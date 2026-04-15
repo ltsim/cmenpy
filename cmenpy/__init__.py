@@ -1,16 +1,9 @@
 import abc
 import functools
-import collections
 
 import numpy as np
 
-
-def expand_buffer(n: int, ndim: int) -> np.ndarray:
-    return np.hstack(([n], np.full((ndim + 1), np.nan)))
-
-
-def init_buffer(n_pop: int, ndim: int) -> np.ndarray:
-    return np.full((n_pop, ndim + 1), np.nan)
+from cmenpy import low
 
 
 class Bounds:
@@ -72,18 +65,22 @@ class Agent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def id(self) -> int: ...
+    def id(self) -> int:
+        ...
 
     @property
     @abc.abstractmethod
-    def solution(self): ...
+    def solution(self):
+        ...
 
     @property
     @abc.abstractmethod
-    def fitness(self) -> int | float: ...
+    def fitness(self) -> int | float:
+        ...
 
     @abc.abstractmethod
-    def __float__(self) -> float: ...
+    def __float__(self) -> float:
+        ...
 
     def __repr__(self) -> str:
         return f"Agent(id={self.id}, fitness={self.fitness}, solution={self.solution})"
@@ -139,12 +136,16 @@ class VirtualAgent(Agent):
 
 
 class Population:
-    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop):
-        self.__exc_reserve = list(n for n in range(*r_pop))
-        self.__uno_reserve = list(n for n in range(0, len(agents)))
+    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop: tuple[int, int]):
+        n_pop = len(agents)
+
+        self.__min_pop, self.__max_pop = r_pop
         self.__buffer = buffer
         self.__target = target
         self.__agents = agents
+        self.__mask = (
+                list(True for _ in range(0, n_pop)) + list(False for _ in range(n_pop, self.__max_pop))
+        )
 
     def __len__(self):
         return len(self.__agents)
@@ -159,58 +160,50 @@ class Population:
         self.__agents[i] = value
 
     def remove(self, i: int):
-        """
-        agents = [*filter(lambda a: a.id == i, self.__agents)]
+        founds = [*filter(lambda a: a.id == i, self.__agents)]
 
-        if not len(agents) > 0:
-            raise IndexError("Agent not found.")
+        if not len(founds) > 0:
+            raise ValueError("Agent not found.")
 
-        agent = agents[0]
+        agent = founds[0]
 
-        n_buff = np.delete(self.__buffer, i, axis=0)
-        self.__buffer.resize(n_buff.shape, refcheck=False)
-        self.__buffer[:] = n_buff
-
+        self.__mask[i] = False
         self.__agents.remove(agent)
-        """
 
     def append(self, solution=None):
-        """
-        n_current_pop = int(np.argmax(self.__buffer[:, 0]) + 1)
-        n_buff_pop = expand_buffer(n_current_pop, self.__target.bounds.ndim)
+        founds = [i for i, x in enumerate(self.__mask) if not x]
 
-        if solution is not None:
-            n_buff_pop[2:] = solution
-            n_buff_pop[1] = self.__target(solution)
+        if not len(founds) > 0:
+            raise ValueError("Max agents in memory.")
 
-        n_buff = np.vstack((self.__buffer, n_buff_pop))
+        i = founds[0]
 
-        self.__buffer.resize(n_buff.shape, refcheck=False)
-        self.__buffer[:] = n_buff
-
-        agent = MemoryAgent(self.__buffer, n_current_pop)
-
-        self.__agents.append(agent)
+        self.__mask[i] = True
+        self.__agents.append(
+            MemoryAgent(self.__buffer, i)
+        )
+        self.__buffer[i, 1:] = solution
+        self.__buffer[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
 
         return VirtualAgent(
             self.__buffer,
-            n_current_pop
+            i
         )
-        """
 
     def __invert__(self):
-        return self.__buffer[:, 1:].copy()
+        return self.__buffer[self.__mask, 1:].copy()
 
     def __matmul__(self, other):
         buff = self.__buffer.copy()
-        buff[:, 1:] = other
-        buff[:, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[:, 2:])
+        buff[self.__mask, 1:] = other
+        buff[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
 
-        return buff[:, 2:]
+        return buff[self.__mask, 2:]
 
     def __imatmul__(self, other):
-        self.__buffer[:, 1:] = other
-        self.__buffer[:, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[:, 2:])
+        self.__buffer[self.__mask, 1:] = other
+        self.__buffer[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
+
         return self
 
     @property
@@ -231,6 +224,22 @@ class Population:
             w_pop.id
         )
 
+    @property
+    def free_space(self):
+        return len(self.__agents) < self.max_pop
+
+    @property
+    def min_pop(self):
+        return self.__min_pop
+
+    @property
+    def max_pop(self):
+        return self.__max_pop
+
+    @property
+    def length(self):
+        return len(self.__agents)
+
 
 class EpochIteration:
     def __init__(self, buffer, target, n_it: int, n_pop: int, r_pop):
@@ -241,11 +250,12 @@ class EpochIteration:
         self.__target = target
         self.__n_it = n_it
         self.__agents = []
-        self.__pop = Population(buffer, target, self.__agents, r_pop)
         self.__r_pop = r_pop
 
         for i in range(n_pop):
             self.__agents.append(MemoryAgent(buffer, i))
+
+        self.__pop = Population(buffer, target, self.__agents, r_pop)
 
     def __iter__(self):
         for i in range(self.__n_it):
@@ -294,7 +304,7 @@ class AlgorithmModel:
             bounds = Bounds(bounds)
             target = TargetFunction(f, bounds)
 
-            self.__buffer = init_buffer(n_pop, bounds.ndim)
+            self.__buffer = low.init_buffer(max_pop, bounds.ndim)
             self.__epoch = EpochIteration(self.__buffer, target, n_it, n_pop, r_pop)
 
             return func(self.__epoch.population, bounds, self.__epoch)
