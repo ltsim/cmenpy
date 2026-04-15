@@ -10,7 +10,7 @@ def expand_buffer(n: int, ndim: int) -> np.ndarray:
 
 
 def init_buffer(n_pop: int, ndim: int) -> np.ndarray:
-    return np.full((n_pop, ndim + 2), np.nan)
+    return np.full((n_pop, ndim + 1), np.nan)
 
 
 class Bounds:
@@ -103,29 +103,23 @@ class MemoryAgent(Agent):
 
     @property
     def solution(self):
-        return self.__buffer[self.mask, 2:]
+        return self.__buffer[self.id, 1:]
 
     @solution.setter
     def solution(self, value):
-        self.__buffer[self.mask, 2:] = value
+        self.__buffer[self.id, 1:] = value
 
     @property
     def fitness(self):
-        return self.__buffer[self.mask, 1]
-
-    @property
-    def mask(self):
-        return self.__buffer[:, 0] == self.id
+        return self.__buffer[self.id, 0]
 
     def __float__(self):
-        return self.__buffer[self.mask, 1]
+        return self.__buffer[self.id, 0]
 
 
 class VirtualAgent(Agent):
     def __init__(self, buffer: np.ndarray, n: int):
-        mask = buffer[:, 0] == n
-
-        self.__buffer = buffer[mask, :].view()
+        self.__buffer = buffer[n, :].copy()
         self.__id = n
 
     @property
@@ -134,19 +128,20 @@ class VirtualAgent(Agent):
 
     @property
     def solution(self):
-        return self.__buffer[2:]
+        return self.__buffer[1:]
 
     @property
     def fitness(self):
-        return self.__buffer[1]
+        return self.__buffer[0]
 
     def __float__(self):
-        pass
+        return self.__buffer[0]
 
 
 class Population:
-    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop=None):
-        self.__a_buffer = collections.deque(n for n in range(*r_pop))
+    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop):
+        self.__exc_reserve = list(n for n in range(*r_pop))
+        self.__uno_reserve = list(n for n in range(0, len(agents)))
         self.__buffer = buffer
         self.__target = target
         self.__agents = agents
@@ -164,6 +159,7 @@ class Population:
         self.__agents[i] = value
 
     def remove(self, i: int):
+        """
         agents = [*filter(lambda a: a.id == i, self.__agents)]
 
         if not len(agents) > 0:
@@ -176,8 +172,10 @@ class Population:
         self.__buffer[:] = n_buff
 
         self.__agents.remove(agent)
+        """
 
     def append(self, solution=None):
+        """
         n_current_pop = int(np.argmax(self.__buffer[:, 0]) + 1)
         n_buff_pop = expand_buffer(n_current_pop, self.__target.bounds.ndim)
 
@@ -198,20 +196,21 @@ class Population:
             self.__buffer,
             n_current_pop
         )
+        """
 
     def __invert__(self):
-        return self.__buffer[:, 2:].copy()
+        return self.__buffer[:, 1:].copy()
 
     def __matmul__(self, other):
         buff = self.__buffer.copy()
-        buff[:, 2:] = other
-        buff[:, 1] = np.apply_along_axis(self.__target, 1, self.__buffer[:, 2:])
+        buff[:, 1:] = other
+        buff[:, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[:, 2:])
 
         return buff[:, 2:]
 
     def __imatmul__(self, other):
-        self.__buffer[:, 2:] = other
-        self.__buffer[:, 1] = np.apply_along_axis(self.__target, 1, self.__buffer[:, 2:])
+        self.__buffer[:, 1:] = other
+        self.__buffer[:, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[:, 2:])
         return self
 
     @property
@@ -234,7 +233,7 @@ class Population:
 
 
 class EpochIteration:
-    def __init__(self, buffer, target, n_it: int, n_pop: int, r_pop=None):
+    def __init__(self, buffer, target, n_it: int, n_pop: int, r_pop):
         if r_pop is None:
             r_pop = (n_pop, n_pop)
 
@@ -242,11 +241,10 @@ class EpochIteration:
         self.__target = target
         self.__n_it = n_it
         self.__agents = []
-        self.__pop = Population(buffer, target, self.__agents)
+        self.__pop = Population(buffer, target, self.__agents, r_pop)
         self.__r_pop = r_pop
 
         for i in range(n_pop):
-            buffer[i, :1] = i
             self.__agents.append(MemoryAgent(buffer, i))
 
     def __iter__(self):
@@ -280,12 +278,24 @@ class AlgorithmModel:
 
     def define(self, func):
         @functools.wraps(func)
-        def inner(f, bounds, n_it, n_pop):
+        def inner(f, bounds, n_it, n_pop, r_pop=None):
+            if r_pop is None:
+                r_pop = (n_pop, n_pop)
+
+            min_pop, max_pop = r_pop
+
+            if min_pop > max_pop:
+                raise IndexError("Population size is too small.")
+            elif n_pop < min_pop:
+                raise IndexError("Population size is too small.")
+            elif n_pop > max_pop:
+                raise IndexError("Population size is too large.")
+
             bounds = Bounds(bounds)
             target = TargetFunction(f, bounds)
 
             self.__buffer = init_buffer(n_pop, bounds.ndim)
-            self.__epoch = EpochIteration(self.__buffer, target, n_it, n_pop)
+            self.__epoch = EpochIteration(self.__buffer, target, n_it, n_pop, r_pop)
 
             return func(self.__epoch.population, bounds, self.__epoch)
 
