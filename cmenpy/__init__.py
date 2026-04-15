@@ -168,6 +168,7 @@ class Population:
         agent = founds[0]
 
         self.__mask[i] = False
+        self.__buffer[i, :] = np.nan
         self.__agents.remove(agent)
 
     def append(self, solution=None):
@@ -183,7 +184,7 @@ class Population:
             MemoryAgent(self.__buffer, i)
         )
         self.__buffer[i, 1:] = solution
-        self.__buffer[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
+        self.__buffer[i, 0] = np.apply_along_axis(self.__target, 0, solution)
 
         return VirtualAgent(
             self.__buffer,
@@ -260,16 +261,6 @@ class EpochIteration:
     def __iter__(self):
         for i in range(self.__n_it):
             yield i
-
-            """
-            n_agents = []
-
-            for a in self.__agents:
-                n_agents.append(Agent(self.__buffer, i, a.id))
-
-            self.__agents = n_agents
-            self.__pop = Population(self.__buffer, self.__target, i, self.__agents)
-            """
 
     @property
     def population(self):
