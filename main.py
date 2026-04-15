@@ -17,9 +17,11 @@ def random_search(pop, bounds, epoch):
             best_pop = pop.best
             worst_pop = pop.worst
 
-            pop.remove(worst_pop.id)
+            # pop.remove(worst_pop.id)
 
-            print("Current population:", len(pop))
+            # print("Current population:", len(pop))
+            print("Best population:", best_pop.fitness)
+
 
     return best_pop
 
@@ -29,4 +31,4 @@ def sphere(x):
 
 
 if __name__ == "__main__":
-    random_search(sphere, [(-1, 1), (-1, 1)], 5, 5)
+    random_search(sphere, [(-1, 1), (-1, 1)], 1500, 500, (100, 1000))
