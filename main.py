@@ -2,9 +2,10 @@ import numpy as np
 
 import cmenpy as cm
 
+my_algorithm = cm.AlgorithmModel("My algorithm")
 
-@cm.define("Random search")
-def random_search(pop, bounds, epoch):
+@my_algorithm.define
+def f(pop, bounds, epoch):
     pop @= np.random.uniform(-1, 1, (len(pop), bounds.ndim))
 
     b_pop = pop.best
@@ -59,5 +60,5 @@ def peaks(i):
 
 
 if __name__ == "__main__":
-    best_pop = random_search(sphere, [(-1, 1), (-1, 1)], 1500, 15, (1, 20))
+    best_pop = my_algorithm(sphere, [(-1, 1), (-1, 1)], 1500, 15, (1, 20))
     print("Best population:", best_pop)

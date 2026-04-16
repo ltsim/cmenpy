@@ -1,7 +1,9 @@
 import abc
 import functools
+import typing
 
 import numpy as np
+import numpy.typing as npt
 
 from cmenpy import low
 
@@ -135,8 +137,12 @@ class VirtualAgent(Agent):
         return self.__buffer[0]
 
 
-class Population:
-    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop: tuple[int, int]):
+C = typing.TypeVar("C", bound=Agent)
+
+
+class Population(typing.Generic[C]):
+    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop: tuple[int, int],
+                 d_class: typing.Type[C] = VirtualAgent):
         n_pop = len(agents)
 
         self.__min_pop, self.__max_pop = r_pop
@@ -147,17 +153,27 @@ class Population:
                 list(True for _ in range(0, n_pop)) + list(False for _ in range(n_pop, self.__max_pop))
         )
 
+        self.__d_class = d_class
+
     def __len__(self):
         return len(self.__agents)
 
     def __iter__(self):
         return (a for a in self.__agents)
 
-    def __getitem__(self, i):
-        return self.__agents[i]
+    def __getitem__(self, i: int) -> VirtualAgent:
+        a = self.__agents[i]
+
+        return VirtualAgent(
+            self.__buffer,
+            a.id
+        )
 
     def __setitem__(self, i, value):
-        self.__agents[i] = value
+        if isinstance(value, Agent):
+            self.__agents[i] = value
+        elif any(isinstance(value, n) for n in (list, tuple, np.ndarray)):
+            self.__buffer[i, :] = value
 
     def remove(self, i: int):
         founds = [*filter(lambda a: a.id == i, self.__agents)]
@@ -237,10 +253,6 @@ class Population:
     def max_pop(self):
         return self.__max_pop
 
-    @property
-    def length(self):
-        return len(self.__agents)
-
 
 class EpochIteration:
     def __init__(self, buffer, target, n_it: int, n_pop: int, r_pop):
@@ -303,6 +315,9 @@ class AlgorithmModel:
         self.__inner = inner
 
         return inner
+
+    def __call__(self, *args, **kwargs):
+        return self.__inner(*args, **kwargs)
 
 
 def define(alias: str):
