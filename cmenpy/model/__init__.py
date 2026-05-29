@@ -24,9 +24,7 @@ class AlgorithmModel:
 
             min_pop, max_pop = r_pop
 
-            if min_pop > max_pop:
-                raise IndexError("Population size is too small.")
-            elif n_pop < min_pop:
+            if min_pop > max_pop or n_pop < min_pop:
                 raise IndexError("Population size is too small.")
             elif n_pop > max_pop:
                 raise IndexError("Population size is too large.")
