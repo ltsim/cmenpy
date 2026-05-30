@@ -1,13 +1,13 @@
 import inspect
 import typing
 
-from cmenpy.model.optimizer import ModelProtocol, OptimizerModel
+from cmenpy.model.optimizer import ModelProtocol, ClassOptimizerModel
 
 T = typing.TypeVar("T", bound=ModelProtocol)
 
 
-def declare(strict: bool = False) -> typing.Callable[[typing.Type[T]], OptimizerModel]:
-    def decorator(cls):
+def declare(strict: bool = False) -> typing.Callable[[typing.Type[T]], ClassOptimizerModel]:
+    def decorator(cls: typing.Type[T]):
         methods_to_check = ["initialize", "evolve"]
 
         protocol_hints = {m: typing.get_type_hints(getattr(ModelProtocol, m)) for m in methods_to_check}
@@ -88,7 +88,7 @@ def declare(strict: bool = False) -> typing.Callable[[typing.Type[T]], Optimizer
 
         cls.__init__ = dynamic_init
 
-        return OptimizerModel(
+        return ClassOptimizerModel(
             cls_model=cls,
         )
 

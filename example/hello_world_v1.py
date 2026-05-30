@@ -2,9 +2,9 @@ import numpy as np
 
 import cmenpy as cm
 
-my_algorithm = cm.AlgorithmModel("My algorithm")
+my_algorithm = cm.FunctionOptimizerModel("My algorithm")
 
-@my_algorithm.declare
+@my_algorithm.define
 def f(pop, bounds, epoch):
     pop @= np.random.uniform(-1, 1, (len(pop), bounds.ndim))
 

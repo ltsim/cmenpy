@@ -6,7 +6,7 @@ from cmenpy.epoch import EpochIteration
 from cmenpy.target import TargetFunction
 
 
-class AlgorithmModel:
+class FunctionOptimizerModel:
     def __init__(self, alias: str, seed=None):
         self.__alias = alias
         self.__inner = None
@@ -46,7 +46,7 @@ class AlgorithmModel:
 
 
 def define(alias: str):
-    model = AlgorithmModel(alias)
+    model = FunctionOptimizerModel(alias)
 
     def inner(func):
         return model.define(func)

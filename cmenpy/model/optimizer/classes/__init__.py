@@ -4,10 +4,10 @@ from cmenpy import low
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.target import TargetFunction, Target
-from cmenpy.model.protocol import ModelProtocol
+from cmenpy.model.optimizer.classes.protocol import ModelProtocol
 
 
-class OptimizerModel:
+class ClassOptimizerModel:
     def __init__(self, cls_model: typing.Type[ModelProtocol]) -> None:
         self.__alias = str(cls_model.__name__)
         self.__cls_model: typing.Type[ModelProtocol] = cls_model
@@ -62,7 +62,7 @@ class OptimizerModel:
                 bounds=bounds,
             )
 
-    def __call__(self, *args, **kwargs) -> "OptimizerModel":
+    def __call__(self, *args, **kwargs) -> "ClassOptimizerModel":
         self.__model = self.__cls_model(
             *args, **kwargs
         )
