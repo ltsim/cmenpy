@@ -20,7 +20,7 @@ class AlgorithmModel:
         @functools.wraps(func)
         def inner(f, bounds, n_it, n_pop, r_pop=None):
             if r_pop is None:
-                r_pop = (n_pop, n_pop)
+                r_pop = n_pop, n_pop
 
             min_pop, max_pop = r_pop
 
