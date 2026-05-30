@@ -4,7 +4,7 @@ import cmenpy as cm
 
 my_algorithm = cm.AlgorithmModel("My algorithm")
 
-@my_algorithm.define
+@my_algorithm.declare
 def f(pop, bounds, epoch):
     pop @= np.random.uniform(-1, 1, (len(pop), bounds.ndim))
 
@@ -20,14 +20,9 @@ def f(pop, bounds, epoch):
             w_pop = pop.worst
 
             pop.remove(w_pop.id)
-
-            print("Current population:", len(pop))
-            print("Worst population remove: ", w_pop)
-            print("Current best population:", b_pop)
         else:
             if pop.free_space:
                 n_pop = pop.append(np.random.uniform(-1, 1, bounds.ndim))
-                print("Append new agent:", n_pop)
 
     return b_pop
 
