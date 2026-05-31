@@ -11,7 +11,6 @@ class MyAlgorithm:
 
     def initialize(self, population, bounds) -> None:
         population @= np.random.uniform(-1, 1, (len(population), bounds.ndim))
-        print(self.w)
 
     def evolve(self, e: int, population: cm.Population, bounds: cm.Bounds) -> None:
         b_pop = population.best
