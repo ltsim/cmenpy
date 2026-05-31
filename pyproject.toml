@@ -79,7 +79,7 @@ dev = [
     "flake8>=7.0",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.15.0",
-    "black>=26.5.1"
+    "black>=21.9b0"
 ]
 
 [project.urls]
@@ -117,7 +117,7 @@ module = [
 
 [tool.black]
 line-length = 88
-target-version = ['py310', 'py311', 'py312', 'py313']
+target-version = ['py310']
 include = '\.pyi?$'
 exclude = '''
 /(
