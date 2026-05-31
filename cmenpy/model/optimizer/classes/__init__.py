@@ -2,9 +2,9 @@ import typing
 
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
-from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.classes.protocol import ModelProtocol
+from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.resource import OptimizerResourceManager
 from cmenpy.target import Target
 from cmenpy.types import DType

@@ -1,15 +1,14 @@
 import functools
 import typing
 
-from cmenpy import low
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.population import Population
 from cmenpy.resource import OptimizerResourceManager
-from cmenpy.target import TargetFunction, Target
-from cmenpy.types import DType, NDArrayType
+from cmenpy.target import Target
+from cmenpy.types import DType
 
 
 class AlgorithmFunction(typing.Protocol):

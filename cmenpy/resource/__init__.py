@@ -3,8 +3,8 @@ import typing
 from cmenpy import low
 from cmenpy.agent import MemoryAgent, Agent
 from cmenpy.bounds import Bounds
-from cmenpy.population import Population
 from cmenpy.epoch import EpochIteration
+from cmenpy.population import Population
 from cmenpy.target import Target, TargetFunction
 from cmenpy.types import NDArrayType
 

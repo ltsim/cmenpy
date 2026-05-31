@@ -1,5 +1,5 @@
-import typing
 import functools
+import typing
 
 from cmenpy.types import DType
 
