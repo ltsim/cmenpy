@@ -3,14 +3,23 @@ import typing
 import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
+from cmenpy.population.utils import sorted_population
 from cmenpy.target import TargetFunction
+from cmenpy.types import NDArrayType
 
-C = typing.TypeVar("C", bound=Agent)
 
+class Population:
+    def __init__(
+            self,
+            buffer: NDArrayType,
+            target: TargetFunction,
+            agents: list[Agent],
+            r_pop: tuple[int, int],
+            d_class: typing.Type[Agent] | None = None
+    ):
+        if d_class is None:
+            d_class = VirtualAgent
 
-class Population(typing.Generic[C]):
-    def __init__(self, buffer: np.ndarray, target: TargetFunction, agents: list[Agent], r_pop: tuple[int, int],
-                 d_class: typing.Type[C] = VirtualAgent):
         n_pop = len(agents)
 
         self.__min_pop, self.__max_pop = r_pop
@@ -86,14 +95,15 @@ class Population(typing.Generic[C]):
         return buff[self.__mask, 2:]
 
     def __imatmul__(self, other):
-        self.__buffer[self.__mask, 1:] = other
-        self.__buffer[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
+        if self.size > 0:
+            self.__buffer[self.__mask, 1:] = other
+            self.__buffer[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
 
         return self
 
     @property
     def best(self):
-        b_pop = sorted(self.__agents, key=lambda a: a.fitness)[0]
+        b_pop = sorted_population(self.__agents)[0]
 
         return VirtualAgent(
             self.__buffer,
@@ -102,7 +112,7 @@ class Population(typing.Generic[C]):
 
     @property
     def worst(self):
-        w_pop = sorted(self.__agents, key=lambda a: a.fitness)[-1]
+        w_pop = sorted_population(self.__agents)[-1]
 
         return VirtualAgent(
             self.__buffer,
@@ -120,3 +130,17 @@ class Population(typing.Generic[C]):
     @property
     def max_pop(self):
         return self.__max_pop
+
+    @property
+    def size(self):
+        return len(self.__agents)
+
+
+def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]]):
+    if r_pop is None:
+        r_pop = n_pop, n_pop
+
+    min_pop, max_pop = r_pop
+
+    return min_pop, max_pop, r_pop
+
