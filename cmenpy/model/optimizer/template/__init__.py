@@ -3,14 +3,14 @@ import typing
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.model.optimizer.base import BaseOptimizer
-from cmenpy.model.optimizer.classes.protocol import ModelProtocol
+from cmenpy.model.optimizer.template.protocol import ModelProtocol
 from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.resource import OptimizerResourceManager
 from cmenpy.target import Target
 from cmenpy.types import DType
 
 
-class ClassOptimizerModel(BaseOptimizer):
+class TemplateOptimizerModel(BaseOptimizer):
     def __init__(self, cls_model: typing.Type[ModelProtocol]) -> None:
         self.__alias = str(cls_model.__name__)
         self.__cls_model: typing.Type[ModelProtocol] = cls_model
@@ -64,7 +64,7 @@ class ClassOptimizerModel(BaseOptimizer):
 
         return self.__resource.population.best
 
-    def __call__(self, *args, **kwargs) -> "ClassOptimizerModel":
+    def __call__(self, *args, **kwargs) -> "TemplateOptimizerModel":
         self.__model = self.__cls_model(*args, **kwargs)
 
         return self

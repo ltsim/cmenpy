@@ -3,7 +3,7 @@ __version__ = "2026"
 from cmenpy.argument import Argument, Variable
 from cmenpy.bounds import Bounds
 from cmenpy.model import declare, declare_check
-from cmenpy.model.optimizer import FunctionOptimizerModel, ClassOptimizerModel
+from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 from cmenpy.population import Population
 
 __all__ = [
@@ -13,5 +13,5 @@ __all__ = [
     "Variable",
     "Population",
     "FunctionOptimizerModel",
-    "ClassOptimizerModel",
+    "TemplateOptimizerModel",
 ]

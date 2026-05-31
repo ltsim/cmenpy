@@ -3,7 +3,7 @@ import typing
 
 from cmenpy.model.optimizer import (
     ModelProtocol,
-    ClassOptimizerModel,
+    TemplateOptimizerModel,
     FunctionOptimizerModel,
 )
 from cmenpy.model.optimizer.base import BaseOptimizer
@@ -125,7 +125,7 @@ def declare_from_class(cls: typing.Type[ModelProtocol]):
 
     setattr(cls, "__init__", dynamic_init)
 
-    return ClassOptimizerModel(
+    return TemplateOptimizerModel(
         cls_model=cls,
     )
 
