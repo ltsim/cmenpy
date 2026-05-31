@@ -31,10 +31,14 @@ class CallableFunction(typing.Protocol):
 
 
 class FunctionOptimizerModel(BaseOptimizer):
-    def __init__(self, alias: str | None = None, seed=None):
+    def __init__(self, alias: str = "Optimizer"):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
         self.__resource: typing.Optional[OptimizerResourceManager] = None
+
+    @property
+    def alias(self) -> str:
+        return self.__alias
 
     def define(self, func: AlgorithmFunction):
         @functools.wraps(func)

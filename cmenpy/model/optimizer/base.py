@@ -20,3 +20,7 @@ class BaseOptimizer(abc.ABC):
 
     @abc.abstractmethod
     def __call__(self, *args, **kwargs): ...
+
+    @property
+    @abc.abstractmethod
+    def alias(self) -> str: ...
