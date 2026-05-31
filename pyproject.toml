@@ -88,6 +88,9 @@ dev = [
 "Bug Tracker" = "https://github.com/ltsim/cmenpy/issues"
 "Change Log" = "https://github.com/ltsim/cmenpy/blob/master/CHANGELOG.md"
 
+[tool.isort]
+profile = "black"
+
 [tool.setuptools.dynamic]
 version = { attr = "cmenpy.__version__" }
 
