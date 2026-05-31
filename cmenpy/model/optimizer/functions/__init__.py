@@ -7,6 +7,7 @@ from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.population import Population
+from cmenpy.resource import OptimizerResourceManager
 from cmenpy.target import TargetFunction, Target
 from cmenpy.types import DType, NDArrayType
 
@@ -34,8 +35,7 @@ class FunctionOptimizerModel(BaseOptimizer):
     def __init__(self, alias: str | None = None, seed=None):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
-        self.__buffer: NDArrayType | None = None
-        self.__epoch: EpochIteration | None = None
+        self.__resource: typing.Optional[OptimizerResourceManager] = None
 
     def define(self, func: AlgorithmFunction):
         @functools.wraps(func)
@@ -56,23 +56,20 @@ class FunctionOptimizerModel(BaseOptimizer):
             elif pop_size > max_pop:
                 raise IndexError("Population size is too large.")
 
-            bounds = create_bounds(bounds)
-            target = TargetFunction(f, bounds)
-
-            buffer = low.init_buffer(max_pop, bounds.ndim)
-            epoch = EpochIteration(buffer, target, epochs, pop_size, pop_range)
-            population = epoch.population
-
-            self.__buffer = buffer
-            self.__epoch = epoch
-
-            func(
-                pop=population,
-                bounds=bounds,
-                epoch=epoch
+            self.__resource = OptimizerResourceManager(
+                f, create_bounds(bounds), epochs, pop_size, pop_range
             )
 
-            return epoch.population.best
+            if self.__resource is None:
+                raise NotImplementedError("Function not implemented.")
+
+            func(
+                pop=self.__resource.population,
+                bounds=self.__resource.bounds,
+                epoch=self.__resource.epoch_it
+            )
+
+            return self.__resource.population.best
 
         self.__alias = func.__name__
         self.__inner = lambda *args, **kwargs: wrapper(*args, **kwargs)
