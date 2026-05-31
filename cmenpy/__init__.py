@@ -6,4 +6,11 @@ from cmenpy.population import Population
 from cmenpy.model import declare, declare_check
 from cmenpy.model.optimizer import FunctionOptimizerModel, ClassOptimizerModel
 
-__all__ = ["declare", "declare_check", "Argument", "Population", "FunctionOptimizerModel", "ClassOptimizerModel"]
+__all__ = [
+    "declare",
+    "declare_check",
+    "Argument",
+    "Population",
+    "FunctionOptimizerModel",
+    "ClassOptimizerModel",
+]

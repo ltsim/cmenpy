@@ -4,6 +4,7 @@ from cmenpy.agent import Agent
 
 A = typing.TypeVar("A", bound=Agent)
 
+
 def sorted_population(agents: list[A]) -> list[A]:
     if not len(agents) > 0:
         raise ValueError("The population is empty.")

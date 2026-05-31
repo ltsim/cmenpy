@@ -22,22 +22,18 @@ class Agent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def id(self) -> int:
-        ...
+    def id(self) -> int: ...
 
     @property
     @abc.abstractmethod
-    def solution(self):
-        ...
+    def solution(self): ...
 
     @property
     @abc.abstractmethod
-    def fitness(self) -> int | float:
-        ...
+    def fitness(self) -> int | float: ...
 
     @abc.abstractmethod
-    def __float__(self) -> float:
-        ...
+    def __float__(self) -> float: ...
 
     def __repr__(self) -> str:
         return f"Agent(id={self.id}, fitness={self.fitness}, solution={self.solution})"

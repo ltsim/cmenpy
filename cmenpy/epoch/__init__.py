@@ -1,7 +1,7 @@
 class EpochIteration:
     def __init__(
-            self,
-            epochs: int,
+        self,
+        epochs: int,
     ):
         if epochs <= 0:
             raise ValueError("Epochs must be a positive integer.")

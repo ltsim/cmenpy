@@ -21,8 +21,14 @@ class ClassOptimizerModel(BaseOptimizer):
     def alias(self) -> str:
         return self.__alias
 
-    def solve(self, f: Target, bounds: Bounds | SequenceStructure[DType], epochs: int, pop_size: int,
-              pop_range: typing.Optional[tuple[int, int]] = None) -> Agent:
+    def solve(
+        self,
+        f: Target,
+        bounds: Bounds | SequenceStructure[DType],
+        epochs: int,
+        pop_size: int,
+        pop_range: typing.Optional[tuple[int, int]] = None,
+    ) -> Agent:
         if self.__model is None:
             raise NotImplementedError()
 
@@ -43,7 +49,6 @@ class ClassOptimizerModel(BaseOptimizer):
         if self.__resource is None:
             raise NotImplementedError("Function not implemented.")
 
-
         if hasattr(self.__model, "initialize"):
             self.__model.initialize(
                 population=self.__resource.population,
@@ -60,9 +65,6 @@ class ClassOptimizerModel(BaseOptimizer):
         return self.__resource.population.best
 
     def __call__(self, *args, **kwargs) -> "ClassOptimizerModel":
-        self.__model = self.__cls_model(
-            *args,
-            **kwargs
-        )
+        self.__model = self.__cls_model(*args, **kwargs)
 
         return self

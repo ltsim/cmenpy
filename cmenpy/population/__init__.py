@@ -10,12 +10,12 @@ from cmenpy.types import NDArrayType
 
 class Population:
     def __init__(
-            self,
-            buffer: NDArrayType,
-            target: TargetFunction,
-            agents: list[Agent],
-            r_pop: tuple[int, int],
-            d_class: typing.Type[Agent] | None = None
+        self,
+        buffer: NDArrayType,
+        target: TargetFunction,
+        agents: list[Agent],
+        r_pop: tuple[int, int],
+        d_class: typing.Type[Agent] | None = None,
     ):
         if d_class is None:
             d_class = VirtualAgent
@@ -26,8 +26,8 @@ class Population:
         self.__buffer = buffer
         self.__target = target
         self.__agents = agents
-        self.__mask = (
-                list(True for _ in range(0, n_pop)) + list(False for _ in range(n_pop, self.__max_pop))
+        self.__mask = list(True for _ in range(0, n_pop)) + list(
+            False for _ in range(n_pop, self.__max_pop)
         )
 
         self.__d_class = d_class
@@ -41,10 +41,7 @@ class Population:
     def __getitem__(self, i: int) -> VirtualAgent:
         a = self.__agents[i]
 
-        return VirtualAgent(
-            self.__buffer,
-            a.id
-        )
+        return VirtualAgent(self.__buffer, a.id)
 
     def __setitem__(self, i, value):
         if isinstance(value, Agent):
@@ -73,16 +70,11 @@ class Population:
         i = founds[0]
 
         self.__mask[i] = True
-        self.__agents.append(
-            MemoryAgent(self.__buffer, i)
-        )
+        self.__agents.append(MemoryAgent(self.__buffer, i))
         self.__buffer[i, 1:] = solution
         self.__buffer[i, 0] = np.apply_along_axis(self.__target, 0, solution)
 
-        return VirtualAgent(
-            self.__buffer,
-            i
-        )
+        return VirtualAgent(self.__buffer, i)
 
     def __invert__(self):
         return self.__buffer[self.__mask, 1:].copy()
@@ -90,14 +82,18 @@ class Population:
     def __matmul__(self, other):
         buff = self.__buffer.copy()
         buff[self.__mask, 1:] = other
-        buff[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
+        buff[self.__mask, 0] = np.apply_along_axis(
+            self.__target, 1, self.__buffer[self.__mask, 2:]
+        )
 
         return buff[self.__mask, 2:]
 
     def __imatmul__(self, other):
         if self.size > 0:
             self.__buffer[self.__mask, 1:] = other
-            self.__buffer[self.__mask, 0] = np.apply_along_axis(self.__target, 1, self.__buffer[self.__mask, 2:])
+            self.__buffer[self.__mask, 0] = np.apply_along_axis(
+                self.__target, 1, self.__buffer[self.__mask, 2:]
+            )
 
         return self
 
@@ -105,19 +101,13 @@ class Population:
     def best(self):
         b_pop = sorted_population(self.__agents)[0]
 
-        return VirtualAgent(
-            self.__buffer,
-            b_pop.id
-        )
+        return VirtualAgent(self.__buffer, b_pop.id)
 
     @property
     def worst(self):
         w_pop = sorted_population(self.__agents)[-1]
 
-        return VirtualAgent(
-            self.__buffer,
-            w_pop.id
-        )
+        return VirtualAgent(self.__buffer, w_pop.id)
 
     @property
     def free_space(self):
@@ -143,4 +133,3 @@ def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]])
     min_pop, max_pop = r_pop
 
     return min_pop, max_pop, r_pop
-

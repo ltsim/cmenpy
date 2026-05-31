@@ -1,22 +1,34 @@
 import inspect
 import typing
 
-from cmenpy.model.optimizer import ModelProtocol, ClassOptimizerModel, FunctionOptimizerModel
+from cmenpy.model.optimizer import (
+    ModelProtocol,
+    ClassOptimizerModel,
+    FunctionOptimizerModel,
+)
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions import CallableFunction, AlgorithmFunction
 
 
-def check_type_protocol_from_class(cls: typing.Type[ModelProtocol], strict: bool = False) -> typing.Type[ModelProtocol]:
-    methods_to_check = [
-        "initialize", "evolve"
-    ]
+def check_type_protocol_from_class(
+    cls: typing.Type[ModelProtocol], strict: bool = False
+) -> typing.Type[ModelProtocol]:
+    methods_to_check = ["initialize", "evolve"]
 
-    protocol_hints = {m: typing.get_type_hints(getattr(ModelProtocol, m)) for m in methods_to_check}
-    protocol_sigs = {m: inspect.signature(getattr(ModelProtocol, m)) for m in methods_to_check}
+    protocol_hints = {
+        m: typing.get_type_hints(getattr(ModelProtocol, m)) for m in methods_to_check
+    }
+    protocol_sigs = {
+        m: inspect.signature(getattr(ModelProtocol, m)) for m in methods_to_check
+    }
 
     for method_name in methods_to_check:
-        if not hasattr(cls, method_name) or not inspect.isfunction(getattr(cls, method_name)):
-            raise TypeError(f"Class '{cls.__name__}' must implement the method '{method_name}'")
+        if not hasattr(cls, method_name) or not inspect.isfunction(
+            getattr(cls, method_name)
+        ):
+            raise TypeError(
+                f"Class '{cls.__name__}' must implement the method '{method_name}'"
+            )
 
         cls_method = getattr(cls, method_name)
         cls_method_hints = typing.get_type_hints(cls_method)
@@ -37,7 +49,9 @@ def check_type_protocol_from_class(cls: typing.Type[ModelProtocol], strict: bool
 
             for param_name in proto_params:
                 if param_name not in cls_method_hints:
-                    raise TypeError(f"Method '{method_name}' parameter '{param_name}' is missing a type hint")
+                    raise TypeError(
+                        f"Method '{method_name}' parameter '{param_name}' is missing a type hint"
+                    )
                 if cls_method_hints[param_name] != proto_hints[param_name]:
                     raise TypeError(
                         f"Method '{method_name}' parameter '{param_name}' must be of type "
@@ -78,9 +92,16 @@ def declare_from_class(cls: typing.Type[ModelProtocol]):
             value = all_arguments.get(field_name)
 
             if typing.get_origin(field_type) is typing.Annotated:
-                base_type, metadata = typing.get_args(field_type)[0], typing.get_args(field_type)[1]
+                base_type, metadata = (
+                    typing.get_args(field_type)[0],
+                    typing.get_args(field_type)[1],
+                )
 
-                if isinstance(metadata, dict) and "min" in metadata and "max" in metadata:
+                if (
+                    isinstance(metadata, dict)
+                    and "min" in metadata
+                    and "max" in metadata
+                ):
                     if value is None and "default" in metadata:
                         value = metadata["default"]
 
@@ -88,10 +109,14 @@ def declare_from_class(cls: typing.Type[ModelProtocol]):
                         raise TypeError(f"Missing required argument: '{field_name}'")
 
                     if not isinstance(value, base_type):
-                        raise TypeError(f"Field '{field_name}' must be of type {base_type.__name__}")
+                        raise TypeError(
+                            f"Field '{field_name}' must be of type {base_type.__name__}"
+                        )
 
                     if not (metadata["min"] <= value <= metadata["max"]):
-                        raise ValueError(f"Value {value} out of range for '{field_name}'")
+                        raise ValueError(
+                            f"Value {value} out of range for '{field_name}'"
+                        )
 
             setattr(self, field_name, value)
 
@@ -114,13 +139,13 @@ def declare(model: typing.Type[ModelProtocol] | AlgorithmFunction) -> BaseOptimi
     raise TypeError(f"Model '{model}' is not a class or function.")
 
 
-def declare_check(strict: bool) -> typing.Callable[[typing.Type[ModelProtocol]], BaseOptimizer]:
+def declare_check(
+    strict: bool,
+) -> typing.Callable[[typing.Type[ModelProtocol]], BaseOptimizer]:
     def wrapper(cls: typing.Type[ModelProtocol]) -> BaseOptimizer:
         if inspect.isfunction(cls):
             raise TypeError(f"You only can declare & check in class declaration.")
 
-        return declare_from_class(
-            check_type_protocol_from_class(cls, strict)
-        )
+        return declare_from_class(check_type_protocol_from_class(cls, strict))
 
     return wrapper

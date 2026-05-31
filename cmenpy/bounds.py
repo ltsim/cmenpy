@@ -6,6 +6,7 @@ from cmenpy.types import DType
 InnerSequence = typing.Union[typing.Tuple[DType, ...], typing.List[DType]]
 SequenceStructure = typing.List[InnerSequence[DType]]
 
+
 class Bounds:
     def __init__(self, bounds: SequenceStructure[DType]):
         self.__bounds = bounds

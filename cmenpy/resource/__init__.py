@@ -11,12 +11,12 @@ from cmenpy.types import NDArrayType
 
 class OptimizerResourceManager:
     def __init__(
-            self,
-            f: Target,
-            bounds: Bounds,
-            epochs: int,
-            pop_size: int,
-            pop_range: typing.Optional[tuple[int, int]] = None
+        self,
+        f: Target,
+        bounds: Bounds,
+        epochs: int,
+        pop_size: int,
+        pop_range: typing.Optional[tuple[int, int]] = None,
     ):
         if pop_range is None:
             pop_range = pop_size, pop_size
@@ -32,7 +32,9 @@ class OptimizerResourceManager:
         for i in range(pop_size):
             self.__agents.append(MemoryAgent(self.__buffer, i))
 
-        self.__population: Population = Population(self.__buffer, self.__target, self.__agents, pop_range)
+        self.__population: Population = Population(
+            self.__buffer, self.__target, self.__agents, pop_range
+        )
 
     @property
     def agents(self) -> typing.List[Agent]:

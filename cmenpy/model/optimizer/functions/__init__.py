@@ -15,20 +15,20 @@ from cmenpy.types import DType, NDArrayType
 class AlgorithmFunction(typing.Protocol):
     __name__: str
 
-    def __call__(self, pop: Population, bounds: Bounds, epoch: EpochIteration) -> None:
-        ...
+    def __call__(
+        self, pop: Population, bounds: Bounds, epoch: EpochIteration
+    ) -> None: ...
 
 
 class CallableFunction(typing.Protocol):
     def __call__(
-            self,
-            f: Target,
-            bounds: Bounds | SequenceStructure[DType],
-            epochs: int,
-            pop_size: int,
-            pop_range: typing.Optional[tuple[int, int]] = None
-    ) -> Agent:
-        ...
+        self,
+        f: Target,
+        bounds: Bounds | SequenceStructure[DType],
+        epochs: int,
+        pop_size: int,
+        pop_range: typing.Optional[tuple[int, int]] = None,
+    ) -> Agent: ...
 
 
 class FunctionOptimizerModel(BaseOptimizer):
@@ -40,11 +40,11 @@ class FunctionOptimizerModel(BaseOptimizer):
     def define(self, func: AlgorithmFunction):
         @functools.wraps(func)
         def wrapper(
-                f: Target,
-                bounds: Bounds | SequenceStructure[DType],
-                epochs: int,
-                pop_size: int,
-                pop_range: typing.Optional[tuple[int, int]] = None
+            f: Target,
+            bounds: Bounds | SequenceStructure[DType],
+            epochs: int,
+            pop_size: int,
+            pop_range: typing.Optional[tuple[int, int]] = None,
         ) -> Agent:
             if pop_range is None:
                 pop_range = pop_size, pop_size
@@ -66,7 +66,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             func(
                 pop=self.__resource.population,
                 bounds=self.__resource.bounds,
-                epoch=self.__resource.epoch_it
+                epoch=self.__resource.epoch_it,
             )
 
             return self.__resource.population.best
@@ -76,28 +76,40 @@ class FunctionOptimizerModel(BaseOptimizer):
 
         return self
 
-    def solve(self, f: Target, bounds: Bounds | SequenceStructure[DType], epochs: int, pop_size: int,
-              pop_range: typing.Optional[tuple[int, int]] = None):
+    def solve(
+        self,
+        f: Target,
+        bounds: Bounds | SequenceStructure[DType],
+        epochs: int,
+        pop_size: int,
+        pop_range: typing.Optional[tuple[int, int]] = None,
+    ):
         if self.__inner is not None:
             return self.__inner(
                 f=f,
                 bounds=bounds,
                 epochs=epochs,
                 pop_size=pop_size,
-                pop_range=pop_range
+                pop_range=pop_range,
             )
 
         raise NotImplementedError()
 
-    def __call__(self, f: Target, bounds: Bounds | SequenceStructure[DType], epochs: int, pop_size: int,
-                 pop_range: typing.Optional[tuple[int, int]] = None):
+    def __call__(
+        self,
+        f: Target,
+        bounds: Bounds | SequenceStructure[DType],
+        epochs: int,
+        pop_size: int,
+        pop_range: typing.Optional[tuple[int, int]] = None,
+    ):
         if self.__inner is not None:
             return self.__inner(
                 f=f,
                 bounds=bounds,
                 epochs=epochs,
                 pop_size=pop_size,
-                pop_range=pop_range
+                pop_range=pop_range,
             )
 
         raise NotImplementedError()

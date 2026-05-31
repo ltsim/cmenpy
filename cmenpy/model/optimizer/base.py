@@ -9,10 +9,14 @@ from cmenpy.types import DType
 
 class BaseOptimizer(abc.ABC):
     @abc.abstractmethod
-    def solve(self, f: Target, bounds: Bounds | SequenceStructure[DType], epochs: int, pop_size: int,
-              pop_range: typing.Optional[tuple[int, int]]) -> Agent:
-        ...
+    def solve(
+        self,
+        f: Target,
+        bounds: Bounds | SequenceStructure[DType],
+        epochs: int,
+        pop_size: int,
+        pop_range: typing.Optional[tuple[int, int]],
+    ) -> Agent: ...
 
     @abc.abstractmethod
-    def __call__(self, *args, **kwargs):
-        ...
+    def __call__(self, *args, **kwargs): ...
