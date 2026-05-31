@@ -1,6 +1,6 @@
 # cmenpy
 
-[![License: BSD-3](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square)](https://opensource.org/licenses/BSD-3-Clause)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
 ![PyPI - Version](https://img.shields.io/pypi/v/cmenpy?style=flat-square)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/cmenpy?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmenpy?style=flat-square)
@@ -20,8 +20,8 @@ It provides the clean, abstractions necessary to build custom evolutionary algor
 
 * **Vectorized Data Structures:** Built from the ground up to maximize data locality and mathematical efficiency. Population arrays, agent states, and search spaces leverage a completely flattened, vectorized structure that eliminates heavy object overhead and interfaces natively with NumPy and parallel computing paradigms.
 * **Extensible Architecture:** Designed with clean, highly pedagogical abstractions. Crafting custom transition operators, custom mutation rules, or completely new optimization paradigms requires overriding just a few decoupled, well-defined methods.
-* **Non-Monolithic Flexibility:** We cut out all the bloat. **cmenpy** bypasses secondary overhead—such as visualization tools, complex file exporters, and rigid internal loggers—focusing entirely on the raw mathematical engine and structural flow.
-* **Enterprise & Research Ready:** Protected by the permissive **BSD 3-Clause License**. You have complete freedom to design, modify, and embed your custom algorithms within proprietary commercial platforms or open academic research pipelines without legal friction.
+* **Non-Monolithic Flexibility:** We cut out all the bloat. Bypasses secondary overhead—such as visualization tools, complex file exporters, and rigid internal loggers—focusing entirely on the raw mathematical engine and structural flow.
+* **Research Ready:** Protected by the **GNU GPLv3 License**. You have complete freedom to design, modify, and distribute your custom algorithms. Any derivative work or integration must also remain open and free, ensuring the software permanently evolves as a public good for both academic research and open commercial development.
 
 ---
 
