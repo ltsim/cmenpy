@@ -18,3 +18,8 @@ class Argument:
         raise TypeError(
             "The second argument of Validator must be a tuple of [(min, max)] or ([min, max], default)."
         )
+
+
+class Variable:
+    def __class_getitem__(cls, target_type):
+        return typing.Annotated[target_type, {"delayed_init": True}]

@@ -7,14 +7,19 @@ class MyAlgorithm:
     a: cm.Argument[int, (1, 100)]
     b: cm.Argument[int, (1, 100)]
 
+    w: cm.Variable[np.array]
+
     def initialize(self, population, bounds) -> None:
         population @= np.random.uniform(-1, 1, (len(population), bounds.ndim))
+        print(self.w)
 
     def evolve(self, e: int, population: cm.Population, bounds: cm.Bounds) -> None:
         b_pop = population.best
 
         population @= np.clip(
-            ~population + np.random.uniform(-1, 1, (len(population), bounds.ndim)), -1, 1
+            ~population + np.random.uniform(-1, 1, (len(population), bounds.ndim)),
+            -1,
+            1,
         )
 
         if population.best < b_pop and population.size > 1:
@@ -32,28 +37,25 @@ if __name__ == "__main__":
     model = MyAlgorithm(a=3, b=2)
 
     def sphere(x):
-        return np.sum(x ** 2)
-
+        return np.sum(x**2)
 
     def rastrigin(x):
-        return 10 * len(x) + np.sum(x ** 2 - 10 * np.cos(2 * np.pi * x))
-
+        return 10 * len(x) + np.sum(x**2 - 10 * np.cos(2 * np.pi * x))
 
     def ackley(x):
         n = len(x)
-        s1 = np.sum(x ** 2)
+        s1 = np.sum(x**2)
         s2 = np.sum(np.cos(2 * np.pi * x))
 
         return -20 * np.exp(-0.2 * np.sqrt(s1 / n)) - np.exp(s2 / n) + 20 + np.e
-
 
     def peaks(i):
         x = i[0]
         y = i[1]
 
-        a = 3 * (1 - x) ** 2 * np.exp(-(x ** 2) - (y + 1) ** 2)
-        b = -10 * (x / 5 - x ** 3 - y ** 5) * np.exp(-x ** 2 - y ** 2)
-        c = -1 / 3 * np.exp(-(x + 1) ** 2 - y ** 2)
+        a = 3 * (1 - x) ** 2 * np.exp(-(x**2) - (y + 1) ** 2)
+        b = -10 * (x / 5 - x**3 - y**5) * np.exp(-(x**2) - y**2)
+        c = -1 / 3 * np.exp(-((x + 1) ** 2) - y**2)
 
         return a + b + c
 
