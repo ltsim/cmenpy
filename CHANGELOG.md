@@ -1,6 +1,6 @@
 # Version 2026
 
-+ A decent and civilized version, compatible with BSD-3 license
++ A decent and civilized version, compatible with GNU GPLv3
 
 ---------------------------------------------------------------------
 
