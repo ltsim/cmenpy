@@ -1,54 +1,106 @@
 import functools
+import typing
 
 from cmenpy import low
-from cmenpy.bounds import Bounds
+from cmenpy.agent import Agent
+from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.epoch import EpochIteration
-from cmenpy.target import TargetFunction
+from cmenpy.model.optimizer.base import BaseOptimizer
+from cmenpy.population import Population
+from cmenpy.target import TargetFunction, Target
+from cmenpy.types import DType, NDArrayType
 
 
-class FunctionOptimizerModel:
-    def __init__(self, alias: str, seed=None):
-        self.__alias = alias
-        self.__inner = None
-        self.__buffer = None
-        self.__epoch = None
+class AlgorithmFunction(typing.Protocol):
+    __name__: str
 
-    def __del__(self):
-        pass
+    def __call__(self, pop: Population, bounds: Bounds, epoch: EpochIteration) -> None:
+        ...
 
-    def define(self, func):
+
+class CallableFunction(typing.Protocol):
+    def __call__(
+            self,
+            f: Target,
+            bounds: Bounds | SequenceStructure[DType],
+            epochs: int,
+            pop_size: int,
+            pop_range: typing.Optional[tuple[int, int]] = None
+    ) -> Agent:
+        ...
+
+
+class FunctionOptimizerModel(BaseOptimizer):
+    def __init__(self, alias: str | None = None, seed=None):
+        self.__alias = alias if isinstance(alias, str) else alias
+        self.__inner: typing.Optional[CallableFunction] = None
+        self.__buffer: NDArrayType | None = None
+        self.__epoch: EpochIteration | None = None
+
+    def define(self, func: AlgorithmFunction):
         @functools.wraps(func)
-        def inner(f, bounds, n_it, n_pop, r_pop=None):
-            if r_pop is None:
-                r_pop = (n_pop, n_pop)
+        def wrapper(
+                f: Target,
+                bounds: Bounds | SequenceStructure[DType],
+                epochs: int,
+                pop_size: int,
+                pop_range: typing.Optional[tuple[int, int]] = None
+        ) -> Agent:
+            if pop_range is None:
+                pop_range = pop_size, pop_size
 
-            min_pop, max_pop = r_pop
+            min_pop, max_pop = pop_range
 
-            if min_pop > max_pop or n_pop < min_pop:
+            if min_pop > max_pop or pop_size < min_pop:
                 raise IndexError("Population size is too small.")
-            elif n_pop > max_pop:
+            elif pop_size > max_pop:
                 raise IndexError("Population size is too large.")
 
-            bounds = Bounds(bounds)
+            bounds = create_bounds(bounds)
             target = TargetFunction(f, bounds)
 
-            self.__buffer = low.init_buffer(max_pop, bounds.ndim)
-            self.__epoch = EpochIteration(self.__buffer, target, n_it, n_pop, r_pop)
+            buffer = low.init_buffer(max_pop, bounds.ndim)
+            epoch = EpochIteration(buffer, target, epochs, pop_size, pop_range)
+            population = epoch.population
 
-            return func(self.__epoch.population, bounds, self.__epoch)
+            self.__buffer = buffer
+            self.__epoch = epoch
 
-        self.__inner = inner
+            func(
+                pop=population,
+                bounds=bounds,
+                epoch=epoch
+            )
 
-        return inner
+            return epoch.population.best
 
-    def __call__(self, *args, **kwargs):
-        return self.__inner(*args, **kwargs)
+        self.__alias = func.__name__
+        self.__inner = lambda *args, **kwargs: wrapper(*args, **kwargs)
 
+        return self
 
-def define(alias: str):
-    model = FunctionOptimizerModel(alias)
+    def solve(self, f: Target, bounds: Bounds | SequenceStructure[DType], epochs: int, pop_size: int,
+              pop_range: typing.Optional[tuple[int, int]] = None):
+        if self.__inner is not None:
+            return self.__inner(
+                f=f,
+                bounds=bounds,
+                epochs=epochs,
+                pop_size=pop_size,
+                pop_range=pop_range
+            )
 
-    def inner(func):
-        return model.define(func)
+        raise NotImplementedError()
 
-    return inner
+    def __call__(self, f: Target, bounds: Bounds | SequenceStructure[DType], epochs: int, pop_size: int,
+                 pop_range: typing.Optional[tuple[int, int]] = None):
+        if self.__inner is not None:
+            return self.__inner(
+                f=f,
+                bounds=bounds,
+                epochs=epochs,
+                pop_size=pop_size,
+                pop_range=pop_range
+            )
+
+        raise NotImplementedError()

@@ -1,95 +1,126 @@
 import inspect
 import typing
 
-from cmenpy.model.optimizer import ModelProtocol, ClassOptimizerModel
+from cmenpy.model.optimizer import ModelProtocol, ClassOptimizerModel, FunctionOptimizerModel
+from cmenpy.model.optimizer.base import BaseOptimizer
+from cmenpy.model.optimizer.functions import CallableFunction, AlgorithmFunction
 
-T = typing.TypeVar("T", bound=ModelProtocol)
 
+def check_type_protocol_from_class(cls: typing.Type[ModelProtocol], strict: bool = False) -> typing.Type[ModelProtocol]:
+    methods_to_check = [
+        "initialize", "evolve"
+    ]
 
-def declare(strict: bool = False) -> typing.Callable[[typing.Type[T]], ClassOptimizerModel]:
-    def decorator(cls: typing.Type[T]):
-        methods_to_check = ["initialize", "evolve"]
+    protocol_hints = {m: typing.get_type_hints(getattr(ModelProtocol, m)) for m in methods_to_check}
+    protocol_sigs = {m: inspect.signature(getattr(ModelProtocol, m)) for m in methods_to_check}
 
-        protocol_hints = {m: typing.get_type_hints(getattr(ModelProtocol, m)) for m in methods_to_check}
-        protocol_sigs = {m: inspect.signature(getattr(ModelProtocol, m)) for m in methods_to_check}
+    for method_name in methods_to_check:
+        if not hasattr(cls, method_name) or not inspect.isfunction(getattr(cls, method_name)):
+            raise TypeError(f"Class '{cls.__name__}' must implement the method '{method_name}'")
 
-        for method_name in methods_to_check:
-            if not hasattr(cls, method_name) or not inspect.isfunction(getattr(cls, method_name)):
-                raise TypeError(f"Class '{cls.__name__}' must implement the method '{method_name}'")
+        cls_method = getattr(cls, method_name)
+        cls_method_hints = typing.get_type_hints(cls_method)
+        cls_sig = inspect.signature(cls_method)
 
-            cls_method = getattr(cls, method_name)
-            cls_method_hints = typing.get_type_hints(cls_method)
-            cls_sig = inspect.signature(cls_method)
+        proto_sig = protocol_sigs[method_name]
+        proto_hints = protocol_hints[method_name]
 
-            proto_sig = protocol_sigs[method_name]
-            proto_hints = protocol_hints[method_name]
+        proto_params = [p for p in proto_sig.parameters if p != "self"]
+        cls_params = [p for p in cls_sig.parameters if p != "self"]
 
-            proto_params = [p for p in proto_sig.parameters if p != "self"]
-            cls_params = [p for p in cls_sig.parameters if p != "self"]
+        if strict:
+            if proto_params != cls_params:
+                raise TypeError(
+                    f"Method '{method_name}' in '{cls.__name__}' has incorrect parameter order or names. "
+                    f"Expected sequence: {proto_params}, but got: {cls_params}"
+                )
 
-            if strict:
-                if proto_params != cls_params:
+            for param_name in proto_params:
+                if param_name not in cls_method_hints:
+                    raise TypeError(f"Method '{method_name}' parameter '{param_name}' is missing a type hint")
+                if cls_method_hints[param_name] != proto_hints[param_name]:
                     raise TypeError(
-                        f"Method '{method_name}' in '{cls.__name__}' has incorrect parameter order or names. "
-                        f"Expected sequence: {proto_params}, but got: {cls_params}"
+                        f"Method '{method_name}' parameter '{param_name}' must be of type "
+                        f"{proto_hints[param_name].__name__}, not {cls_method_hints[param_name].__name__}"
+                    )
+        else:
+            for param_name in proto_params:
+                if param_name not in cls_params:
+                    raise TypeError(
+                        f"Method '{method_name}' in '{cls.__name__}' is missing "
+                        f"the required parameter '{param_name}'"
                     )
 
-                for param_name in proto_params:
-                    if param_name not in cls_method_hints:
-                        raise TypeError(f"Method '{method_name}' parameter '{param_name}' is missing a type hint")
-                    if cls_method_hints[param_name] != proto_hints[param_name]:
-                        raise TypeError(
-                            f"Method '{method_name}' parameter '{param_name}' must be of type "
-                            f"{proto_hints[param_name].__name__}, not {cls_method_hints[param_name].__name__}"
-                        )
-            else:
-                for param_name in proto_params:
-                    if param_name not in cls_params:
-                        raise TypeError(
-                            f"Method '{method_name}' in '{cls.__name__}' is missing "
-                            f"the required parameter '{param_name}'"
-                        )
+    return cls
 
-        original_init = cls.__init__
 
-        def dynamic_init(self, *args, **kwargs):
-            hints = typing.get_type_hints(cls)
-            field_names = [k for k in hints.keys() if k not in methods_to_check]
+def declare_from_func(func: AlgorithmFunction):
+    model = FunctionOptimizerModel()
 
-            pos_arguments = dict(zip(field_names, args))
-            all_arguments = {**pos_arguments, **kwargs}
+    return model.define(func)
 
-            for field_name, field_type in hints.items():
-                if field_name in methods_to_check:
-                    continue
 
-                value = all_arguments.get(field_name)
+def declare_from_class(cls: typing.Type[ModelProtocol]):
+    methods_to_check = ["initialize", "evolve"]
+    original_init = cls.__init__
 
-                if typing.get_origin(field_type) is typing.Annotated:
-                    base_type, metadata = typing.get_args(field_type)[0], typing.get_args(field_type)[1]
+    def dynamic_init(self, *args, **kwargs):
+        hints = typing.get_type_hints(cls)
+        field_names = [k for k in hints.keys() if k not in methods_to_check]
 
-                    if isinstance(metadata, dict) and "min" in metadata and "max" in metadata:
-                        if value is None and "default" in metadata:
-                            value = metadata["default"]
+        pos_arguments = dict(zip(field_names, args))
+        all_arguments = {**pos_arguments, **kwargs}
 
-                        if value is None:
-                            raise TypeError(f"Missing required argument: '{field_name}'")
+        for field_name, field_type in hints.items():
+            if field_name in methods_to_check:
+                continue
 
-                        if not isinstance(value, base_type):
-                            raise TypeError(f"Field '{field_name}' must be of type {base_type.__name__}")
+            value = all_arguments.get(field_name)
 
-                        if not (metadata["min"] <= value <= metadata["max"]):
-                            raise ValueError(f"Value {value} out of range for '{field_name}'")
+            if typing.get_origin(field_type) is typing.Annotated:
+                base_type, metadata = typing.get_args(field_type)[0], typing.get_args(field_type)[1]
 
-                setattr(self, field_name, value)
+                if isinstance(metadata, dict) and "min" in metadata and "max" in metadata:
+                    if value is None and "default" in metadata:
+                        value = metadata["default"]
 
-            if original_init is not object.__init__:
-                original_init(self, *args, **kwargs)
+                    if value is None:
+                        raise TypeError(f"Missing required argument: '{field_name}'")
 
-        cls.__init__ = dynamic_init
+                    if not isinstance(value, base_type):
+                        raise TypeError(f"Field '{field_name}' must be of type {base_type.__name__}")
 
-        return ClassOptimizerModel(
-            cls_model=cls,
+                    if not (metadata["min"] <= value <= metadata["max"]):
+                        raise ValueError(f"Value {value} out of range for '{field_name}'")
+
+            setattr(self, field_name, value)
+
+        if original_init is not object.__init__:
+            original_init(self, *args, **kwargs)
+
+    setattr(cls, "__init__", dynamic_init)
+
+    return ClassOptimizerModel(
+        cls_model=cls,
+    )
+
+
+def declare(model: typing.Type[ModelProtocol] | AlgorithmFunction) -> BaseOptimizer:
+    if isinstance(model, type):
+        return declare_from_class(model)
+    elif inspect.isfunction(model):
+        return declare_from_func(model)
+
+    raise TypeError(f"Model '{model}' is not a class or function.")
+
+
+def declare_check(strict: bool) -> typing.Callable[[typing.Type[ModelProtocol]], BaseOptimizer]:
+    def wrapper(cls: typing.Type[ModelProtocol]) -> BaseOptimizer:
+        if inspect.isfunction(cls):
+            raise TypeError(f"You only can declare & check in class declaration.")
+
+        return declare_from_class(
+            check_type_protocol_from_class(cls, strict)
         )
 
-    return decorator
+    return wrapper
