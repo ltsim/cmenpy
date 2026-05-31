@@ -6,7 +6,10 @@ import numpy.typing as npt
 from cmenpy.bounds import Bounds
 
 ScalarType = typing.TypeVar("ScalarType", bound=np.number)
-Target = typing.Callable[[npt.NDArray[ScalarType]], ScalarType | typing.Any]
+
+class Target(typing.Protocol):
+    def __call__(self, x: npt.NDArray[ScalarType]) -> ScalarType | typing.Any:
+        ...
 
 
 class TargetFunction:
@@ -15,7 +18,7 @@ class TargetFunction:
         self.__bounds = bounds
         self.__nfe = 0
 
-    def __call__(self, x):
+    def __call__(self, x: npt.NDArray[ScalarType]) -> ScalarType | typing.Any:
         self.__nfe += 1
 
         return self.__target(x)
