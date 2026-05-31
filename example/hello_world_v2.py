@@ -2,20 +2,34 @@ import numpy as np
 import cmenpy as cm
 
 
-@cm.declare(strict=False)
+@cm.declare
 class MyAlgorithm:
-    epoch: cm.Argument[int, (1, 100)]
-    population: cm.Argument[int, (1, 100)]
+    a: cm.Argument[int, (1, 100)]
+    b: cm.Argument[int, (1, 100)]
 
     def initialize(self, population, bounds) -> None:
-        ...
+        population @= np.random.uniform(-1, 1, (len(population), bounds.ndim))
 
-    def evolve(self, e: int, population, bounds) -> None:
-        ...
+    def evolve(self, e: int, population: cm.Population, bounds: cm.Bounds) -> None:
+        b_pop = population.best
+
+        population @= np.clip(
+            ~population + np.random.uniform(-1, 1, (len(population), bounds.ndim)), -1, 1
+        )
+
+        if population.best < b_pop and population.size > 1:
+            b_pop = population.best
+            w_pop = population.worst
+            id_pop = w_pop.id
+
+            population.remove(id_pop)
+        else:
+            if population.free_space:
+                n_pop = population.append(np.random.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":
-    model = MyAlgorithm(epoch=50, population=100)
+    model = MyAlgorithm(a=3, b=2)
 
     def sphere(x):
         return np.sum(x ** 2)
@@ -43,4 +57,5 @@ if __name__ == "__main__":
 
         return a + b + c
 
-    model.solve(sphere, [(-1, 1), (-1, 1)], 1500, 15, (1, 20))
+    best_pop = model.solve(sphere, cm.Bounds([(-1, 1), (-1, 1)]), 1500, 15, (1, 20))
+    print("Best population:", best_pop)
