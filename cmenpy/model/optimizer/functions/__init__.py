@@ -3,31 +3,14 @@ import typing
 
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
-from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.base import BaseOptimizer
-from cmenpy.population import Population
+from cmenpy.model.optimizer.functions.protocols import (
+    CallableFunction,
+    AlgorithmFunction,
+)
 from cmenpy.resource import OptimizerResourceManager
 from cmenpy.target import Target
 from cmenpy.types import DType
-
-
-class AlgorithmFunction(typing.Protocol):
-    __name__: str
-
-    def __call__(
-        self, pop: Population, bounds: Bounds, epoch: EpochIteration
-    ) -> None: ...
-
-
-class CallableFunction(typing.Protocol):
-    def __call__(
-        self,
-        f: Target,
-        bounds: Bounds | SequenceStructure[DType],
-        epochs: int,
-        pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]] = None,
-    ) -> Agent: ...
 
 
 class FunctionOptimizerModel(BaseOptimizer):
