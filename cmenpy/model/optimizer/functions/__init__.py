@@ -4,7 +4,11 @@ import typing
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.model.optimizer.base import BaseOptimizer
-from cmenpy.model.optimizer.functions.params import FunctionParamsArguments
+from cmenpy.model.optimizer.functions.params import (
+    FunctionParamsArguments,
+    ExceptionValueParams,
+    ExceptionTypeParams,
+)
 from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
@@ -85,7 +89,12 @@ class FunctionOptimizerModel(BaseOptimizer):
         raise NotImplementedError()
 
     def __call__(self, *args, **kwargs) -> BaseOptimizer:
-        self.__arguments.load(kwargs)
+        try:
+            self.__arguments.load(kwargs)
+        except ExceptionValueParams as e:
+            raise ValueError(f"Invalid value in arguments: {str(e)}")
+        except ExceptionTypeParams as e:
+            raise TypeError(f"Invalid type in arguments: {str(e)}")
 
         if self.__inner is not None:
             return self

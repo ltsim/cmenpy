@@ -3,6 +3,12 @@ import typing
 ANNOTATED_KIND = typing.get_origin(typing.Annotated[int, int])
 
 
+class ExceptionValueParams(Exception): ...
+
+
+class ExceptionTypeParams(Exception): ...
+
+
 def _validate_range_and_type(value, field_type, field_name):
     if typing.get_origin(field_type) is ANNOTATED_KIND:
         type_args = typing.get_args(field_type)
@@ -12,7 +18,7 @@ def _validate_range_and_type(value, field_type, field_name):
 
     actual_origin = typing.get_origin(base_type) or base_type
     if not isinstance(value, actual_origin):
-        raise TypeError(
+        raise ExceptionTypeParams(
             f"Invalid type for '{field_name}'. "
             f"Expected {actual_origin.__name__}, got {type(value).__name__}"
         )
@@ -30,7 +36,7 @@ def _validate_range_and_type(value, field_type, field_name):
 
         if has_numpy and isinstance(value, np.ndarray):
             if not np.all((value >= min_val) & (value <= max_val)):
-                raise ValueError(
+                raise ExceptionValueParams(
                     f"Array elements in '{field_name}' out of range [{min_val}, {max_val}]."
                 )
             return
@@ -38,13 +44,13 @@ def _validate_range_and_type(value, field_type, field_name):
         if isinstance(value, (list, tuple, set)):
             for item in value:
                 if not (min_val <= item <= max_val):
-                    raise ValueError(
+                    raise ExceptionValueParams(
                         f"Element {item} in collection '{field_name}' out of range [{min_val}, {max_val}]."
                     )
             return
 
         if not (min_val <= value <= max_val):
-            raise ValueError(
+            raise ExceptionValueParams(
                 f"Value {value} for '{field_name}' out of range [{min_val}, {max_val}]."
             )
 
