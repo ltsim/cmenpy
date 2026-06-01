@@ -108,14 +108,14 @@ class Population:
 
     @property
     def free_space(self):
-        return len(self.__agents) < self.max_pop
+        return len(self.__agents) < self.max
 
     @property
-    def min_pop(self):
+    def min(self):
         return self.__min_pop
 
     @property
-    def max_pop(self):
+    def max(self):
         return self.__max_pop
 
     @property
