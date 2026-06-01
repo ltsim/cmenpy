@@ -146,7 +146,7 @@ def template_check(
 
 def declare(
     **kwargs: typing.Any,
-) -> typing.Union[BaseOptimizer, typing.Callable[[AlgorithmFunction], BaseOptimizer]]:
+) -> typing.Callable[[AlgorithmFunction], BaseOptimizer]:
     def wrapper(target: AlgorithmFunction):
         if not inspect.isfunction(target):
             raise TypeError(f"Model '{target}' is not a function.")
