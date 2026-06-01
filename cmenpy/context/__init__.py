@@ -35,7 +35,7 @@ class Context:
         return self.__bounds
 
     @property
-    def pop(self) -> Population:
+    def population(self) -> Population:
         return self.__population
 
     @property

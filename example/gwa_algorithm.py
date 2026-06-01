@@ -6,7 +6,7 @@ from opfunu.name_based import Ackley01
 
 @cm.declare()
 def gwo(args, epoch, ctx):
-    pop, bounds, rng = ctx.pop, ctx.bounds, ctx.rng
+    pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
     f_target = ctx.target.f
 
     pop @= rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
@@ -43,6 +43,6 @@ if __name__ == "__main__":
     f = Ackley01(ndim=30)
 
     b_pop = model.solve(
-        f.evaluate, [[-5.12, 5.12] for _ in range(f.ndim)], 150, 75, debug=True
+        f.evaluate, [[-5.12, 5.12] for _ in range(f.ndim)], 130, 75, debug=True
     )
     print(b_pop)
