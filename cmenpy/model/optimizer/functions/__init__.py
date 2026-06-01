@@ -13,7 +13,7 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.resource import OptimizerResourceManager
+from cmenpy.resource import MainContextManager
 from cmenpy.target import Target
 from cmenpy.types import DType
 
@@ -24,7 +24,7 @@ class FunctionOptimizerModel(BaseOptimizer):
     ):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
-        self.__resource: typing.Optional[OptimizerResourceManager] = None
+        self.__resource: typing.Optional[MainContextManager] = None
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
         self.__seed: typing.Optional[int] = seed
 
@@ -51,7 +51,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             elif pop_size > max_pop:
                 raise IndexError("Population size is too large.")
 
-            self.__resource = OptimizerResourceManager(
+            self.__resource = MainContextManager(
                 f, create_bounds(bounds), epochs, pop_size, pop_range, self.__seed
             )
 

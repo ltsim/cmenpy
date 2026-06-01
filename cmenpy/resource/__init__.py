@@ -10,7 +10,37 @@ from cmenpy.target import Target, TargetFunction
 from cmenpy.types import NDArrayType
 
 
-class OptimizerResourceManager:
+class Context:
+    def __init__(
+        self,
+        f: Target,
+        bounds: Bounds,
+        population: Population,
+        generator: DefaultGenerator,
+    ):
+        self.__target = TargetFunction(f, bounds)
+        self.__bounds = bounds
+        self.__population = population
+        self.__generator = generator
+
+    @property
+    def target(self):
+        return self.__target
+
+    @property
+    def bounds(self):
+        return self.__bounds
+
+    @property
+    def pop(self):
+        return self.__population
+
+    @property
+    def rng(self):
+        return self.__generator.rng
+
+
+class MainContextManager:
     def __init__(
         self,
         f: Target,

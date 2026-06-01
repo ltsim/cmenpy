@@ -9,31 +9,39 @@ class MyAlgorithm:
 
     w: cm.Variable[np.array]
 
-    def initialize(self, population, bounds) -> None:
-        population @= np.random.uniform(-1, 1, (len(population), bounds.ndim))
+    def initialize(self, ctx) -> None:
+        pop = ctx.pop
+        rng = ctx.rng
+        bounds = ctx.bounds
 
-    def evolve(self, e: cm.Epoch, population: cm.Population, bounds: cm.Bounds) -> None:
-        b_pop = population.best
+        pop @= rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
-        population @= np.clip(
-            ~population + np.random.uniform(-1, 1, (len(population), bounds.ndim)),
+    def evolve(self, e, ctx) -> None:
+        pop = ctx.pop
+        rng = ctx.rng
+        bounds = ctx.bounds
+
+        b_pop = pop.best
+
+        pop @= np.clip(
+            ~pop + rng.uniform(-1, 1, (len(pop), bounds.ndim)),
             -1,
             1,
         )
 
-        if population.best < b_pop and population.size > 1:
-            b_pop = population.best
-            w_pop = population.worst
+        if pop.best < b_pop and pop.size > 1:
+            b_pop = pop.best
+            w_pop = pop.worst
             id_pop = w_pop.id
 
-            population.remove(id_pop)
+            pop.remove(id_pop)
         else:
-            if population.free_space:
-                n_pop = population.append(np.random.uniform(-1, 1, bounds.ndim))
+            if pop.free_space:
+                n_pop = pop.append(rng.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":
-    model = MyAlgorithm(a=3, b=2)
+    model = MyAlgorithm(a=3, b=2, seed=1)
 
     def sphere(x):
         return np.sum(x**2)
