@@ -16,11 +16,11 @@ class Bounds:
         return len(self.__bounds)
 
     @property
-    def lb(self) -> DType:
+    def low(self) -> DType:
         return self.__bounds[0][0]
 
     @property
-    def ub(self) -> DType:
+    def up(self) -> DType:
         return self.__bounds[0][1]
 
     def __iter__(self):
