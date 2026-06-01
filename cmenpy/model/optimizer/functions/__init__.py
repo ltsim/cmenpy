@@ -13,7 +13,7 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.resource import MainContextManager, Context
+from cmenpy.context import MainContextManager, Context
 from cmenpy.target import Target
 from cmenpy.types import DType
 

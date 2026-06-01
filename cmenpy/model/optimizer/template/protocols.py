@@ -3,7 +3,7 @@ import typing
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import Epoch
 from cmenpy.population import Population
-from cmenpy.resource import MainContextManager, Context
+from cmenpy.context import MainContextManager, Context
 
 
 @typing.runtime_checkable
