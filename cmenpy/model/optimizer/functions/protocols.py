@@ -2,9 +2,9 @@ import typing
 
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.context import Context
 from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
-from cmenpy.population import Population
 from cmenpy.target import Target
 from cmenpy.types import DType
 
@@ -14,10 +14,9 @@ class AlgorithmFunction(typing.Protocol):
 
     def __call__(
         self,
-        pop: Population,
-        bounds: Bounds,
+        args: FunctionParamsArguments,
         epoch: EpochIteration,
-        args: typing.Optional[FunctionParamsArguments] = None,
+        ctx: Context,
     ) -> None: ...
 
 

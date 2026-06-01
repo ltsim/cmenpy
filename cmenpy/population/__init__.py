@@ -35,9 +35,6 @@ class Population:
     def __len__(self):
         return len(self.__agents)
 
-    def __iter__(self):
-        return (a for a in self.__agents)
-
     def __getitem__(self, i: int) -> VirtualAgent:
         a = self.__agents[i]
 
@@ -111,19 +108,27 @@ class Population:
 
     @property
     def free_space(self):
-        return len(self.__agents) < self.max_pop
+        return len(self.__agents) < self.max
 
     @property
-    def min_pop(self):
+    def min(self):
         return self.__min_pop
 
     @property
-    def max_pop(self):
+    def max(self):
         return self.__max_pop
 
     @property
     def size(self):
         return len(self.__agents)
+
+    @property
+    def all(self) -> list[VirtualAgent]:
+        return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
+
+    @property
+    def sorted(self) -> list[VirtualAgent]:
+        return sorted_population(self.all)
 
 
 def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]]):

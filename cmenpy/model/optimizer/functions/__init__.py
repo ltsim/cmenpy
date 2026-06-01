@@ -3,6 +3,7 @@ import typing
 
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
+from cmenpy.context import MainContextManager, Context
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions.params import (
     FunctionParamsArguments,
@@ -13,17 +14,19 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.resource import OptimizerResourceManager
 from cmenpy.target import Target
 from cmenpy.types import DType
 
 
 class FunctionOptimizerModel(BaseOptimizer):
-    def __init__(self, alias: str = "Optimizer", **kwargs):
+    def __init__(
+        self, alias: str = "Optimizer", seed: typing.Optional[int] = None, **kwargs
+    ):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
-        self.__resource: typing.Optional[OptimizerResourceManager] = None
+        self.__resource: typing.Optional[MainContextManager] = None
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
+        self.__seed: typing.Optional[int] = seed
 
     @property
     def alias(self) -> str:
@@ -48,18 +51,22 @@ class FunctionOptimizerModel(BaseOptimizer):
             elif pop_size > max_pop:
                 raise IndexError("Population size is too large.")
 
-            self.__resource = OptimizerResourceManager(
-                f, create_bounds(bounds), epochs, pop_size, pop_range
+            self.__resource = MainContextManager(
+                f, create_bounds(bounds), epochs, pop_size, pop_range, self.__seed
             )
 
             if self.__resource is None:
                 raise NotImplementedError("Function not implemented.")
 
             func(
-                pop=self.__resource.population,
-                bounds=self.__resource.bounds,
-                epoch=self.__resource.epoch_it,
                 args=self.__arguments,
+                epoch=self.__resource.epoch_it,
+                ctx=Context(
+                    f=self.__resource.target,
+                    bounds=self.__resource.bounds,
+                    population=self.__resource.population,
+                    generator=self.__resource.default_generator,
+                ),
             )
 
             return self.__resource.population.best
@@ -88,7 +95,11 @@ class FunctionOptimizerModel(BaseOptimizer):
 
         raise NotImplementedError()
 
-    def __call__(self, *args, **kwargs) -> BaseOptimizer:
+    def __call__(
+        self, seed: typing.Optional[int] = None, *args, **kwargs
+    ) -> BaseOptimizer:
+        self.__seed = seed
+
         try:
             self.__arguments.load(kwargs)
         except ExceptionValueParams as e:

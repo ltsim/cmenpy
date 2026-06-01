@@ -1,11 +1,11 @@
 import typing
 
-from cmenpy.bounds import Bounds
-from cmenpy.population import Population
+from cmenpy.context import Context
+from cmenpy.epoch import Epoch
 
 
 @typing.runtime_checkable
 class ModelProtocol(typing.Protocol):
-    def initialize(self, population: Population, bounds: Bounds) -> None: ...
+    def initialize(self, ctx: Context) -> None: ...
 
-    def evolve(self, e: int, population: Population, bounds: Bounds) -> None: ...
+    def evolve(self, e: Epoch, ctx: Context) -> None: ...

@@ -4,13 +4,14 @@ import cmenpy as cm
 
 
 @cm.declare(x=cm.Argument[int, (0, 3), 2])
-def my_algorithm(args, pop, bounds, epoch):
-    pop @= np.random.uniform(-1, 1, (len(pop), bounds.ndim))
+def my_algorithm(args, epoch, ctx):
+    pop, bounds, rng = ctx.pop, ctx.bounds, ctx.rng
 
+    pop @= rng.uniform(-1, 1, (len(pop), bounds.ndim))
     b_pop = pop.best
 
     for _ in epoch:
-        pop @= np.clip(~pop + np.random.uniform(-1, 1, (len(pop), bounds.ndim)), -1, 1)
+        pop @= np.clip(~pop + rng.uniform(-1, 1, (len(pop), bounds.ndim)), -1, 1)
 
         if pop.best < b_pop and pop.size > 1:
             b_pop = pop.best
@@ -19,11 +20,11 @@ def my_algorithm(args, pop, bounds, epoch):
             pop.remove(w_pop.id)
         else:
             if pop.free_space:
-                n_pop = pop.append(np.random.uniform(-1, 1, bounds.ndim))
+                n_pop = pop.append(rng.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":
-    model = my_algorithm(x=1)
+    model = my_algorithm(x=1, seed=1)
 
     def sphere(x):
         return np.sum(x**2)

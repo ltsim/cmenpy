@@ -4,12 +4,43 @@ from cmenpy import low
 from cmenpy.agent import MemoryAgent, Agent
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
+from cmenpy.generator import DefaultGenerator
 from cmenpy.population import Population
 from cmenpy.target import Target, TargetFunction
 from cmenpy.types import NDArrayType
 
 
-class OptimizerResourceManager:
+class Context:
+    def __init__(
+        self,
+        f: Target,
+        bounds: Bounds,
+        population: Population,
+        generator: DefaultGenerator,
+    ):
+        self.__target = TargetFunction(f, bounds)
+        self.__bounds = bounds
+        self.__population = population
+        self.__generator = generator
+
+    @property
+    def target(self):
+        return self.__target
+
+    @property
+    def bounds(self):
+        return self.__bounds
+
+    @property
+    def pop(self):
+        return self.__population
+
+    @property
+    def rng(self):
+        return self.__generator.rng
+
+
+class MainContextManager:
     def __init__(
         self,
         f: Target,
@@ -17,6 +48,7 @@ class OptimizerResourceManager:
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,
+        seed: typing.Optional[int] = None,
     ):
         if pop_range is None:
             pop_range = pop_size, pop_size
@@ -28,6 +60,7 @@ class OptimizerResourceManager:
         self.__buffer = low.init_buffer(max_pop, bounds.ndim)
         self.__epoch_it = EpochIteration(epochs)
         self.__bounds = bounds
+        self.__generator = DefaultGenerator(seed=seed)
 
         for i in range(pop_size):
             self.__agents.append(MemoryAgent(self.__buffer, i))
@@ -57,5 +90,9 @@ class OptimizerResourceManager:
         return self.__target
 
     @property
-    def bounds(self):
+    def bounds(self) -> Bounds:
         return self.__bounds
+
+    @property
+    def default_generator(self) -> DefaultGenerator:
+        return self.__generator
