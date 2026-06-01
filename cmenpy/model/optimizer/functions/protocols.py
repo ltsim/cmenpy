@@ -1,13 +1,10 @@
 import typing
 
-import numpy as np
-
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.context import Context
 from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
-from cmenpy.population import Population
-from cmenpy.context import Context
 from cmenpy.target import Target
 from cmenpy.types import DType
 

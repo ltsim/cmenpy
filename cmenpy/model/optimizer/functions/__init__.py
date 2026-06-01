@@ -3,6 +3,7 @@ import typing
 
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
+from cmenpy.context import MainContextManager, Context
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions.params import (
     FunctionParamsArguments,
@@ -13,7 +14,6 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.context import MainContextManager, Context
 from cmenpy.target import Target
 from cmenpy.types import DType
 

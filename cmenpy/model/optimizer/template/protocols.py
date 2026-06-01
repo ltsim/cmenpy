@@ -1,9 +1,7 @@
 import typing
 
-from cmenpy.bounds import Bounds
+from cmenpy.context import Context
 from cmenpy.epoch import Epoch
-from cmenpy.population import Population
-from cmenpy.context import MainContextManager, Context
 
 
 @typing.runtime_checkable
