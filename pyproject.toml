@@ -81,6 +81,10 @@ dev = [
     "scipy-stubs>=1.15.0",
     "black>=21.9b0"
 ]
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/ltsim/cmenpy"
