@@ -2,7 +2,7 @@ import numpy as np
 import cmenpy as cm
 
 
-@cm.declare
+@cm.template
 class MyAlgorithm:
     a: cm.Argument[int, (1, 100)]
     b: cm.Argument[int, (1, 100)]

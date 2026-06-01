@@ -4,6 +4,11 @@ import typing
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.model.optimizer.base import BaseOptimizer
+from cmenpy.model.optimizer.functions.params import (
+    FunctionParamsArguments,
+    ExceptionValueParams,
+    ExceptionTypeParams,
+)
 from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
@@ -14,10 +19,11 @@ from cmenpy.types import DType
 
 
 class FunctionOptimizerModel(BaseOptimizer):
-    def __init__(self, alias: str = "Optimizer"):
+    def __init__(self, alias: str = "Optimizer", **kwargs):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
         self.__resource: typing.Optional[OptimizerResourceManager] = None
+        self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
 
     @property
     def alias(self) -> str:
@@ -53,6 +59,7 @@ class FunctionOptimizerModel(BaseOptimizer):
                 pop=self.__resource.population,
                 bounds=self.__resource.bounds,
                 epoch=self.__resource.epoch_it,
+                args=self.__arguments,
             )
 
             return self.__resource.population.best
@@ -81,21 +88,15 @@ class FunctionOptimizerModel(BaseOptimizer):
 
         raise NotImplementedError()
 
-    def __call__(
-        self,
-        f: Target,
-        bounds: Bounds | SequenceStructure[DType],
-        epochs: int,
-        pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]] = None,
-    ):
+    def __call__(self, *args, **kwargs) -> BaseOptimizer:
+        try:
+            self.__arguments.load(kwargs)
+        except ExceptionValueParams as e:
+            raise ValueError(f"Invalid value in arguments: {str(e)}")
+        except ExceptionTypeParams as e:
+            raise TypeError(f"Invalid type in arguments: {str(e)}")
+
         if self.__inner is not None:
-            return self.__inner(
-                f=f,
-                bounds=bounds,
-                epochs=epochs,
-                pop_size=pop_size,
-                pop_range=pop_range,
-            )
+            return self
 
         raise NotImplementedError()

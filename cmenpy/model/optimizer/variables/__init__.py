@@ -3,21 +3,35 @@ import typing
 
 class Argument:
     def __class_getitem__(cls, params):
-        if isinstance(params, tuple) and len(params) == 3:
-            target_type, (min_value, max_value), default_val = params
+        if not isinstance(params, tuple):
+            params = (params,)
 
-            return typing.Annotated[
-                target_type,
-                {"min": min_value, "max": max_value, "default": default_val},
-            ]
-        elif isinstance(params, tuple) and len(params) == 2:
-            target_type, (min_value, max_value) = params
+        match params:
+            case (target_type, (min_val, max_val), default_val):
+                return typing.Annotated[
+                    target_type,
+                    {"min": min_val, "max": max_val, "default": default_val},
+                ]
 
-            return typing.Annotated[target_type, {"min": min_value, "max": max_value}]
+            case (target_type, default_val) if (
+                not isinstance(default_val, tuple) or len(default_val) != 2
+            ):
+                return typing.Annotated[target_type, {"default": default_val}]
 
-        raise TypeError(
-            "The second argument of Validator must be a tuple of [(min, max)] or ([min, max], default)."
-        )
+            case (target_type, (min_val, max_val)):
+                return typing.Annotated[target_type, {"min": min_val, "max": max_val}]
+
+            case (target_type,):
+                return typing.Annotated[target_type, {"delayed_init": True}]
+
+            case _:
+                raise TypeError(
+                    "Invalid MyType syntax. Supported formats:\n"
+                    "  Argument[type]\n"
+                    "  Argument[type, default]\n"
+                    "  Argument[type, (min, max)]\n"
+                    "  Argument[type, (min, max), default]"
+                )
 
 
 class Variable:

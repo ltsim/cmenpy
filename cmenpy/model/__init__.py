@@ -68,8 +68,8 @@ def check_type_protocol_from_class(
     return cls
 
 
-def declare_from_func(func: AlgorithmFunction):
-    model = FunctionOptimizerModel()
+def declare_from_func(func: AlgorithmFunction, **kwargs):
+    model = FunctionOptimizerModel(**kwargs)
 
     return model.define(func)
 
@@ -130,22 +130,34 @@ def declare_from_class(cls: typing.Type[ModelProtocol]):
     )
 
 
-def declare(model: typing.Type[ModelProtocol] | AlgorithmFunction) -> BaseOptimizer:
-    if isinstance(model, type):
-        return declare_from_class(model)
-    elif inspect.isfunction(model):
-        return declare_from_func(model)
-
-    raise TypeError(f"Model '{model}' is not a class or function.")
-
-
-def declare_check(
+def template_check(
     strict: bool,
-) -> typing.Callable[[typing.Type[ModelProtocol]], BaseOptimizer]:
-    def wrapper(cls: typing.Type[ModelProtocol]) -> BaseOptimizer:
-        if inspect.isfunction(cls):
-            raise TypeError(f"You only can declare & check in class declaration.")
+) -> typing.Union[
+    BaseOptimizer, typing.Callable[[typing.Type[ModelProtocol]], BaseOptimizer]
+]:
+    def wrapper(target: typing.Type[ModelProtocol]):
+        if not isinstance(target, type):
+            raise TypeError(f"Model '{target}' is not a function.")
 
-        return declare_from_class(check_type_protocol_from_class(cls, strict))
+        return declare_from_class(check_type_protocol_from_class(target, strict))
 
     return wrapper
+
+
+def declare(
+    **kwargs: typing.Any,
+) -> typing.Callable[[AlgorithmFunction], BaseOptimizer]:
+    def wrapper(target: AlgorithmFunction):
+        if not inspect.isfunction(target):
+            raise TypeError(f"Model '{target}' is not a function.")
+
+        return declare_from_func(target, **kwargs)
+
+    return wrapper
+
+
+def template(model: typing.Type[ModelProtocol]) -> BaseOptimizer:
+    if not isinstance(model, type):
+        raise TypeError(f"Model '{model}' is not a class.")
+
+    return declare_from_class(model)
