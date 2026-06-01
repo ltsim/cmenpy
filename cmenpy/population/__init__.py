@@ -127,7 +127,7 @@ class Population:
         return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
 
     @property
-    def sorted(self):
+    def sorted(self) -> list[VirtualAgent]:
         return sorted_population(self.all)
 
 
