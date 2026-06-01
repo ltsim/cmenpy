@@ -64,7 +64,7 @@ class TemplateOptimizerModel(BaseOptimizer):
 
         return self.__resource.population.best
 
-    def __call__(self, *args, **kwargs) -> "TemplateOptimizerModel":
+    def __call__(self, *args, **kwargs) -> "BaseOptimizer":
         self.__model = self.__cls_model(*args, **kwargs)
 
         return self
