@@ -1,5 +1,4 @@
 import time
-import typing
 
 from cmenpy.tracker import Tracker
 

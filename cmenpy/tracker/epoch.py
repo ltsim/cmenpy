@@ -13,3 +13,6 @@ class EpochHistory:
 
     def __hash__(self) -> int:
         return hash(self.epoch)
+
+    def __repr__(self) -> str:
+        return f"EpochHistory(epoch={self.epoch}, timeit={self.timeit})"
