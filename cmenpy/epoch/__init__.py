@@ -19,5 +19,5 @@ class EpochIteration:
         return self.__current_epoch
 
     @property
-    def max_epochs(self):
+    def max(self) -> int:
         return self.__epochs
