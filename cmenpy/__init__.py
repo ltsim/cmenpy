@@ -1,6 +1,7 @@
 __version__ = "2026"
 
 from cmenpy.bounds import Bounds
+from cmenpy.epoch import EpochIteration, Epoch
 from cmenpy.population import Population
 from cmenpy.model import declare, template, template_check
 from cmenpy.model.optimizer.variables import Argument, Variable
@@ -15,6 +16,8 @@ __all__ = [
     "Variable",
     "Scalar",
     "Vector",
+    "EpochIteration",
+    "Epoch",
     "DefineAgent",
     "Population",
     "FunctionOptimizerModel",
