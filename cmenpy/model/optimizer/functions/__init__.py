@@ -13,7 +13,7 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.resource import MainContextManager
+from cmenpy.resource import MainContextManager, Context
 from cmenpy.target import Target
 from cmenpy.types import DType
 
@@ -59,11 +59,14 @@ class FunctionOptimizerModel(BaseOptimizer):
                 raise NotImplementedError("Function not implemented.")
 
             func(
-                pop=self.__resource.population,
-                bounds=self.__resource.bounds,
-                epoch=self.__resource.epoch_it,
                 args=self.__arguments,
-                rng=self.__resource.default_generator.rng,
+                epoch=self.__resource.epoch_it,
+                ctx=Context(
+                    f=self.__resource.target,
+                    bounds=self.__resource.bounds,
+                    population=self.__resource.population,
+                    generator=self.__resource.default_generator,
+                ),
             )
 
             return self.__resource.population.best
