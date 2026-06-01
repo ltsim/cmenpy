@@ -1,4 +1,5 @@
 import abc
+import typing
 
 import numpy as np
 
@@ -86,3 +87,9 @@ class VirtualAgent(Agent):
 
     def __float__(self):
         return self.__buffer[0]
+
+
+class AgentTemplate(typing.Protocol):
+    id: int
+    solution: np.ndarray
+    fitness: float
