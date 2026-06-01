@@ -1,5 +1,7 @@
 import typing
 
+import numpy as np
+
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.epoch import EpochIteration
@@ -18,6 +20,7 @@ class AlgorithmFunction(typing.Protocol):
         bounds: Bounds,
         epoch: EpochIteration,
         args: typing.Optional[FunctionParamsArguments] = None,
+        rng: typing.Optional[np.random.Generator] = None,
     ) -> None: ...
 
 
