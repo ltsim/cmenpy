@@ -1,5 +1,4 @@
 import collections
-import typing
 
 from cmenpy.population import Population
 from cmenpy.tracker.epoch import EpochHistory
@@ -14,4 +13,13 @@ class Tracker:
     def history(self) -> list[EpochHistory]:
         return [*self.___history]
 
-    def track(self) -> None: ...
+    def track(self, e: int, timeit: int | float) -> None:
+        self.___history.append(
+            EpochHistory(
+                epoch=e,
+                best=self.___population.best,
+                worst=self.___population.worst,
+                all=self.___population.all,
+                timeit=timeit,
+            )
+        )

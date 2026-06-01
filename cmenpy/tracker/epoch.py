@@ -3,9 +3,13 @@ import dataclasses
 from cmenpy.agent import Agent
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class EpochHistory:
+    epoch: int
     best: Agent
     worst: Agent
-    population: list[Agent]
+    all: list[Agent]
     timeit: int | float
+
+    def __hash__(self) -> int:
+        return hash(self.epoch)

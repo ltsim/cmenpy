@@ -1,6 +1,9 @@
 import functools
 import typing
 
+from cmenpy.target import Target
+from cmenpy.tracker import Tracker, EpochHistory
+from cmenpy.types import DType
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.context import MainContextManager, Context
@@ -14,8 +17,6 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.target import Target
-from cmenpy.types import DType
 
 
 class FunctionOptimizerModel(BaseOptimizer):
@@ -30,10 +31,18 @@ class FunctionOptimizerModel(BaseOptimizer):
         self.__resource: typing.Optional[MainContextManager] = None
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
         self.__seed: typing.Optional[int] = seed
+        self.__debug = False
 
     @property
     def alias(self) -> str:
         return self.__alias
+
+    @property
+    def tracker(self) -> list[EpochHistory]:
+        if self.__resource is None:
+            return []
+
+        return self.__resource.tracker.history
 
     def define(self, func: AlgorithmFunction):
         @functools.wraps(func)
@@ -55,7 +64,13 @@ class FunctionOptimizerModel(BaseOptimizer):
                 raise IndexError("Population size is too large.")
 
             self.__resource = MainContextManager(
-                f, create_bounds(bounds), epochs, pop_size, pop_range, self.__seed
+                f,
+                create_bounds(bounds),
+                epochs,
+                pop_size,
+                pop_range,
+                self.__seed,
+                self.__debug,
             )
 
             if self.__resource is None:
@@ -88,6 +103,8 @@ class FunctionOptimizerModel(BaseOptimizer):
         pop_range: typing.Optional[tuple[int, int]] = None,
         debug=False,
     ):
+        self.__debug = debug
+
         if self.__inner is not None:
             return self.__inner(
                 f=f,
