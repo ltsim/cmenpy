@@ -1,9 +1,6 @@
 import functools
 import typing
 
-from cmenpy.target import Target
-from cmenpy.tracker import Tracker, EpochHistory
-from cmenpy.types import DType
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.context import MainContextManager, Context
@@ -17,6 +14,9 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
+from cmenpy.target import Target
+from cmenpy.tracker import EpochHistory
+from cmenpy.types import DType
 
 
 class FunctionOptimizerModel(BaseOptimizer):
