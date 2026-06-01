@@ -13,7 +13,7 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.resource import OptimizerResourceManager
+from cmenpy.context import MainContextManager, Context
 from cmenpy.target import Target
 from cmenpy.types import DType
 
@@ -24,7 +24,7 @@ class FunctionOptimizerModel(BaseOptimizer):
     ):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
-        self.__resource: typing.Optional[OptimizerResourceManager] = None
+        self.__resource: typing.Optional[MainContextManager] = None
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
         self.__seed: typing.Optional[int] = seed
 
@@ -51,7 +51,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             elif pop_size > max_pop:
                 raise IndexError("Population size is too large.")
 
-            self.__resource = OptimizerResourceManager(
+            self.__resource = MainContextManager(
                 f, create_bounds(bounds), epochs, pop_size, pop_range, self.__seed
             )
 
@@ -59,11 +59,14 @@ class FunctionOptimizerModel(BaseOptimizer):
                 raise NotImplementedError("Function not implemented.")
 
             func(
-                pop=self.__resource.population,
-                bounds=self.__resource.bounds,
-                epoch=self.__resource.epoch_it,
                 args=self.__arguments,
-                rng=self.__resource.default_generator.rng,
+                epoch=self.__resource.epoch_it,
+                ctx=Context(
+                    f=self.__resource.target,
+                    bounds=self.__resource.bounds,
+                    population=self.__resource.population,
+                    generator=self.__resource.default_generator,
+                ),
             )
 
             return self.__resource.population.best

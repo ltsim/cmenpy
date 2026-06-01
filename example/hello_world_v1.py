@@ -4,9 +4,10 @@ import cmenpy as cm
 
 
 @cm.declare(x=cm.Argument[int, (0, 3), 2])
-def my_algorithm(args, pop, bounds, epoch, rng):
-    pop @= rng.uniform(-1, 1, (len(pop), bounds.ndim))
+def my_algorithm(args, epoch, ctx):
+    pop, bounds, rng = ctx.pop, ctx.bounds, ctx.rng
 
+    pop @= rng.uniform(-1, 1, (len(pop), bounds.ndim))
     b_pop = pop.best
 
     for _ in epoch:
