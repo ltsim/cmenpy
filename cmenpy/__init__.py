@@ -1,14 +1,15 @@
 __version__ = "2026"
 
-from cmenpy.model.optimizer.variables import Argument, Variable
 from cmenpy.bounds import Bounds
-from cmenpy.model import declare, declare_check
-from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
+from cmenpy.model import declare, template, template_check
 from cmenpy.population import Population
+from cmenpy.model.optimizer.variables import Argument, Variable
+from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 
 __all__ = [
     "declare",
-    "declare_check",
+    "template",
+    "template_check",
     "Argument",
     "Variable",
     "Population",
