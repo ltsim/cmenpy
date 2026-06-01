@@ -6,7 +6,7 @@ import numpy as np
 class DefaultGenerator:
     def __init__(self, seed: typing.Optional[int] = None) -> None:
         self.__seed = seed
-        self.__rng = np.random.default_rng(seed)
+        self.__rng = np.random.default_rng(self.__seed)
 
     @property
     def seed(self) -> typing.Optional[int]:
