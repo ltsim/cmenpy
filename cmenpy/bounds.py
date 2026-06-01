@@ -15,8 +15,19 @@ class Bounds:
     def ndim(self):
         return len(self.__bounds)
 
+    @property
+    def lb(self) -> DType:
+        return self.__bounds[0][0]
+
+    @property
+    def ub(self) -> DType:
+        return self.__bounds[0][1]
+
     def __iter__(self):
         return (b for b in self.__bounds)
+
+    def __len__(self):
+        return len(self.__bounds)
 
 
 def create_bounds(bounds: SequenceStructure[DType] | Bounds) -> Bounds:
