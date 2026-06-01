@@ -68,17 +68,20 @@ def check_type_protocol_from_class(
     return cls
 
 
-def declare_from_func(func: AlgorithmFunction, **kwargs):
+def declare_from_func(
+    func: AlgorithmFunction, **kwargs: typing.Any
+) -> FunctionOptimizerModel:
     model = FunctionOptimizerModel(**kwargs)
+    model.define(func)
 
-    return model.define(func)
+    return model
 
 
-def declare_from_class(cls: typing.Type[ModelProtocol]):
+def declare_from_class(cls: typing.Type[ModelProtocol]) -> TemplateOptimizerModel:
     methods_to_check = ["initialize", "evolve"]
     original_init = cls.__init__
 
-    def dynamic_init(self, *args, **kwargs):
+    def dynamic_init(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> None:
         hints = typing.get_type_hints(cls)
         field_names = [k for k in hints.keys() if k not in methods_to_check]
 
@@ -133,9 +136,9 @@ def declare_from_class(cls: typing.Type[ModelProtocol]):
 def template_check(
     strict: bool,
 ) -> typing.Union[
-    BaseOptimizer, typing.Callable[[typing.Type[ModelProtocol]], BaseOptimizer]
+    BaseOptimizer, typing.Callable[[typing.Type[ModelProtocol]], TemplateOptimizerModel]
 ]:
-    def wrapper(target: typing.Type[ModelProtocol]):
+    def wrapper(target: typing.Type[ModelProtocol]) -> TemplateOptimizerModel:
         if not isinstance(target, type):
             raise TypeError(f"Model '{target}' is not a function.")
 
@@ -146,8 +149,8 @@ def template_check(
 
 def declare(
     **kwargs: typing.Any,
-) -> typing.Callable[[AlgorithmFunction], BaseOptimizer]:
-    def wrapper(target: AlgorithmFunction):
+) -> typing.Callable[[AlgorithmFunction], FunctionOptimizerModel]:
+    def wrapper(target: AlgorithmFunction) -> FunctionOptimizerModel:
         if not inspect.isfunction(target):
             raise TypeError(f"Model '{target}' is not a function.")
 
@@ -156,7 +159,7 @@ def declare(
     return wrapper
 
 
-def template(model: typing.Type[ModelProtocol]) -> BaseOptimizer:
+def template(model: typing.Type[ModelProtocol]) -> TemplateOptimizerModel:
     if not isinstance(model, type):
         raise TypeError(f"Model '{model}' is not a class.")
 

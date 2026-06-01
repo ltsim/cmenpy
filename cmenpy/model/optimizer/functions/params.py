@@ -9,7 +9,9 @@ class ExceptionValueParams(Exception): ...
 class ExceptionTypeParams(Exception): ...
 
 
-def _validate_range_and_type(value, field_type, field_name):
+def _validate_range_and_type(
+    value: typing.Any, field_type: typing.Any, field_name: str
+):
     if typing.get_origin(field_type) is ANNOTATED_KIND:
         type_args = typing.get_args(field_type)
         base_type, metadata = type_args[0], type_args[1]

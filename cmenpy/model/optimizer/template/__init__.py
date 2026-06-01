@@ -1,13 +1,14 @@
 import typing
 
+from cmenpy.target import Target
+from cmenpy.tracker import Tracker, EpochHistory
+from cmenpy.types import DType
 from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.context import MainContextManager, Context
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
-from cmenpy.target import Target
-from cmenpy.types import DType
 
 
 class TemplateOptimizerModel(BaseOptimizer):
@@ -17,10 +18,18 @@ class TemplateOptimizerModel(BaseOptimizer):
         self.__inner: typing.Optional[CallableFunction] = None
         self.__resource: typing.Optional[MainContextManager] = None
         self.__seed: typing.Optional[int] = None
+        self.__debug = False
 
     @property
     def alias(self) -> str:
         return self.__alias
+
+    @property
+    def tracker(self) -> list[EpochHistory]:
+        if self.__resource is None:
+            return []
+
+        return self.__resource.tracker.history
 
     def solve(
         self,
@@ -29,9 +38,12 @@ class TemplateOptimizerModel(BaseOptimizer):
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,
+        debug=False,
     ) -> Agent:
         if self.__model is None:
             raise NotImplementedError()
+
+        self.__debug = debug
 
         if pop_range is None:
             pop_range = pop_size, pop_size
@@ -44,7 +56,13 @@ class TemplateOptimizerModel(BaseOptimizer):
             raise IndexError("Population size is too large.")
 
         self.__resource = MainContextManager(
-            f, create_bounds(bounds), epochs, pop_size, pop_range, self.__seed
+            f,
+            create_bounds(bounds),
+            epochs,
+            pop_size,
+            pop_range,
+            self.__seed,
+            self.__debug,
         )
 
         if self.__resource is None:
@@ -74,7 +92,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         return self.__resource.population.best
 
     def __call__(
-        self, seed: typing.Optional[int] = None, *args, **kwargs
+        self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any
     ) -> "BaseOptimizer":
         self.__seed = seed
         self.__model = self.__cls_model(*args, **kwargs)
