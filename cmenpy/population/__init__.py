@@ -81,7 +81,7 @@ class BufferPopulation:
         buff = self.__buffer.copy()
         buff[self.__mask, 1:] = other
         buff[self.__mask, 0] = np.apply_along_axis(
-            self.__target, 1, self.__buffer[self.__mask, 2:]
+            self.__target, 1, self.__buffer[self.__mask, 1:]
         )
 
         return buff[self.__mask, 2:]
@@ -90,7 +90,7 @@ class BufferPopulation:
         if self.size > 0:
             self.__buffer[self.__mask, 1:] = other
             self.__buffer[self.__mask, 0] = np.apply_along_axis(
-                self.__target, 1, self.__buffer[self.__mask, 2:]
+                self.__target, 1, self.__buffer[self.__mask, 1:]
             )
 
         return self
@@ -144,9 +144,9 @@ class BufferPopulation:
         buffer = self.__buffer.copy()
 
         return ViewPopulation(
+            mask=self.__mask,
             buffer=buffer,
             target=self.__target,
-            agents=[MemoryAgent(buffer, i) for i, a in enumerate(self.__agents)],
         )
 
 
