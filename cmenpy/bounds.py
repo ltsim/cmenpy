@@ -29,6 +29,9 @@ class Bounds:
     def __len__(self):
         return len(self.__bounds)
 
+    def __class_getitem__(cls, params):
+        return create_bounds(params)
+
 
 def create_bounds(bounds: SequenceStructure[DType] | Bounds) -> Bounds:
     if isinstance(bounds, Bounds):

@@ -58,5 +58,5 @@ if __name__ == "__main__":
 
         return a + b + c
 
-    best_pop = model.solve(sphere, cm.Bounds([(-1, 1), (-1, 1)]), 1500, 15, (1, 20))
+    best_pop = model.solve(sphere, cm.Bounds[(-1, 1), (-1, 1)], 1500, 15, (1, 20))
     print("Best population:", best_pop)
