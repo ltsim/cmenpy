@@ -1,9 +1,17 @@
 import numpy as np
 import cmenpy as cm
+from cmenpy.agent import AgentTemplate
+
+
+class MyAgent(AgentTemplate):
+    v: cm.Scalar[int]
+    w: cm.Vector[float]
 
 
 @cm.template
 class MyAlgorithm:
+    agent: cm.DefineAgent[MyAgent]
+
     a: cm.Argument[int, (1, 100)]
     b: cm.Argument[int, (1, 100)]
 
@@ -58,5 +66,5 @@ if __name__ == "__main__":
 
         return a + b + c
 
-    best_pop = model.solve(sphere, cm.Bounds[(-1, 1), (-1, 1)], 1500, 15, (1, 20))
+    best_pop = model.solve(sphere, cm.Bounds([(-1, 1), (-1, 1)]), 1500, 15, (1, 20))
     print("Best population:", best_pop)
