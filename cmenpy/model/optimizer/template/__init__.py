@@ -29,6 +29,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,
+        debug=False,
     ) -> Agent:
         if self.__model is None:
             raise NotImplementedError()
@@ -74,7 +75,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         return self.__resource.population.best
 
     def __call__(
-        self, seed: typing.Optional[int] = None, *args, **kwargs
+        self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any
     ) -> "BaseOptimizer":
         self.__seed = seed
         self.__model = self.__cls_model(*args, **kwargs)

@@ -20,7 +20,10 @@ from cmenpy.types import DType
 
 class FunctionOptimizerModel(BaseOptimizer):
     def __init__(
-        self, alias: str = "Optimizer", seed: typing.Optional[int] = None, **kwargs
+        self,
+        alias: str = "Optimizer",
+        seed: typing.Optional[int] = None,
+        **kwargs: typing.Any,
     ):
         self.__alias = alias if isinstance(alias, str) else alias
         self.__inner: typing.Optional[CallableFunction] = None
@@ -83,6 +86,7 @@ class FunctionOptimizerModel(BaseOptimizer):
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,
+        debug=False,
     ):
         if self.__inner is not None:
             return self.__inner(
@@ -96,7 +100,7 @@ class FunctionOptimizerModel(BaseOptimizer):
         raise NotImplementedError()
 
     def __call__(
-        self, seed: typing.Optional[int] = None, *args, **kwargs
+        self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any
     ) -> BaseOptimizer:
         self.__seed = seed
 

@@ -1,5 +1,7 @@
 import typing
 
+import numpy as np
+
 from cmenpy import low
 from cmenpy.agent import MemoryAgent, Agent
 from cmenpy.bounds import Bounds
@@ -24,19 +26,19 @@ class Context:
         self.__generator = generator
 
     @property
-    def target(self):
+    def target(self) -> TargetFunction:
         return self.__target
 
     @property
-    def bounds(self):
+    def bounds(self) -> Bounds:
         return self.__bounds
 
     @property
-    def pop(self):
+    def pop(self) -> Population:
         return self.__population
 
     @property
-    def rng(self):
+    def rng(self) -> np.random.Generator:
         return self.__generator.rng
 
 

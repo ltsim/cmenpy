@@ -16,6 +16,7 @@ class BaseOptimizer(abc.ABC):
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]],
+        debug: typing.Optional[bool],
     ) -> Agent: ...
 
     @abc.abstractmethod
