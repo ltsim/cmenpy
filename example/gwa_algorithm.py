@@ -11,6 +11,10 @@ def gwo(args, epoch, ctx):
 
     pop @= rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
 
+    pop_view = pop.view
+
+    pop_view[1:] = 0
+
     for e in epoch:
         all_pop = pop.sorted
         best_pop = all_pop[:3]

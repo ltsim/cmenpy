@@ -7,7 +7,7 @@ from cmenpy.agent import MemoryAgent, Agent
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
-from cmenpy.population import Population
+from cmenpy.population import BufferPopulation
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
 from cmenpy.types import NDArrayType
@@ -18,7 +18,7 @@ class Context:
         self,
         f: Target,
         bounds: Bounds,
-        population: Population,
+        population: BufferPopulation,
         generator: DefaultGenerator,
     ):
         self.__target = TargetFunction(f, bounds)
@@ -35,7 +35,7 @@ class Context:
         return self.__bounds
 
     @property
-    def population(self) -> Population:
+    def population(self) -> BufferPopulation:
         return self.__population
 
     @property
@@ -68,7 +68,7 @@ class MainContextManager:
         for i in range(pop_size):
             self.__agents.append(MemoryAgent(self.__buffer, i))
 
-        self.__population: Population = Population(
+        self.__population: BufferPopulation = BufferPopulation(
             self.__buffer, self.__target, self.__agents, pop_range
         )
 
@@ -80,7 +80,7 @@ class MainContextManager:
         return self.__agents
 
     @property
-    def population(self) -> Population:
+    def population(self) -> BufferPopulation:
         return self.__population
 
     @property

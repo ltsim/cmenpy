@@ -1,11 +1,11 @@
 import collections
 
-from cmenpy.population import Population
+from cmenpy.population import BufferPopulation
 from cmenpy.tracker.epoch import EpochHistory
 
 
 class Tracker:
-    def __init__(self, population: Population):
+    def __init__(self, population: BufferPopulation):
         self.___history = collections.deque()
         self.___population = population
 

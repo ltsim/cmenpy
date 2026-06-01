@@ -4,11 +4,12 @@ import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
 from cmenpy.population.utils import sorted_population
+from cmenpy.population.view import ViewPopulation
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 
 
-class Population:
+class BufferPopulation:
     def __init__(
         self,
         buffer: NDArrayType,
@@ -137,6 +138,16 @@ class Population:
     @property
     def solutions(self):
         return self.__buffer[self.__mask, 1:].copy()
+
+    @property
+    def view(self) -> ViewPopulation:
+        buffer = self.__buffer.copy()
+
+        return ViewPopulation(
+            buffer=buffer,
+            target=self.__target,
+            agents=[MemoryAgent(buffer, i) for i, a in enumerate(self.__agents)],
+        )
 
 
 def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]]):
