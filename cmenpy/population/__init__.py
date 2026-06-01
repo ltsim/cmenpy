@@ -130,6 +130,14 @@ class Population:
     def sorted(self) -> list[VirtualAgent]:
         return sorted_population(self.all)
 
+    @property
+    def fitness(self):
+        return self.__buffer[self.__mask, 0].copy()
+
+    @property
+    def solutions(self):
+        return self.__buffer[self.__mask, 1:].copy()
+
 
 def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]]):
     if r_pop is None:
