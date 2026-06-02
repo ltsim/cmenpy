@@ -4,7 +4,7 @@ import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
 from cmenpy.population.operations.swap import SwapOperation
-from cmenpy.population.utils import sorted_population
+from cmenpy.population.functools.utils import sorted_population
 from cmenpy.population.view import ViewPopulation, BasePopulation
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
