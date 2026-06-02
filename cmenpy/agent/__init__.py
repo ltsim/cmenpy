@@ -21,6 +21,9 @@ class Agent(abc.ABC):
 
         return False
 
+    @abc.abstractmethod
+    def __getitem__(self, key: int) -> float: ...
+
     @property
     @abc.abstractmethod
     def id(self) -> int: ...
@@ -48,6 +51,9 @@ class MemoryAgent(Agent):
         self.__buffer = buffer
         self.__id = n
 
+    def __getitem__(self, key: int) -> float:
+        return self.__buffer[key]
+
     @property
     def id(self):
         return self.__id
@@ -72,6 +78,9 @@ class VirtualAgent(Agent):
     def __init__(self, buffer: np.ndarray, n: int):
         self.__buffer = buffer[n, :].copy()
         self.__id = n
+
+    def __getitem__(self, key: int) -> float:
+        return self.__buffer[key]
 
     @property
     def id(self):
