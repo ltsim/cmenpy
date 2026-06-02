@@ -3,12 +3,14 @@ import typing
 import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
-from cmenpy.population.utils import sorted_population
+from cmenpy.population.operations.swap import SwapOperation
+from cmenpy.population.functools.utils import sort_agents
+from cmenpy.population.view import ViewPopulation, BasePopulation
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 
 
-class Population:
+class PopulationManager:
     def __init__(
         self,
         buffer: NDArrayType,
@@ -32,19 +34,14 @@ class Population:
 
         self.__d_class = d_class
 
+    def __iter__(self):
+        return iter(self.all)
+
+    def __repr__(self):
+        return f"Population(size={self.size})"
+
     def __len__(self):
         return len(self.__agents)
-
-    def __getitem__(self, i: int) -> VirtualAgent:
-        a = self.__agents[i]
-
-        return VirtualAgent(self.__buffer, a.id)
-
-    def __setitem__(self, i, value):
-        if isinstance(value, Agent):
-            self.__agents[i] = value
-        elif any(isinstance(value, n) for n in (list, tuple, np.ndarray)):
-            self.__buffer[i, :] = value
 
     def remove(self, i: int):
         founds = [*filter(lambda a: a.id == i, self.__agents)]
@@ -58,7 +55,7 @@ class Population:
         self.__buffer[i, :] = np.nan
         self.__agents.remove(agent)
 
-    def append(self, solution=None):
+    def append(self, solution: NDArrayType):
         founds = [i for i, x in enumerate(self.__mask) if not x]
 
         if not len(founds) > 0:
@@ -73,6 +70,12 @@ class Population:
 
         return VirtualAgent(self.__buffer, i)
 
+    def __iadd__(self, other: NDArrayType):
+        self.append(other)
+
+    def __isub__(self, other: int):
+        self.remove(other)
+
     def __invert__(self):
         return self.__buffer[self.__mask, 1:].copy()
 
@@ -80,7 +83,7 @@ class Population:
         buff = self.__buffer.copy()
         buff[self.__mask, 1:] = other
         buff[self.__mask, 0] = np.apply_along_axis(
-            self.__target, 1, self.__buffer[self.__mask, 2:]
+            self.__target, 1, self.__buffer[self.__mask, 1:]
         )
 
         return buff[self.__mask, 2:]
@@ -89,20 +92,20 @@ class Population:
         if self.size > 0:
             self.__buffer[self.__mask, 1:] = other
             self.__buffer[self.__mask, 0] = np.apply_along_axis(
-                self.__target, 1, self.__buffer[self.__mask, 2:]
+                self.__target, 1, self.__buffer[self.__mask, 1:]
             )
 
         return self
 
     @property
     def best(self):
-        b_pop = sorted_population(self.__agents)[0]
+        b_pop = sort_agents(self.__agents)[0]
 
         return VirtualAgent(self.__buffer, b_pop.id)
 
     @property
     def worst(self):
-        w_pop = sorted_population(self.__agents)[-1]
+        w_pop = sort_agents(self.__agents)[-1]
 
         return VirtualAgent(self.__buffer, w_pop.id)
 
@@ -127,22 +130,28 @@ class Population:
         return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
 
     @property
-    def sorted(self) -> list[VirtualAgent]:
-        return sorted_population(self.all)
-
-    @property
-    def fitness(self):
+    def fitnesses(self):
         return self.__buffer[self.__mask, 0].copy()
 
     @property
     def solutions(self):
         return self.__buffer[self.__mask, 1:].copy()
 
+    @property
+    def view(self) -> ViewPopulation:
+        buffer = self.__buffer.copy()
 
-def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]]):
-    if r_pop is None:
-        r_pop = n_pop, n_pop
+        return ViewPopulation(
+            mask=self.__mask,
+            buffer=buffer,
+            target=self.__target,
+        )
 
-    min_pop, max_pop = r_pop
+    @view.setter
+    def view(self, v: ViewPopulation):
+        self.__buffer[self.__mask, 1:] = v.solutions
+        self.__buffer[self.__mask, 0] = v.fitnesses
 
-    return min_pop, max_pop, r_pop
+    @property
+    def swap(self) -> SwapOperation:
+        return SwapOperation(self.__buffer)

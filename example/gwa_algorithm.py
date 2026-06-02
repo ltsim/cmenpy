@@ -6,17 +6,17 @@ from opfunu.name_based import Ackley01
 
 @cm.declare()
 def gwo(args, epoch, ctx):
-    pop, bounds, rng = ctx.pop, ctx.bounds, ctx.rng
-    f_target = ctx.target.f
+    pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
 
     pop @= rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
 
     for e in epoch:
-        all_pop = pop.sorted
-        best_pop = all_pop[:3]
-        new_pop = []
+        all_pop = cm.sort_agents(pop)
+        new_pop = pop.view
 
-        a = 2 - 2 * int(e) / epoch.max
+        best_pop = all_pop[:3]
+
+        a = 2 - 2 * e / epoch.max
 
         A = a * (2 * rng.uniform(size=(pop.size, bounds.ndim)) - 1)
         C = 2 * rng.uniform(size=(pop.size, bounds.ndim))
@@ -27,15 +27,11 @@ def gwo(args, epoch, ctx):
                 for b in best_pop
             ]
 
-            solution = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
+            new_pop[i] = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
 
-            new_pop.append(solution)
-
-        for i, p in enumerate(new_pop):
-            n_p = f_target(p)
-
-            if n_p < pop[i].fitness:
-                pop[i] = [n_p, *p]
+        for i, (a, b) in enumerate(zip(new_pop, all_pop)):
+            if b := cm.best_of((a, b)):
+                pop.swap[i] = b.view
 
 
 if __name__ == "__main__":
@@ -43,6 +39,6 @@ if __name__ == "__main__":
     f = Ackley01(ndim=30)
 
     b_pop = model.solve(
-        f.evaluate, [[-5.12, 5.12] for _ in range(f.ndim)], 150, 75, debug=True
+        f.evaluate, [[-5.12, 5.12] for _ in range(f.ndim)], 130, 75, debug=True
     )
     print(b_pop)

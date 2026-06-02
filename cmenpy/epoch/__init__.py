@@ -38,7 +38,7 @@ class EpochIteration:
             self.__current_epoch = e
 
             start = time.process_time()
-            yield Epoch(e)
+            yield e
             self.__cpu_time = time.process_time() - start
 
             if self.__debug:

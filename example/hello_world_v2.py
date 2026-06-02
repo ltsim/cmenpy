@@ -10,14 +10,14 @@ class MyAlgorithm:
     w: cm.Variable[np.array]
 
     def initialize(self, ctx) -> None:
-        pop = ctx.pop
+        pop = ctx.population
         rng = ctx.rng
         bounds = ctx.bounds
 
         pop @= rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
     def evolve(self, e, ctx) -> None:
-        pop = ctx.pop
+        pop = ctx.population
         rng = ctx.rng
         bounds = ctx.bounds
 

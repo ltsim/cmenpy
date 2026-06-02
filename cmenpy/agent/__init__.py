@@ -3,6 +3,8 @@ import typing
 
 import numpy as np
 
+from cmenpy.types import NDArrayType
+
 
 class Agent(abc.ABC):
     def __lt__(self, other):
@@ -20,6 +22,12 @@ class Agent(abc.ABC):
             return self.fitness > other
 
         return False
+
+    @abc.abstractmethod
+    def __iter__(self): ...
+
+    @abc.abstractmethod
+    def __getitem__(self, key: int) -> float: ...
 
     @property
     @abc.abstractmethod
@@ -42,11 +50,21 @@ class Agent(abc.ABC):
     def __hash__(self):
         return hash(self.id)
 
+    @property
+    @abc.abstractmethod
+    def view(self) -> NDArrayType: ...
+
 
 class MemoryAgent(Agent):
     def __init__(self, buffer: np.ndarray, n: int):
         self.__buffer = buffer
         self.__id = n
+
+    def __iter__(self):
+        return iter(self.__buffer.copy())
+
+    def __getitem__(self, key: int) -> float:
+        return self.__buffer[key]
 
     @property
     def id(self):
@@ -67,11 +85,21 @@ class MemoryAgent(Agent):
     def __float__(self):
         return self.__buffer[self.id, 0]
 
+    @property
+    def view(self) -> NDArrayType:
+        return self.__buffer
+
 
 class VirtualAgent(Agent):
     def __init__(self, buffer: np.ndarray, n: int):
         self.__buffer = buffer[n, :].copy()
         self.__id = n
+
+    def __iter__(self):
+        return iter(self.__buffer.copy())
+
+    def __getitem__(self, key: int) -> float:
+        return self.__buffer[key]
 
     @property
     def id(self):
@@ -87,6 +115,10 @@ class VirtualAgent(Agent):
 
     def __float__(self):
         return self.__buffer[0]
+
+    @property
+    def view(self) -> NDArrayType:
+        return self.__buffer
 
 
 class AgentTemplate(typing.Protocol):

@@ -17,6 +17,7 @@ from cmenpy.model.optimizer.functions.protocols import (
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
 from cmenpy.types import DType
+from cmenpy.types.option import SenseType
 
 
 class FunctionOptimizerModel(BaseOptimizer):
@@ -32,6 +33,7 @@ class FunctionOptimizerModel(BaseOptimizer):
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
         self.__seed: typing.Optional[int] = seed
         self.__debug = False
+        self.__sense: SenseType = "min"
 
     @property
     def alias(self) -> str:
@@ -52,6 +54,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             epochs: int,
             pop_size: int,
             pop_range: typing.Optional[tuple[int, int]] = None,
+            sense: SenseType = "min",
         ) -> Agent:
             if pop_range is None:
                 pop_range = pop_size, pop_size
@@ -63,6 +66,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             elif pop_size > max_pop:
                 raise IndexError("Population size is too large.")
 
+            self.__sense = sense
             self.__resource = MainContextManager(
                 f,
                 create_bounds(bounds),
@@ -71,6 +75,7 @@ class FunctionOptimizerModel(BaseOptimizer):
                 pop_range,
                 self.__seed,
                 self.__debug,
+                self.__sense,
             )
 
             if self.__resource is None:
@@ -84,6 +89,7 @@ class FunctionOptimizerModel(BaseOptimizer):
                     bounds=self.__resource.bounds,
                     population=self.__resource.population,
                     generator=self.__resource.default_generator,
+                    sense=self.__sense,
                 ),
             )
 
@@ -101,7 +107,8 @@ class FunctionOptimizerModel(BaseOptimizer):
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,
-        debug=False,
+        debug: bool = False,
+        sense: SenseType = "min",
     ):
         self.__debug = debug
 

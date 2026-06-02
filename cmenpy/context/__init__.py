@@ -7,10 +7,11 @@ from cmenpy.agent import MemoryAgent, Agent
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
-from cmenpy.population import Population
+from cmenpy.population import PopulationManager
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
 from cmenpy.types import NDArrayType
+from cmenpy.types.option import SenseType
 
 
 class Context:
@@ -18,13 +19,15 @@ class Context:
         self,
         f: Target,
         bounds: Bounds,
-        population: Population,
+        population: PopulationManager,
         generator: DefaultGenerator,
+        sense: SenseType,
     ):
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
         self.__population = population
         self.__generator = generator
+        self.__sense = sense
 
     @property
     def target(self) -> TargetFunction:
@@ -35,12 +38,16 @@ class Context:
         return self.__bounds
 
     @property
-    def pop(self) -> Population:
+    def population(self) -> PopulationManager:
         return self.__population
 
     @property
     def rng(self) -> np.random.Generator:
         return self.__generator.rng
+
+    @property
+    def sense(self) -> SenseType:
+        return self.__sense
 
 
 class MainContextManager:
@@ -53,6 +60,7 @@ class MainContextManager:
         pop_range: typing.Optional[tuple[int, int]] = None,
         seed: typing.Optional[int] = None,
         debug: bool = False,
+        sense: SenseType = "min",
     ):
         if pop_range is None:
             pop_range = pop_size, pop_size
@@ -68,19 +76,27 @@ class MainContextManager:
         for i in range(pop_size):
             self.__agents.append(MemoryAgent(self.__buffer, i))
 
-        self.__population: Population = Population(
-            self.__buffer, self.__target, self.__agents, pop_range
+        self.__population: PopulationManager = PopulationManager(
+            self.__buffer,
+            self.__target,
+            self.__agents,
+            pop_range,
         )
 
         self.__tracker: Tracker = Tracker(self.__population)
         self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
+        self.__sense = sense
+
+    @property
+    def sense(self):
+        return self.__sense
 
     @property
     def agents(self) -> typing.List[Agent]:
         return self.__agents
 
     @property
-    def population(self) -> Population:
+    def population(self) -> PopulationManager:
         return self.__population
 
     @property
