@@ -4,7 +4,7 @@ import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
 from cmenpy.population.operations.swap import SwapOperation
-from cmenpy.population.functools.utils import sorted_population
+from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.view import ViewPopulation, BasePopulation
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
@@ -99,13 +99,13 @@ class PopulationManager:
 
     @property
     def best(self):
-        b_pop = sorted_population(self.__agents)[0]
+        b_pop = sort_agents(self.__agents)[0]
 
         return VirtualAgent(self.__buffer, b_pop.id)
 
     @property
     def worst(self):
-        w_pop = sorted_population(self.__agents)[-1]
+        w_pop = sort_agents(self.__agents)[-1]
 
         return VirtualAgent(self.__buffer, w_pop.id)
 
@@ -131,7 +131,7 @@ class PopulationManager:
 
     @property
     def sorted(self) -> list[VirtualAgent]:
-        return sorted_population(self.all)
+        return sort_agents(self.all)
 
     @property
     def fitnesses(self):
