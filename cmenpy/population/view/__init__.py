@@ -1,9 +1,6 @@
-import typing
-
 import numpy as np
 
-from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
-from cmenpy.population.utils import sorted_population
+from cmenpy.agent import Agent, VirtualAgent
 from cmenpy.population.view.base import BasePopulation
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
@@ -13,12 +10,10 @@ class ViewPopulation(BasePopulation):
     def __init__(
         self,
         mask: list[int],
-        agents: list[Agent],
         buffer: NDArrayType,
         target: TargetFunction,
     ):
         self.__mask = mask
-        self.__agents = agents
         self.__buffer = buffer
         self.__target = target
 
@@ -62,7 +57,7 @@ class ViewPopulation(BasePopulation):
 
     @property
     def all(self) -> list[Agent]:
-        return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
+        return [VirtualAgent(self.__buffer, i) for i in range(self.size)]
 
     @property
     def solutions(self) -> NDArrayType:
