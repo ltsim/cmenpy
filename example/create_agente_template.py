@@ -21,7 +21,7 @@ class MyAlgorithm:
         population @= np.random.uniform(-1, 1, (len(population), bounds.ndim))
 
     def evolve(
-        self, e: int, population: cm.BufferPopulation, bounds: cm.Bounds
+        self, e: int, population: cm.PopulationManager, bounds: cm.Bounds
     ) -> None:
         b_pop = population.best
 
