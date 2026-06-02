@@ -11,7 +11,7 @@ def gwo(args, epoch, ctx):
     pop @= rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
 
     for e in epoch:
-        all_pop = pop.sorted
+        all_pop = cm.sort_agents(pop)
         new_pop = pop.view
 
         best_pop = all_pop[:3]
@@ -30,13 +30,13 @@ def gwo(args, epoch, ctx):
             new_pop[i] = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
-            if a.fitness < b.fitness:
+            if cm.is_best((a, b)):
                 pop.swap[i] = new_pop[i]
 
 
 if __name__ == "__main__":
     model = gwo(seed=None)
-    f = Ackley01(ndim=2)
+    f = Ackley01(ndim=30)
 
     b_pop = model.solve(
         f.evaluate, [[-5.12, 5.12] for _ in range(f.ndim)], 130, 75, debug=True

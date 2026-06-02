@@ -11,6 +11,7 @@ from cmenpy.population import PopulationManager
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
 from cmenpy.types import NDArrayType
+from cmenpy.types.option import SenseType
 
 
 class Context:
@@ -20,11 +21,13 @@ class Context:
         bounds: Bounds,
         population: PopulationManager,
         generator: DefaultGenerator,
+        sense: SenseType,
     ):
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
         self.__population = population
         self.__generator = generator
+        self.__sense = sense
 
     @property
     def target(self) -> TargetFunction:
@@ -42,6 +45,10 @@ class Context:
     def rng(self) -> np.random.Generator:
         return self.__generator.rng
 
+    @property
+    def sense(self) -> SenseType:
+        return self.__sense
+
 
 class MainContextManager:
     def __init__(
@@ -53,6 +60,7 @@ class MainContextManager:
         pop_range: typing.Optional[tuple[int, int]] = None,
         seed: typing.Optional[int] = None,
         debug: bool = False,
+        sense: SenseType = "min",
     ):
         if pop_range is None:
             pop_range = pop_size, pop_size
@@ -69,11 +77,19 @@ class MainContextManager:
             self.__agents.append(MemoryAgent(self.__buffer, i))
 
         self.__population: PopulationManager = PopulationManager(
-            self.__buffer, self.__target, self.__agents, pop_range
+            self.__buffer,
+            self.__target,
+            self.__agents,
+            pop_range,
         )
 
         self.__tracker: Tracker = Tracker(self.__population)
         self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
+        self.__sense = sense
+
+    @property
+    def sense(self):
+        return self.__sense
 
     @property
     def agents(self) -> typing.List[Agent]:

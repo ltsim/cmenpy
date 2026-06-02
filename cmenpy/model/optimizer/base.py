@@ -6,6 +6,7 @@ from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
 from cmenpy.types import DType
+from cmenpy.types.option import SenseType
 
 
 class BaseOptimizer(abc.ABC):
@@ -18,6 +19,7 @@ class BaseOptimizer(abc.ABC):
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]],
         debug: typing.Optional[bool],
+        sense: typing.Optional[SenseType],
     ) -> Agent: ...
 
     @abc.abstractmethod

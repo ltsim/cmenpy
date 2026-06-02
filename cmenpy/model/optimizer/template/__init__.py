@@ -9,6 +9,7 @@ from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
 from cmenpy.types import DType
+from cmenpy.types.option import SenseType
 
 
 class TemplateOptimizerModel(BaseOptimizer):
@@ -19,6 +20,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         self.__resource: typing.Optional[MainContextManager] = None
         self.__seed: typing.Optional[int] = None
         self.__debug = False
+        self.__sense: SenseType = "min"
 
     @property
     def alias(self) -> str:
@@ -38,7 +40,8 @@ class TemplateOptimizerModel(BaseOptimizer):
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,
-        debug=False,
+        debug: bool = False,
+        sense: SenseType = "min",
     ) -> Agent:
         if self.__model is None:
             raise NotImplementedError()
@@ -55,6 +58,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         elif pop_size > max_pop:
             raise IndexError("Population size is too large.")
 
+        self.__sense = sense
         self.__resource = MainContextManager(
             f,
             create_bounds(bounds),
@@ -63,6 +67,7 @@ class TemplateOptimizerModel(BaseOptimizer):
             pop_range,
             self.__seed,
             self.__debug,
+            self.__sense,
         )
 
         if self.__resource is None:
@@ -75,6 +80,7 @@ class TemplateOptimizerModel(BaseOptimizer):
                     bounds=self.__resource.bounds,
                     population=self.__resource.population,
                     generator=self.__resource.default_generator,
+                    sense=self.__sense,
                 ),
             )
 

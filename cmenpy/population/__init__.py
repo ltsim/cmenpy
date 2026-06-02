@@ -130,10 +130,6 @@ class PopulationManager:
         return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
 
     @property
-    def sorted(self) -> list[VirtualAgent]:
-        return sort_agents(self.all)
-
-    @property
     def fitnesses(self):
         return self.__buffer[self.__mask, 0].copy()
 
