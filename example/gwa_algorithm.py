@@ -16,7 +16,7 @@ def gwo(args, epoch, ctx):
 
         best_pop = all_pop[:3]
 
-        a = 2 - 2 * int(e) / epoch.max
+        a = 2 - 2 * e / epoch.max
 
         A = a * (2 * rng.uniform(size=(pop.size, bounds.ndim)) - 1)
         C = 2 * rng.uniform(size=(pop.size, bounds.ndim))
