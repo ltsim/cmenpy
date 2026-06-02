@@ -30,8 +30,8 @@ def gwo(args, epoch, ctx):
             new_pop[i] = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
-            if cm.is_best((a, b)):
-                pop.swap[i] = new_pop[i]
+            if b := cm.best_of((a, b)):
+                pop.swap[i] = b.view
 
 
 if __name__ == "__main__":
