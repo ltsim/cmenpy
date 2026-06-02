@@ -145,9 +145,15 @@ class BufferPopulation:
 
         return ViewPopulation(
             mask=self.__mask,
+            agents=self.__agents,
             buffer=buffer,
             target=self.__target,
         )
+
+    @view.setter
+    def view(self, v: ViewPopulation):
+        self.__buffer[self.__mask, 1:] = v.solutions
+        self.__buffer[self.__mask, 0] = v.fitnesses
 
 
 def create_range_population(n_pop: int, r_pop: typing.Optional[tuple[int, int]]):

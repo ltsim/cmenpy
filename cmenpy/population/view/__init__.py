@@ -13,10 +13,12 @@ class ViewPopulation(BasePopulation):
     def __init__(
         self,
         mask: list[int],
+        agents: list[Agent],
         buffer: NDArrayType,
         target: TargetFunction,
     ):
         self.__mask = mask
+        self.__agents = agents
         self.__buffer = buffer
         self.__target = target
 
@@ -60,15 +62,12 @@ class ViewPopulation(BasePopulation):
 
     @property
     def all(self) -> list[Agent]:
-        return [VirtualAgent(self.__buffer, i) for i in range(self.size)]
-
-    @property
-    def fitnesses(self) -> NDArrayType:
-        return self.__buffer[self.__mask, 1:].copy()
+        return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
 
     @property
     def solutions(self) -> NDArrayType:
-        return self.__buffer[self.__mask, :1].reshape(-1).copy()
+        return self.__buffer[self.__mask, 1:].copy()
 
-    def __class_getitem__(cls, item: list[Agent]):
-        pass
+    @property
+    def fitnesses(self) -> NDArrayType:
+        return self.__buffer[self.__mask, :1].reshape(-1).copy()
