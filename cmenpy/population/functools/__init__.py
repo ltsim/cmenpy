@@ -1,8 +1,8 @@
-from cmenpy.types.dynamic import AB, SourceIterable
+from cmenpy.types.dynamic import DualSource, SourceIterable
 from cmenpy.types.option import SenseType
 
 
-def is_best(ab: AB, sense: SenseType = "min") -> bool:
+def is_best(ab: DualSource, sense: SenseType = "min") -> bool:
     a, b = ab
 
     if sense == "min":
@@ -11,7 +11,7 @@ def is_best(ab: AB, sense: SenseType = "min") -> bool:
     return a[0] > b[0]
 
 
-def is_worst(ab: AB, sense: SenseType = "min") -> bool:
+def is_worst(ab: DualSource, sense: SenseType = "min") -> bool:
     a, b = ab
 
     if sense == "min":
@@ -20,7 +20,7 @@ def is_worst(ab: AB, sense: SenseType = "min") -> bool:
     return a[0] < b[0]
 
 
-def best_of(ab: AB, sense: SenseType = "min") -> SourceIterable:
+def best_of(ab: DualSource, sense: SenseType = "min") -> SourceIterable:
     a, b = ab
 
     if is_best(ab, sense):
@@ -29,7 +29,7 @@ def best_of(ab: AB, sense: SenseType = "min") -> SourceIterable:
     return b
 
 
-def worst_of(ab: AB, sense: SenseType = "min") -> SourceIterable:
+def worst_of(ab: DualSource, sense: SenseType = "min") -> SourceIterable:
     a, b = ab
 
     if is_best(ab, sense):

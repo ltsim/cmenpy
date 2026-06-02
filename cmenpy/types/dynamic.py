@@ -3,4 +3,4 @@ from cmenpy.agent import Agent
 from cmenpy.types import NDArrayType
 
 SourceIterable = Agent | NDArrayType | Iterable[float | int]
-AB = tuple[SourceIterable, SourceIterable]
+DualSource = tuple[SourceIterable, SourceIterable]
