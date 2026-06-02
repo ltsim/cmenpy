@@ -31,7 +31,7 @@ def gwo(args, epoch, ctx):
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
             if a.fitness < b.fitness:
-                pop[i] = new_pop[i]
+                pop.swap[i] = new_pop[i]
 
 
 if __name__ == "__main__":
