@@ -6,7 +6,7 @@ from cmenpy.epoch import EpochIteration, Epoch
 from cmenpy.model import declare, template, template_check
 from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 from cmenpy.model.optimizer.variables import Argument, Variable
-from cmenpy.population import BufferPopulation
+from cmenpy.population import PopulationManager
 
 __all__ = [
     "declare",
@@ -19,7 +19,7 @@ __all__ = [
     "EpochIteration",
     "Epoch",
     "DefineAgent",
-    "BufferPopulation",
+    "PopulationManager",
     "FunctionOptimizerModel",
     "TemplateOptimizerModel",
 ]
