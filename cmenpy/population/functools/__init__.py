@@ -1,11 +1,8 @@
-from cmenpy.agent import Agent
-from cmenpy.types import NDArrayType
+from cmenpy.types.dynamic import AB, SourceIterable
 from cmenpy.types.option import SenseType
 
-AgentIterator = Agent | NDArrayType
 
-
-def is_best(ab: tuple[AgentIterator, AgentIterator], sense: SenseType = "min") -> bool:
+def is_best(ab: AB, sense: SenseType = "min") -> bool:
     a, b = ab
 
     if sense == "min":
@@ -14,10 +11,28 @@ def is_best(ab: tuple[AgentIterator, AgentIterator], sense: SenseType = "min") -
     return a[0] > b[0]
 
 
-def is_worst(ab: tuple[AgentIterator, AgentIterator], sense: SenseType = "min") -> bool:
+def is_worst(ab: AB, sense: SenseType = "min") -> bool:
     a, b = ab
 
     if sense == "min":
         return a[0] > b[0]
 
     return a[0] < b[0]
+
+
+def best_of(ab: AB, sense: SenseType = "min") -> SourceIterable:
+    a, b = ab
+
+    if is_best(ab, sense):
+        return a
+
+    return b
+
+
+def worst_of(ab: AB, sense: SenseType = "min") -> SourceIterable:
+    a, b = ab
+
+    if is_best(ab, sense):
+        return a
+
+    return b
