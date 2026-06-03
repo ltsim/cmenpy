@@ -1,7 +1,8 @@
+from cmenpy.population.operations.stream import WriterOperator
 from cmenpy.types import NDArrayType
 
 
-class SwapOperation:
+class SwapOperation(WriterOperator):
     def __init__(
         self,
         buffer: NDArrayType,
