@@ -3,6 +3,8 @@ import typing
 import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
+from cmenpy.population.operations.assign import AssignOperator
+from cmenpy.population.operations.compute import ComputeOperator
 from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.view import ViewPopulation, BasePopulation
@@ -155,3 +157,11 @@ class PopulationManager:
     @property
     def swap(self) -> SwapOperation:
         return SwapOperation(self.__buffer)
+
+    @property
+    def compute(self) -> ComputeOperator:
+        return ComputeOperator(self.__mask, self.__buffer, self.__target)
+
+    @property
+    def assign(self) -> AssignOperator:
+        return AssignOperator(self.__mask, self.__buffer, self.__target)

@@ -4,10 +4,9 @@ from cmenpy.types import NDArrayType, ArrayIntegerType
 
 
 class AssignOperator(VectorizableOperator):
-
     def __init__(
         self,
-        mask: ArrayIntegerType,
+        mask: list[int],
         buffer: NDArrayType,
         target: TargetFunction,
     ):

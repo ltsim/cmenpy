@@ -2,13 +2,11 @@ import numpy as np
 
 from cmenpy.population.operations.stream import VectorizableOperator
 from cmenpy.target import TargetFunction
-from cmenpy.types import NDArrayType, ArrayIntegerType
+from cmenpy.types import NDArrayType
 
 
 class ComputeOperator(VectorizableOperator):
-    def __init__(
-        self, mask: ArrayIntegerType, buffer: NDArrayType, target: TargetFunction
-    ):
+    def __init__(self, mask: list[int], buffer: NDArrayType, target: TargetFunction):
         super().__init__(buffer.shape)
         self.__mask = mask
         self.__buffer = buffer

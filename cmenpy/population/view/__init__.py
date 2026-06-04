@@ -1,6 +1,9 @@
 import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent
+from cmenpy.population.operations.assign import AssignOperator
+from cmenpy.population.operations.compute import ComputeOperator
+from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.view.base import BasePopulation
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
@@ -66,3 +69,15 @@ class ViewPopulation(BasePopulation):
     @property
     def fitnesses(self) -> NDArrayType:
         return self.__buffer[self.__mask, :1].reshape(-1).copy()
+
+    @property
+    def swap(self) -> SwapOperation:
+        return SwapOperation(self.__buffer)
+
+    @property
+    def compute(self) -> ComputeOperator:
+        return ComputeOperator(self.__mask, self.__buffer, self.__target)
+
+    @property
+    def assign(self) -> AssignOperator:
+        return AssignOperator(self.__mask, self.__buffer, self.__target)
