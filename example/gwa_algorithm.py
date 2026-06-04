@@ -21,13 +21,23 @@ def gwo(args, epoch, ctx):
         A = a * (2 * rng.uniform(size=(pop.size, bounds.ndim)) - 1)
         C = 2 * rng.uniform(size=(pop.size, bounds.ndim))
 
-        for i, p in enumerate(all_pop):
-            X = [
-                b.solution - A[i] * np.abs(C[i] * b.solution - p.solution)
-                for b in best_pop
-            ]
+        X_n = np.zeros((pop.size, bounds.ndim))
 
-            new_pop.compute[i] << np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
+        for i, p in enumerate(all_pop):
+            X_n[i] = np.clip(
+                np.sum(
+                    [
+                        b.solution - A[i] * np.abs(C[i] * b.solution - p.solution)
+                        for b in best_pop
+                    ],
+                    axis=0,
+                )
+                / 3,
+                bounds.low,
+                bounds.up,
+            )
+
+        new_pop.compute << X_n
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
             if b := cm.best_of((a, b)):
