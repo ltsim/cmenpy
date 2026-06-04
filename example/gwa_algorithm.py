@@ -19,12 +19,12 @@ def gwo(args, epoch, ctx):
 
         a = 2 - 2 * e / epoch.max
 
-        for i, p in enumerate(all_pop):
-            A = a * (2 * rng.random(size=(len(best_pop), bounds.ndim)) - 1)
-            C = 2 * rng.random(size=(len(best_pop), bounds.ndim))
+        A = a * (2 * rng.random(size=(pop.size, len(best_pop), bounds.ndim)) - 1)
+        C = 2 * rng.random(size=(pop.size, len(best_pop), bounds.ndim))
 
+        for i, p in enumerate(all_pop):
             D = [
-                b.solution - A[j] * np.abs(C[j] * b.solution - p.solution)
+                b.solution - A[i][j] * np.abs(C[i][j] * b.solution - p.solution)
                 for j, b in enumerate(best_pop)
             ]
 
