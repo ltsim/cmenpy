@@ -72,35 +72,6 @@ class PopulationManager:
 
         return VirtualAgent(self.__buffer, i)
 
-    """
-    def __iadd__(self, other: NDArrayType):
-        self.append(other)
-
-    def __isub__(self, other: int):
-        self.remove(other)
-    
-    def __invert__(self):
-        return self.__buffer[self.__mask, 1:].copy()
-
-    def __matmul__(self, other):
-        buff = self.__buffer.copy()
-        buff[self.__mask, 1:] = other
-        buff[self.__mask, 0] = np.apply_along_axis(
-            self.__target, 1, self.__buffer[self.__mask, 1:]
-        )
-
-        return buff[self.__mask, 2:]
-
-    def __imatmul__(self, other):
-        if self.size > 0:
-            self.__buffer[self.__mask, 1:] = other
-            self.__buffer[self.__mask, 0] = np.apply_along_axis(
-                self.__target, 1, self.__buffer[self.__mask, 1:]
-            )
-
-        return self 
-    """
-
     @property
     def best(self):
         b_pop = sort_agents(self.__agents)[0]
