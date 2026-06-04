@@ -1,8 +1,22 @@
 import numpy as np
 
-from cmenpy.population.operations.stream import VectorizableOperator
+from cmenpy.population.operations.stream.vectorizable import (
+    VectorizableOperator,
+    PipelineOperator,
+)
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
+
+
+class ComputePipeline(PipelineOperator):
+    def __init__(self, idx: int, buffer: NDArrayType, target: TargetFunction):
+        self.__idx = idx
+        self.__buffer = buffer
+        self.__target = target
+
+    def __lshift__(self, value: NDArrayType):
+        self.__buffer[self.__idx, 1:] = value
+        self.__buffer[self.__idx, 0] = self.__target.evaluate(value)
 
 
 class ComputeOperator(VectorizableOperator):
@@ -12,26 +26,16 @@ class ComputeOperator(VectorizableOperator):
         self.__buffer = buffer
         self.__target = target
 
-    def __imatmul__(self, other: NDArrayType):
-        self.__buffer[self.__mask, 1:] = other
+    def __lshift__(self, value: NDArrayType):
+        self.__buffer[self.__mask, 1:] = value
         self.__buffer[self.__mask, 0] = np.apply_along_axis(
             self.__target, 1, self.__buffer[self.__mask, 1:]
         )
 
         return self
 
-    def __matmul__(self, other):
-        buff = self.__buffer.copy()
-        buff[self.__mask, 1:] = other
-        buff[self.__mask, 0] = np.apply_along_axis(
-            self.__target, 1, self.__buffer[self.__mask, 1:]
-        )
-
-        return buff[self.__mask, 1:]
-
-    def __setitem__(self, item, value):
-        self.__buffer[item, 1:] = value
-        self.__buffer[item, 0] = self.__target.evaluate(value)
+    def __getitem__(self, item: int) -> "PipelineOperator":
+        return ComputePipeline(item, self.__buffer, self.__target)
 
     def __repr__(self) -> str:
         return "Compute<VectorizableOperator>()"
