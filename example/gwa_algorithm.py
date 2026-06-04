@@ -24,20 +24,18 @@ def gwo(args, epoch, ctx):
         X_n = np.zeros((pop.size, bounds.ndim))
 
         for i, p in enumerate(all_pop):
-            X_n[i] = np.clip(
-                np.sum(
-                    [
-                        b.solution - A[i] * np.abs(C[i] * b.solution - p.solution)
-                        for b in best_pop
-                    ],
-                    axis=0,
-                )
-                / 3,
-                bounds.low,
-                bounds.up,
-            )
+            xn = [
+                b.solution - A[i] * np.abs(C[i] * b.solution - p.solution)
+                for b in best_pop
+            ]
 
-        new_pop.compute << X_n
+            X_n[i] = np.sum(xn, axis=0) / 3
+
+        new_pop.compute << np.clip(
+            X_n,
+            bounds.low,
+            bounds.up,
+        )
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
             if b := cm.best_of((a, b)):
