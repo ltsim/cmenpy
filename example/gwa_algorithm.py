@@ -9,34 +9,34 @@ def gwo(args, epoch, ctx):
     pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
 
     pop.compute << rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
-    X_n = np.full((pop.size, bounds.ndim), np.nan)
+    X = np.full((pop.size, bounds.ndim), np.nan)
 
     for e in epoch:
-        all_pop = cm.sort_agents(pop, ctx.sense)
-        new_pop = pop.view
+        sorted_pop = cm.sort_agents(pop, ctx.sense)
 
-        best_pop = all_pop[:3]
+        n_pop = pop.view
+        b_pop = sorted_pop[:3]
 
         a = 2 - 2 * e / epoch.max
 
-        A = a * (2 * rng.random(size=(pop.size, len(best_pop), bounds.ndim)) - 1)
-        C = 2 * rng.random(size=(pop.size, len(best_pop), bounds.ndim))
+        A = a * (2 * rng.random(size=(pop.size, len(b_pop), bounds.ndim)) - 1)
+        C = 2 * rng.random(size=(pop.size, len(b_pop), bounds.ndim))
 
-        for i, p in enumerate(all_pop):
+        for i, p in enumerate(sorted_pop):
             D = [
                 b.solution - A[i][j] * np.abs(C[i][j] * b.solution - p.solution)
-                for j, b in enumerate(best_pop)
+                for j, b in enumerate(b_pop)
             ]
 
-            X_n[i] = np.sum(D, axis=0) / len(best_pop)
+            X[i] = np.sum(D, axis=0) / len(b_pop)
 
-        new_pop.compute << np.clip(
-            X_n,
+        n_pop.compute << np.clip(
+            X,
             bounds.low,
             bounds.up,
         )
 
-        for i, (a, b) in enumerate(zip(new_pop, all_pop)):
+        for i, (a, b) in enumerate(zip(n_pop, sorted_pop)):
             pop.assign[i] << cm.best_of((a, b), ctx.sense).buff
 
 
