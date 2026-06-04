@@ -3,6 +3,8 @@ import typing
 import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
+from cmenpy.population.operations.assign import AssignOperator
+from cmenpy.population.operations.compute import ComputeOperator
 from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.view import ViewPopulation, BasePopulation
@@ -70,33 +72,6 @@ class PopulationManager:
 
         return VirtualAgent(self.__buffer, i)
 
-    def __iadd__(self, other: NDArrayType):
-        self.append(other)
-
-    def __isub__(self, other: int):
-        self.remove(other)
-
-    def __invert__(self):
-        return self.__buffer[self.__mask, 1:].copy()
-
-    def __matmul__(self, other):
-        buff = self.__buffer.copy()
-        buff[self.__mask, 1:] = other
-        buff[self.__mask, 0] = np.apply_along_axis(
-            self.__target, 1, self.__buffer[self.__mask, 1:]
-        )
-
-        return buff[self.__mask, 2:]
-
-    def __imatmul__(self, other):
-        if self.size > 0:
-            self.__buffer[self.__mask, 1:] = other
-            self.__buffer[self.__mask, 0] = np.apply_along_axis(
-                self.__target, 1, self.__buffer[self.__mask, 1:]
-            )
-
-        return self
-
     @property
     def best(self):
         b_pop = sort_agents(self.__agents)[0]
@@ -155,3 +130,11 @@ class PopulationManager:
     @property
     def swap(self) -> SwapOperation:
         return SwapOperation(self.__buffer)
+
+    @property
+    def compute(self) -> ComputeOperator:
+        return ComputeOperator(self.__mask, self.__buffer, self.__target)
+
+    @property
+    def assign(self) -> AssignOperator:
+        return AssignOperator(self.__mask, self.__buffer)
