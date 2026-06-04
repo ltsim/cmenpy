@@ -27,7 +27,7 @@ def gwo(args, epoch, ctx):
                 for b in best_pop
             ]
 
-            new_pop[i] = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
+            new_pop.compute[i] = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
             if b := cm.best_of((a, b)):
