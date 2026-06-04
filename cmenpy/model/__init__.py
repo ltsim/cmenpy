@@ -148,6 +148,7 @@ def template_check(
 
 
 def declare(
+    *args,
     **kwargs: typing.Any,
 ) -> typing.Callable[[AlgorithmFunction], FunctionOptimizerModel]:
     def wrapper(target: AlgorithmFunction) -> FunctionOptimizerModel:
