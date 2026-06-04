@@ -1,4 +1,4 @@
-__version__ = "2026"
+__version__ = "2026a0"
 
 from cmenpy.agent.attributes import Scalar, Vector, DefineAgent
 from cmenpy.bounds import Bounds
