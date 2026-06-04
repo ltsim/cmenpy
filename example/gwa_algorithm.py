@@ -45,7 +45,7 @@ def gwo(args, epoch, ctx):
 
 
 if __name__ == "__main__":
-    model = gwo(seed=None)
+    model = gwo()
     f = Ackley01(ndim=30)
 
     b_pop = model.solve(
