@@ -72,12 +72,13 @@ class PopulationManager:
 
         return VirtualAgent(self.__buffer, i)
 
+    """
     def __iadd__(self, other: NDArrayType):
         self.append(other)
 
     def __isub__(self, other: int):
         self.remove(other)
-
+    
     def __invert__(self):
         return self.__buffer[self.__mask, 1:].copy()
 
@@ -97,7 +98,8 @@ class PopulationManager:
                 self.__target, 1, self.__buffer[self.__mask, 1:]
             )
 
-        return self
+        return self 
+    """
 
     @property
     def best(self):
@@ -164,4 +166,4 @@ class PopulationManager:
 
     @property
     def assign(self) -> AssignOperator:
-        return AssignOperator(self.__mask, self.__buffer, self.__target)
+        return AssignOperator(self.__mask, self.__buffer)
