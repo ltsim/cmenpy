@@ -8,7 +8,7 @@ from opfunu.name_based import Ackley01
 def gwo(args, epoch, ctx):
     pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
 
-    pop @= rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
+    pop.compute << rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
 
     for e in epoch:
         all_pop = cm.sort_agents(pop)
@@ -27,11 +27,11 @@ def gwo(args, epoch, ctx):
                 for b in best_pop
             ]
 
-            new_pop.compute[i] = np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
+            new_pop.compute[i] << np.clip(np.sum(X, axis=0) / 3, bounds.low, bounds.up)
 
         for i, (a, b) in enumerate(zip(new_pop, all_pop)):
             if b := cm.best_of((a, b)):
-                pop.swap[i] = b.view
+                pop.assign[i] << b.buff
 
 
 if __name__ == "__main__":
