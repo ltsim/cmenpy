@@ -53,7 +53,7 @@ class Agent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def buff(self) -> NDArrayType: ...
+    def x(self) -> NDArrayType: ...
 
 
 class MemoryAgent(Agent):
@@ -88,7 +88,7 @@ class MemoryAgent(Agent):
         return self.__buffer[self.id, 0]
 
     @property
-    def buff(self) -> NDArrayType:
+    def x(self) -> NDArrayType:
         return self.__buffer
 
 
@@ -119,7 +119,7 @@ class VirtualAgent(Agent):
         return self.__buffer[0]
 
     @property
-    def buff(self) -> NDArrayType:
+    def x(self) -> NDArrayType:
         return self.__buffer
 
 
