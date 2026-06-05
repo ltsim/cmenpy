@@ -2,17 +2,17 @@ import typing
 
 import numpy as np
 
-from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
+from cmenpy.agent import Agent, VirtualAgent
 from cmenpy.population.agents import (
     PopulationGenerator,
     AgentMutableCollection,
     AgentMutable,
 )
 from cmenpy.population.base import PopulationOperationBase
+from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.operations.assign import AssignOperator
 from cmenpy.population.operations.compute import ComputeOperator
 from cmenpy.population.operations.swap import SwapOperation
-from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.view import ViewPopulation, ViewBase
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType

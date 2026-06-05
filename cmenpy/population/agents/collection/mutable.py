@@ -1,9 +1,7 @@
 import abc
-import typing
-
 from collections.abc import MutableSequence
 
-from cmenpy.agent import Agent, MemoryAgent
+from cmenpy.agent import MemoryAgent
 from cmenpy.population.agents.collection.sequence import AgentSequenceCollection
 from cmenpy.types import NDArrayType
 

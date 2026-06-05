@@ -1,15 +1,15 @@
 import typing
 
 from cmenpy.agent import Agent
-from cmenpy.population.operations.assign import AssignOperator
-from cmenpy.population.operations.compute import ComputeOperator
-from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population import PopulationOperationBase
 from cmenpy.population.agents import (
     PopulationGenerator,
     AgentMutableCollection,
     AgentMutable,
 )
+from cmenpy.population.operations.assign import AssignOperator
+from cmenpy.population.operations.compute import ComputeOperator
+from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.view.base import ViewBase
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType

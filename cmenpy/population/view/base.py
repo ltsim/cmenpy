@@ -1,8 +1,5 @@
 import abc
 
-from cmenpy.agent import Agent
-from cmenpy.types import NDArrayType
-
 
 class ViewBase(abc.ABC):
     @abc.abstractmethod
