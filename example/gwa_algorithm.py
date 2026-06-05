@@ -12,7 +12,7 @@ def gwo(args, epoch, ctx):
     X = np.full((pop.size, bounds.ndim), np.nan)
 
     for e in epoch:
-        sorted_pop = cm.sort_agents(pop, ctx.sense)
+        sorted_pop = cm.sort_agents(pop)
 
         n_pop = pop.view
         b_pop = sorted_pop[:3]
@@ -36,8 +36,8 @@ def gwo(args, epoch, ctx):
             bounds.up,
         )
 
-        for i, (a, b) in enumerate(zip(n_pop, sorted_pop)):
-            pop.assign[i] << cm.best_of((a, b), ctx.sense).buff
+        for i, (a, b) in enumerate(zip(n_pop.agents, sorted_pop)):
+            pop.assign[i] << cm.best_of((a, b), ctx.sense).x
 
 
 if __name__ == "__main__":
