@@ -3,7 +3,6 @@ import typing
 import numpy as np
 
 from cmenpy import low
-from cmenpy.agent import MemoryAgent, Agent
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
@@ -67,20 +66,17 @@ class MainContextManager:
 
         min_pop, max_pop = pop_range
 
-        self.__agents: list[Agent] = []
         self.__target = TargetFunction(f, bounds)
         self.__buffer = low.init_buffer(max_pop, bounds.ndim)
         self.__bounds = bounds
         self.__generator = DefaultGenerator(seed=seed)
 
-        for i in range(pop_size):
-            self.__agents.append(MemoryAgent(self.__buffer, i))
-
         self.__population: PopulationManager = PopulationManager(
             self.__buffer,
             self.__target,
-            self.__agents,
+            pop_size,
             pop_range,
+            sense,
         )
 
         self.__tracker: Tracker = Tracker(self.__population)
@@ -90,10 +86,6 @@ class MainContextManager:
     @property
     def sense(self):
         return self.__sense
-
-    @property
-    def agents(self) -> typing.List[Agent]:
-        return self.__agents
 
     @property
     def population(self) -> PopulationManager:

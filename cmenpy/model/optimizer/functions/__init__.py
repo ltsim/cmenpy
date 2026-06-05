@@ -28,7 +28,7 @@ class FunctionOptimizerModel(BaseOptimizer):
         **kwargs: typing.Any,
     ):
         self.__alias = alias if isinstance(alias, str) else alias
-        self.__inner: typing.Optional[CallableFunction] = None
+        self.__inner: typing.Optional[CallableFunction | typing.Any] = None
         self.__resource: typing.Optional[MainContextManager] = None
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
         self.__seed: typing.Optional[int] = seed
@@ -93,10 +93,10 @@ class FunctionOptimizerModel(BaseOptimizer):
                 ),
             )
 
-            return self.__resource.population.best
+            return self.__resource.population.agents.best
 
         self.__alias = func.__name__
-        self.__inner = lambda *args, **kwargs: wrapper(*args, **kwargs)
+        self.__inner = wrapper
 
         return self
 
