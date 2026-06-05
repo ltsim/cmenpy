@@ -6,7 +6,7 @@ from cmenpy.population.agent import Agent, ImmutableAgent
 from cmenpy.population.base import PopulationOperationBase
 from cmenpy.population.operations.assign import AssignOperator
 from cmenpy.population.operations.compute import ComputeOperator
-from cmenpy.population.operations.extrat import ExtractOperation
+from cmenpy.population.operations.extract import ExtractOperation
 from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.people import (
     PeopleGenerator,
