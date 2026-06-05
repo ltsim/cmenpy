@@ -1,12 +1,12 @@
 import abc
 from collections.abc import MutableSequence
 
-from cmenpy.agent import MutableAgent
-from cmenpy.population.agents.collection.sequence import AgentSequenceCollection
+from cmenpy.population.agent import MutableAgent
+from cmenpy.population.people.collection.sequence import PeopleSequenceCollection
 from cmenpy.types import NDArrayType
 
 
-class AgentMutableCollection(abc.ABC, MutableSequence):
+class PeopleMutableCollection(abc.ABC, MutableSequence):
     @abc.abstractmethod
     def append(self, value: NDArrayType) -> None: ...
 
@@ -27,4 +27,4 @@ class AgentMutableCollection(abc.ABC, MutableSequence):
 
     @property
     @abc.abstractmethod
-    def sort(self) -> AgentSequenceCollection: ...
+    def sort(self) -> PeopleSequenceCollection: ...

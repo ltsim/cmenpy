@@ -2,10 +2,10 @@ import abc
 import typing
 from collections.abc import Sequence
 
-from cmenpy.agent import MutableAgent
+from cmenpy.population.agent import MutableAgent
 
 
-class AgentSequenceCollection(abc.ABC, Sequence):
+class PeopleSequenceCollection(abc.ABC, Sequence):
     @abc.abstractmethod
     def __getitem__(self, index) -> MutableAgent | typing.List[MutableAgent]: ...
 

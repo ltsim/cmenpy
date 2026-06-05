@@ -3,16 +3,16 @@ import typing
 
 import numpy as np
 
-from cmenpy.agent import Agent, MutableAgent
-from cmenpy.population.agents.collection.mutable import AgentMutableCollection
-from cmenpy.population.agents.collection.sequence import AgentSequenceCollection
-from cmenpy.population.agents.properties import GlobalPopulationProperty
+from cmenpy.population.agent import Agent, MutableAgent
+from cmenpy.population.people.collection.mutable import PeopleMutableCollection
+from cmenpy.population.people.collection.sequence import PeopleSequenceCollection
+from cmenpy.population.people.properties import GlobalPopulationProperty
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
 
-class AgentSequence(AgentSequenceCollection, GlobalPopulationProperty):
+class PeopleSequence(PeopleSequenceCollection, GlobalPopulationProperty):
     def __init__(
         self,
         mask: list[bool],
@@ -34,7 +34,7 @@ class AgentSequence(AgentSequenceCollection, GlobalPopulationProperty):
         return len(self.__agents)
 
 
-class AgentMutable(AgentMutableCollection, GlobalPopulationProperty):
+class PeopleMutable(PeopleMutableCollection, GlobalPopulationProperty):
     def __init__(
         self,
         mask: list[bool],
@@ -102,14 +102,14 @@ class AgentMutable(AgentMutableCollection, GlobalPopulationProperty):
         return sum(self.__mask) < self.max
 
     @property
-    def sort(self) -> AgentSequence:
+    def sort(self) -> PeopleSequence:
         idx = np.argsort(self.__buffer[self.__mask, 0])
         agents = [MutableAgent(self.__buffer, i, self.__target) for i in idx]
 
         if self.__sense == "max":
             agents = agents[::-1]
 
-        return AgentSequence(
+        return PeopleSequence(
             self.__mask,
             self.__buffer,
             self.__target,
@@ -120,4 +120,4 @@ class AgentMutable(AgentMutableCollection, GlobalPopulationProperty):
 class PopulationGenerator(abc.ABC):
     @property
     @abc.abstractmethod
-    def agents(self) -> AgentMutableCollection: ...
+    def agents(self) -> PeopleMutableCollection: ...

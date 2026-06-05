@@ -1,6 +1,6 @@
 import numpy as np
 
-from cmenpy.agent import MutableAgent
+from cmenpy.population.agent import MutableAgent
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
