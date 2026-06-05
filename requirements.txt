@@ -1,4 +1,0 @@
-numpy>=2.4.4
-pyopencl>=2026.1
-sympy>=1.14.0
-pyperf>=2.10.0
