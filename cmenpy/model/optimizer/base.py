@@ -1,8 +1,8 @@
 import abc
 import typing
 
-from cmenpy.agent import Agent
 from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.population.agent import Agent
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
 from cmenpy.types import DType

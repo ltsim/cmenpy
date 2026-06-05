@@ -2,17 +2,17 @@ import typing
 
 import numpy as np
 
-from cmenpy.agent import Agent, ImmutableAgent
-from cmenpy.population.agents import (
-    PopulationGenerator,
-    AgentMutableCollection,
-    AgentMutable,
-)
+from cmenpy.population.agent import Agent, ImmutableAgent
 from cmenpy.population.base import PopulationOperationBase
 from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.operations.assign import AssignOperator
 from cmenpy.population.operations.compute import ComputeOperator
 from cmenpy.population.operations.swap import SwapOperation
+from cmenpy.population.people import (
+    PopulationGenerator,
+    PeopleMutableCollection,
+    PeopleMutable,
+)
 from cmenpy.population.view import ViewPopulation, ViewBase
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
@@ -87,8 +87,8 @@ class PopulationManager(PopulationOperationBase, PopulationGenerator):
         return AssignOperator(self.__mask, self.__buffer)
 
     @property
-    def agents(self) -> AgentMutableCollection:
-        return AgentMutable(
+    def agents(self) -> PeopleMutableCollection:
+        return PeopleMutable(
             self.__mask,
             self.__buffer,
             self.__target,

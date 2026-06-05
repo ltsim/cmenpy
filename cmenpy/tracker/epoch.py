@@ -1,6 +1,6 @@
 import dataclasses
 
-from cmenpy.agent import Agent
+from cmenpy.population.agent import Agent
 
 
 @dataclasses.dataclass(frozen=True)
