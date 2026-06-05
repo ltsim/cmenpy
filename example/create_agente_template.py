@@ -1,6 +1,6 @@
 import numpy as np
 import cmenpy as cm
-from cmenpy.agent import AgentTemplate
+from cmenpy.population.agent import AgentTemplate
 
 
 class MyAgent(AgentTemplate):

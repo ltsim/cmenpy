@@ -1,8 +1,8 @@
 from cmenpy.population import PopulationGenerator
-from cmenpy.population.agents import AgentSequenceCollection
+from cmenpy.population.people import PeopleSequenceCollection
 
 
 def sort_agents(
     population: PopulationGenerator,
-) -> AgentSequenceCollection:
+) -> PeopleSequenceCollection:
     return population.agents.sort

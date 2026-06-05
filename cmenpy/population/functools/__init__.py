@@ -1,6 +1,6 @@
 import typing
 
-from cmenpy.agent import Agent
+from cmenpy.population.agent import Agent
 from cmenpy.types.option import SenseType
 
 

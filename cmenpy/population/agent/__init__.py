@@ -56,7 +56,7 @@ class Agent(abc.ABC):
     def x(self) -> NDArrayType: ...
 
 
-class MemoryAgent(Agent):
+class MutableAgent(Agent):
     def __init__(self, buffer: np.ndarray, n: int, target: TargetFunction):
         self.__buffer = buffer
         self.__id = n
@@ -92,7 +92,7 @@ class MemoryAgent(Agent):
         return self.__buffer[self.id, :]
 
 
-class VirtualAgent(Agent):
+class ImmutableAgent(Agent):
     def __init__(self, buffer: np.ndarray, n: int):
         self.__buffer = buffer[n, :].copy()
         self.__id = n

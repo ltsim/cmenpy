@@ -1,6 +1,6 @@
 import numpy as np
 
-from cmenpy.agent import MemoryAgent
+from cmenpy.population.agent import MutableAgent
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
@@ -28,22 +28,22 @@ class GlobalPopulationProperty:
         return self.__buffer[self.__mask, 1:].copy()
 
     @property
-    def best(self) -> MemoryAgent:
+    def best(self) -> MutableAgent:
         idx = np.argsort(self.__buffer[:, 0])
 
         if self.__sense == "min":
-            return MemoryAgent(self.__buffer, idx[0], self.__target)
+            return MutableAgent(self.__buffer, idx[0], self.__target)
 
-        return MemoryAgent(self.__buffer, idx[-1], self.__target)
+        return MutableAgent(self.__buffer, idx[-1], self.__target)
 
     @property
-    def worst(self) -> MemoryAgent:
+    def worst(self) -> MutableAgent:
         idx = np.argsort(self.__buffer[:, 0])
 
         if self.__sense == "min":
-            return MemoryAgent(self.__buffer, idx[-1], self.__target)
+            return MutableAgent(self.__buffer, idx[-1], self.__target)
 
-        return MemoryAgent(self.__buffer, idx[0], self.__target)
+        return MutableAgent(self.__buffer, idx[0], self.__target)
 
     @property
     def idx_sort(self):
