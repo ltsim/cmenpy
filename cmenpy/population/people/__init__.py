@@ -86,11 +86,13 @@ class PeopleMutable(PeopleMutableCollection, GlobalPopulationProperty):
         return sum(self.__mask)
 
     def __iter__(self):
-        return [
-            MutableAgent(self.__buffer, i, self.__target)
-            for i, k in enumerate(self.__mask)
-            if k
-        ]
+        return iter(
+            [
+                MutableAgent(self.__buffer, i, self.__target)
+                for i, k in enumerate(self.__mask)
+                if k
+            ]
+        )
 
     @property
     def min(self):
