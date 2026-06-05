@@ -1,8 +1,10 @@
-from cmenpy.types.dynamic import DualSource, SourceIterable
+import typing
+
+from cmenpy.agent import Agent
 from cmenpy.types.option import SenseType
 
 
-def is_best(ab: DualSource, sense: SenseType = "min") -> bool:
+def is_best(ab: typing.Any, sense: SenseType = "min") -> bool:
     a, b = ab
 
     if sense == "min":
@@ -11,7 +13,7 @@ def is_best(ab: DualSource, sense: SenseType = "min") -> bool:
     return a[0] > b[0]
 
 
-def is_worst(ab: DualSource, sense: SenseType = "min") -> bool:
+def is_worst(ab: typing.Any, sense: SenseType = "min") -> bool:
     a, b = ab
 
     if sense == "min":
@@ -20,19 +22,15 @@ def is_worst(ab: DualSource, sense: SenseType = "min") -> bool:
     return a[0] < b[0]
 
 
-def best_of(ab: DualSource, sense: SenseType = "min") -> SourceIterable:
-    a, b = ab
+def best_of(agents: typing.Collection[Agent], sense: SenseType = "min") -> Agent:
+    if sense == "min":
+        return min(agents)
 
-    if is_best(ab, sense):
-        return a
-
-    return b
+    return max(agents)
 
 
-def worst_of(ab: DualSource, sense: SenseType = "min") -> SourceIterable:
-    a, b = ab
+def worst_of(agents: typing.Collection[Agent], sense: SenseType = "min") -> Agent:
+    if sense == "max":
+        return min(agents)
 
-    if is_best(ab, sense):
-        return a
-
-    return b
+    return max(agents)
