@@ -1,7 +1,7 @@
 import abc
 from collections.abc import MutableSequence
 
-from cmenpy.agent import MemoryAgent
+from cmenpy.agent import MutableAgent
 from cmenpy.population.agents.collection.sequence import AgentSequenceCollection
 from cmenpy.types import NDArrayType
 
@@ -15,7 +15,7 @@ class AgentMutableCollection(abc.ABC, MutableSequence):
 
     @property
     @abc.abstractmethod
-    def max(self) -> MemoryAgent: ...
+    def max(self) -> MutableAgent: ...
 
     @property
     @abc.abstractmethod

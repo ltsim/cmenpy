@@ -2,7 +2,7 @@ import typing
 
 import numpy as np
 
-from cmenpy.agent import Agent, VirtualAgent
+from cmenpy.agent import Agent, ImmutableAgent
 from cmenpy.population.agents import (
     PopulationGenerator,
     AgentMutableCollection,
@@ -30,7 +30,7 @@ class PopulationManager(PopulationOperationBase, PopulationGenerator):
         d_class: typing.Type[Agent] | None = None,
     ):
         if d_class is None:
-            d_class = VirtualAgent
+            d_class = ImmutableAgent
 
         n_pop = size
 
