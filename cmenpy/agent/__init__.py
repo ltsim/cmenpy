@@ -66,7 +66,7 @@ class MemoryAgent(Agent):
         return iter(self.__buffer.copy())
 
     def __getitem__(self, key: int) -> float:
-        return self.__buffer[key]
+        return self.__buffer[self.__id, key]
 
     @property
     def id(self):
@@ -89,7 +89,7 @@ class MemoryAgent(Agent):
 
     @property
     def x(self) -> NDArrayType:
-        return self.__buffer
+        return self.__buffer[self.id, :]
 
 
 class VirtualAgent(Agent):
