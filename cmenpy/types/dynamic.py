@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+
 from cmenpy.agent import Agent
 from cmenpy.types import NDArrayType
 
