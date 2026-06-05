@@ -3,129 +3,76 @@ import typing
 import numpy as np
 
 from cmenpy.agent import Agent, VirtualAgent, MemoryAgent
+from cmenpy.population.agents import (
+    PopulationGenerator,
+    AgentMutableCollection,
+    AgentMutable,
+)
+from cmenpy.population.base import PopulationOperationBase
 from cmenpy.population.operations.assign import AssignOperator
 from cmenpy.population.operations.compute import ComputeOperator
 from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.functools.utils import sort_agents
-from cmenpy.population.view import ViewPopulation, BasePopulation
+from cmenpy.population.view import ViewPopulation, ViewBase
 from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
+from cmenpy.types.option import SenseType
 
 
-class PopulationManager:
+class PopulationManager(PopulationOperationBase, PopulationGenerator):
     def __init__(
         self,
         buffer: NDArrayType,
         target: TargetFunction,
-        agents: list[Agent],
+        size: int,
         r_pop: tuple[int, int],
+        sense: SenseType = "min",
         d_class: typing.Type[Agent] | None = None,
     ):
         if d_class is None:
             d_class = VirtualAgent
 
-        n_pop = len(agents)
+        n_pop = size
 
-        self.__min_pop, self.__max_pop = r_pop
+        self.__r_pop = r_pop
         self.__buffer = buffer
         self.__target = target
-        self.__agents = agents
+
+        max_pop = self.__r_pop[0]
         self.__mask = list(True for _ in range(0, n_pop)) + list(
-            False for _ in range(n_pop, self.__max_pop)
+            False for _ in range(n_pop, max_pop)
         )
 
+        self.__sense = sense
         self.__d_class = d_class
 
-    def __iter__(self):
-        return iter(self.all)
-
     def __repr__(self):
-        return f"Population(size={self.size})"
+        return f"Population()"
 
     def __len__(self):
-        return len(self.__agents)
-
-    def remove(self, i: int):
-        founds = [*filter(lambda a: a.id == i, self.__agents)]
-
-        if not len(founds) > 0:
-            raise ValueError("Agent not found.")
-
-        agent = founds[0]
-
-        self.__mask[i] = False
-        self.__buffer[i, :] = np.nan
-        self.__agents.remove(agent)
-
-    def append(self, solution: NDArrayType):
-        founds = [i for i, x in enumerate(self.__mask) if not x]
-
-        if not len(founds) > 0:
-            raise ValueError("Max agents in memory.")
-
-        i = founds[0]
-
-        self.__mask[i] = True
-        self.__agents.append(MemoryAgent(self.__buffer, i))
-        self.__buffer[i, 1:] = solution
-        self.__buffer[i, 0] = np.apply_along_axis(self.__target, 0, solution)
-
-        return VirtualAgent(self.__buffer, i)
-
-    @property
-    def best(self):
-        b_pop = sort_agents(self.__agents)[0]
-
-        return VirtualAgent(self.__buffer, b_pop.id)
-
-    @property
-    def worst(self):
-        w_pop = sort_agents(self.__agents)[-1]
-
-        return VirtualAgent(self.__buffer, w_pop.id)
-
-    @property
-    def free_space(self):
-        return len(self.__agents) < self.max
-
-    @property
-    def min(self):
-        return self.__min_pop
-
-    @property
-    def max(self):
-        return self.__max_pop
+        return sum(self.__mask)
 
     @property
     def size(self):
-        return len(self.__agents)
-
-    @property
-    def all(self) -> list[VirtualAgent]:
-        return [VirtualAgent(self.__buffer, i) for i, a in enumerate(self.__agents)]
-
-    @property
-    def fitnesses(self):
-        return self.__buffer[self.__mask, 0].copy()
-
-    @property
-    def solutions(self):
-        return self.__buffer[self.__mask, 1:].copy()
+        return sum(self.__mask)
 
     @property
     def view(self) -> ViewPopulation:
-        buffer = self.__buffer.copy()
+        buffer = np.copy(self.__buffer)
 
         return ViewPopulation(
             mask=self.__mask,
             buffer=buffer,
             target=self.__target,
+            r_pop=self.__r_pop,
+            sense=self.__sense,
+            d_class=self.__d_class,
         )
 
     @view.setter
     def view(self, v: ViewPopulation):
-        self.__buffer[self.__mask, 1:] = v.solutions
-        self.__buffer[self.__mask, 0] = v.fitnesses
+        self.__buffer[self.__mask, 1:] = v.agents.solutions
+        self.__buffer[self.__mask, 0] = v.agents.fitnesses
 
     @property
     def swap(self) -> SwapOperation:
@@ -138,3 +85,14 @@ class PopulationManager:
     @property
     def assign(self) -> AssignOperator:
         return AssignOperator(self.__mask, self.__buffer)
+
+    @property
+    def agents(self) -> AgentMutableCollection:
+        return AgentMutable(
+            self.__mask,
+            self.__buffer,
+            self.__target,
+            self.__r_pop,
+            self.__sense,
+            self.__d_class,
+        )
