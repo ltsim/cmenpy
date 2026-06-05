@@ -4,12 +4,12 @@ import numpy as np
 
 from cmenpy.population.agent import Agent, ImmutableAgent
 from cmenpy.population.base import PopulationOperationBase
-from cmenpy.population.functools.utils import sort_agents
 from cmenpy.population.operations.assign import AssignOperator
 from cmenpy.population.operations.compute import ComputeOperator
+from cmenpy.population.operations.extrat import ExtractOperation
 from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.people import (
-    PopulationGenerator,
+    PeopleGenerator,
     PeopleMutableCollection,
     PeopleMutable,
 )
@@ -19,7 +19,7 @@ from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
 
-class PopulationManager(PopulationOperationBase, PopulationGenerator):
+class PopulationManager(PopulationOperationBase, PeopleGenerator):
     def __init__(
         self,
         buffer: NDArrayType,
@@ -38,7 +38,7 @@ class PopulationManager(PopulationOperationBase, PopulationGenerator):
         self.__buffer = buffer
         self.__target = target
 
-        max_pop = self.__r_pop[0]
+        max_pop = self.__r_pop[1]
         self.__mask = list(True for _ in range(0, n_pop)) + list(
             False for _ in range(n_pop, max_pop)
         )
@@ -85,6 +85,10 @@ class PopulationManager(PopulationOperationBase, PopulationGenerator):
     @property
     def assign(self) -> AssignOperator:
         return AssignOperator(self.__mask, self.__buffer)
+
+    @property
+    def extract(self) -> ExtractOperation:
+        return ExtractOperation(self.__mask, self.__buffer)
 
     @property
     def agents(self) -> PeopleMutableCollection:

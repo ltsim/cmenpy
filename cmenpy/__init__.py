@@ -5,9 +5,10 @@ from cmenpy.epoch import EpochIteration, Epoch
 from cmenpy.model import declare, template, template_check
 from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 from cmenpy.model.optimizer.variables import Argument, Variable
-from cmenpy.population import PopulationManager, sort_agents
+from cmenpy.population import PopulationManager
 from cmenpy.population.agent.attributes import Scalar, Vector, DefineAgent
 from cmenpy.population.functools import is_best, is_worst, best_of, worst_of
+from cmenpy.population.functools.utils import sort_agents
 
 __all__ = [
     "declare",

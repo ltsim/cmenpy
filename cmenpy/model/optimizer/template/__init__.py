@@ -92,10 +92,11 @@ class TemplateOptimizerModel(BaseOptimizer):
                     bounds=self.__resource.bounds,
                     population=self.__resource.population,
                     generator=self.__resource.default_generator,
+                    sense=self.__sense,
                 ),
             )
 
-        return self.__resource.population.best
+        return self.__resource.population.agents.best
 
     def __call__(
         self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any

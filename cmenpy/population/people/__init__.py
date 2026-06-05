@@ -117,7 +117,7 @@ class PeopleMutable(PeopleMutableCollection, GlobalPopulationProperty):
         )
 
 
-class PopulationGenerator(abc.ABC):
+class PeopleGenerator(abc.ABC):
     @property
     @abc.abstractmethod
     def agents(self) -> PeopleMutableCollection: ...

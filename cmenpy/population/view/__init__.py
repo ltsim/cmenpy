@@ -1,12 +1,12 @@
 import typing
 
-from cmenpy.population import PopulationOperationBase
+from cmenpy.population import PopulationOperationBase, ExtractOperation
 from cmenpy.population.agent import Agent
 from cmenpy.population.operations.assign import AssignOperator
 from cmenpy.population.operations.compute import ComputeOperator
 from cmenpy.population.operations.swap import SwapOperation
 from cmenpy.population.people import (
-    PopulationGenerator,
+    PeopleGenerator,
     PeopleMutableCollection,
     PeopleMutable,
 )
@@ -16,7 +16,7 @@ from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
 
-class ViewPopulation(ViewBase, PopulationOperationBase, PopulationGenerator):
+class ViewPopulation(ViewBase, PopulationOperationBase, PeopleGenerator):
     def __init__(
         self,
         mask: list[bool],
@@ -51,6 +51,10 @@ class ViewPopulation(ViewBase, PopulationOperationBase, PopulationGenerator):
     @property
     def assign(self) -> AssignOperator:
         return AssignOperator(self.__mask, self.__buffer, self.__target)
+
+    @property
+    def extract(self) -> ExtractOperation:
+        return ExtractOperation(self.__mask, self.__buffer)
 
     @property
     def agents(self) -> PeopleMutableCollection:
