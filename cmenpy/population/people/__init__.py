@@ -85,6 +85,13 @@ class PeopleMutable(PeopleMutableCollection, GlobalPopulationProperty):
     def __len__(self):
         return sum(self.__mask)
 
+    def __iter__(self):
+        return [
+            MutableAgent(self.__buffer, i, self.__target)
+            for i, k in enumerate(self.__mask)
+            if k
+        ]
+
     @property
     def min(self):
         return self.__r_pop[0]
