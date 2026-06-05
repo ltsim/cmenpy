@@ -14,30 +14,32 @@ class MyAlgorithm:
         rng = ctx.rng
         bounds = ctx.bounds
 
-        pop @= rng.uniform(-1, 1, (pop.size, bounds.ndim))
+        pop.compute << rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
     def evolve(self, e, ctx) -> None:
         pop = ctx.population
         rng = ctx.rng
         bounds = ctx.bounds
 
-        b_pop = pop.best
+        b_pop = pop.agents.best
 
-        pop @= np.clip(
-            ~pop + rng.uniform(-1, 1, (len(pop), bounds.ndim)),
-            -1,
-            1,
+        pop.compute << (
+            np.clip(
+                ~pop.extract + rng.uniform(-1, 1, (len(pop), bounds.ndim)),
+                -1,
+                1,
+            )
         )
 
-        if pop.best < b_pop and pop.size > 1:
-            b_pop = pop.best
-            w_pop = pop.worst
+        if pop.agents.best < b_pop and pop.size > 1:
+            b_pop = pop.agents.best
+            w_pop = pop.agents.worst
             id_pop = w_pop.id
 
-            pop.remove(id_pop)
+            pop.agents.pop(id_pop)
         else:
-            if pop.free_space:
-                n_pop = pop.append(rng.uniform(-1, 1, bounds.ndim))
+            if pop.agents.free_space:
+                n_pop = pop.agents.append(rng.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":

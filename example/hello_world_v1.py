@@ -7,20 +7,22 @@ import cmenpy as cm
 def my_algorithm(args, epoch, ctx):
     pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
 
-    pop @= rng.uniform(-1, 1, (len(pop), bounds.ndim))
-    b_pop = pop.best
+    pop.compute << rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
+    b_pop = pop.agents.best
 
     for _ in epoch:
-        pop @= np.clip(~pop + rng.uniform(-1, 1, (len(pop), bounds.ndim)), -1, 1)
+        pop.compute << np.clip(
+            ~pop.extract + rng.uniform(-1, 1, (len(pop), bounds.ndim)), -1, 1
+        )
 
-        if pop.best < b_pop and pop.size > 1:
-            b_pop = pop.best
-            w_pop = pop.worst
+        if pop.agents.best < b_pop and pop.size > 1:
+            b_pop = pop.agents.best
+            w_pop = pop.agents.worst
 
-            pop.remove(w_pop.id)
+            pop.agents.pop(w_pop.id)
         else:
-            if pop.free_space:
-                n_pop = pop.append(rng.uniform(-1, 1, bounds.ndim))
+            if pop.agents.free_space:
+                n_pop = pop.agents.append(rng.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":
@@ -50,6 +52,6 @@ if __name__ == "__main__":
         return a + b + c
 
     best_pop = my_algorithm.solve(
-        sphere, cm.Bounds([(-1, 1), (-1, 1)]), 1500, 15, (1, 20)
+        sphere, cm.Bounds([(-1, 1), (-1, 1)]), 150, 15, (1, 25)
     )
     print("Best population:", best_pop)
