@@ -1,6 +1,6 @@
 import typing
 
-from cmenpy.population.operations.stream import ReaderOperator
+from cmenpy.operations.stream import ReaderOperator
 from cmenpy.types import NDArrayType
 
 

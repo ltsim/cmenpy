@@ -2,9 +2,9 @@ import typing
 
 from cmenpy.population import PopulationOperationBase, ExtractOperation
 from cmenpy.population.agent import Agent
-from cmenpy.population.operations.assign import AssignOperator
-from cmenpy.population.operations.compute import ComputeOperator
-from cmenpy.population.operations.swap import SwapOperation
+from cmenpy.operations import AssignOperator
+from cmenpy.operations import ComputeOperator
+from cmenpy.operations import SwapOperation
 from cmenpy.population.people import (
     PeopleGenerator,
     PeopleMutableCollection,

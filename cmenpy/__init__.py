@@ -7,8 +7,8 @@ from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerMode
 from cmenpy.model.optimizer.variables import Argument, Variable
 from cmenpy.population import PopulationManager
 from cmenpy.population.agent.attributes import Scalar, Vector, DefineAgent
-from cmenpy.population.functools import is_best, is_worst, best_of, worst_of
-from cmenpy.population.functools.utils import sort_agents
+from cmenpy.functools import is_best, is_worst, best_of, worst_of
+from cmenpy.functools import sort_agents
 
 __all__ = [
     "declare",

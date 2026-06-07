@@ -1,4 +1,4 @@
-from cmenpy.population.operations.stream import WriterOperator
+from cmenpy.operations.stream import WriterOperator
 from cmenpy.types import NDArrayType
 
 

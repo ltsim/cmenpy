@@ -1,6 +1,6 @@
 import numpy as np
 
-from cmenpy.population.operations.stream.vectorizable import (
+from cmenpy.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
 )

@@ -36,8 +36,11 @@ def gwo(args, epoch, ctx):
             bounds.up,
         )
 
-        for i, (a, b) in enumerate(zip(n_pop.agents, sorted_pop)):
-            pop.assign[i] << cm.best_of((a, b), ctx.sense).x
+        for i, (a, b) in enumerate(zip([*n_pop.agents], sorted_pop)):
+            # pop.assign[i] << cm.best_of((a, b), ctx.sense).x
+
+            if cm.is_best((a, b), ctx.sense):
+                pop.assign[i] << a.x
 
 
 if __name__ == "__main__":

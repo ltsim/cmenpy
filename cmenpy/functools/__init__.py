@@ -2,6 +2,7 @@ import typing
 
 from cmenpy.population.agent import Agent
 from cmenpy.types.option import SenseType
+from cmenpy.functools.utils import sort_agents
 
 
 def is_best(ab: typing.Any, sense: SenseType = "min") -> bool:
@@ -34,3 +35,6 @@ def worst_of(agents: typing.Collection[Agent], sense: SenseType = "min") -> Agen
         return min(agents)
 
     return max(agents)
+
+
+__all__ = ["sort_agents", "is_best", "is_worst", "best_of", "worst_of"]
