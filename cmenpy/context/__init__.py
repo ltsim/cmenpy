@@ -2,7 +2,7 @@ import typing
 
 import numpy as np
 
-from cmenpy import low
+from cmenpy.kernel import low
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
