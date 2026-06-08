@@ -22,6 +22,7 @@ class TensorSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
         BaseProperty.__init__(self, buffer)
         BaseIterator.__init__(self, buffer)
         DynamicBase.__init__(self, buffer)
+
         self.__buffer = buffer
         self.__sense = sense
 

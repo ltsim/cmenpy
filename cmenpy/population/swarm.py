@@ -1,5 +1,7 @@
 import typing
 
+from cmenpy.dynamic.base import DynamicBase
+from cmenpy.iterator.base import BaseIterator
 from cmenpy.kernel import KernelBuffer
 from cmenpy.operations import AssignOperator
 from cmenpy.operations import ComputeOperator
@@ -16,7 +18,9 @@ from cmenpy.properties.base import BaseProperty
 from cmenpy.types.option import SenseType
 
 
-class PopulationSwarm(OperationBase, PeopleGenerator, BaseProperty):
+class PopulationSwarm(
+    OperationBase, PeopleGenerator, BaseProperty, BaseIterator, DynamicBase
+):
     def __init__(
         self,
         buffer: KernelBuffer,
@@ -26,7 +30,9 @@ class PopulationSwarm(OperationBase, PeopleGenerator, BaseProperty):
         if d_class is None:
             d_class = ImmutableAgent
 
-        super().__init__(buffer)
+        BaseProperty.__init__(self, buffer)
+        BaseIterator.__init__(self, buffer)
+        DynamicBase.__init__(self, buffer)
 
         self.__buffer = buffer
         self.__sense = sense
