@@ -1,5 +1,4 @@
-from cmenpy.population import PeopleGenerator
-from cmenpy.population.people import PeopleSequenceCollection
+from cmenpy.population.people import PeopleSequenceCollection, PeopleGenerator
 
 
 def sort_agents(
