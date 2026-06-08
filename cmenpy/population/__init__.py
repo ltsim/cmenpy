@@ -3,7 +3,7 @@ import typing
 import numpy as np
 
 from cmenpy.population.agent import Agent, ImmutableAgent
-from cmenpy.population.base import PopulationOperationBase
+from cmenpy.operations.base import OperationBase
 from cmenpy.operations import AssignOperator
 from cmenpy.operations import ComputeOperator
 from cmenpy.operations import ExtractOperation
@@ -19,7 +19,7 @@ from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
 
-class PopulationManager(PopulationOperationBase, PeopleGenerator):
+class PopulationManager(OperationBase, PeopleGenerator):
     def __init__(
         self,
         buffer: NDArrayType,
