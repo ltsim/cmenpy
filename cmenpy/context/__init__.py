@@ -83,7 +83,7 @@ class MainContextManager:
         return self.__epoch_it
 
     @property
-    def buffer(self) -> NDArrayType:
+    def buffer(self) -> KernelBuffer:
         return self.__buffer
 
     @property
