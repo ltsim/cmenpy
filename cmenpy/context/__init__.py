@@ -2,11 +2,11 @@ import typing
 
 import numpy as np
 
-from cmenpy.kernel import low
+from cmenpy.kernel import low, KernelBuffer, KernelSize
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
-from cmenpy.population import PopulationManager
+from cmenpy.population import PopulationSwarm
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
 from cmenpy.types import NDArrayType
@@ -18,7 +18,7 @@ class Context:
         self,
         f: Target,
         bounds: Bounds,
-        population: PopulationManager,
+        population: PopulationSwarm,
         generator: DefaultGenerator,
         sense: SenseType,
     ):
@@ -37,7 +37,7 @@ class Context:
         return self.__bounds
 
     @property
-    def population(self) -> PopulationManager:
+    def population(self) -> PopulationSwarm:
         return self.__population
 
     @property
@@ -55,40 +55,27 @@ class MainContextManager:
         f: Target,
         bounds: Bounds,
         epochs: int,
-        pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]] = None,
+        size: KernelSize,
         seed: typing.Optional[int] = None,
         debug: bool = False,
         sense: SenseType = "min",
     ):
-        if pop_range is None:
-            pop_range = pop_size, pop_size
-
-        min_pop, max_pop = pop_range
-
+        self.__size = size
         self.__target = TargetFunction(f, bounds)
-        self.__buffer = low.init_buffer(max_pop, bounds.ndim)
         self.__bounds = bounds
+        self.__sense = sense
+        self.__buffer = KernelBuffer(size, self.__bounds, self.__target, self.__sense)
         self.__generator = DefaultGenerator(seed=seed)
-
-        self.__population: PopulationManager = PopulationManager(
-            self.__buffer,
-            self.__target,
-            pop_size,
-            pop_range,
-            sense,
-        )
-
+        self.__population: PopulationSwarm = PopulationSwarm(self.__buffer, sense)
         self.__tracker: Tracker = Tracker(self.__population)
         self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
-        self.__sense = sense
 
     @property
     def sense(self):
         return self.__sense
 
     @property
-    def population(self) -> PopulationManager:
+    def population(self) -> PopulationSwarm:
         return self.__population
 
     @property
