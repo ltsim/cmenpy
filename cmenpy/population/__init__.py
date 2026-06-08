@@ -1,14 +1,12 @@
 import typing
 
-import numpy as np
-
 from cmenpy.kernel import KernelBuffer
-from cmenpy.population.agent import Agent, ImmutableAgent
-from cmenpy.operations.base import OperationBase
 from cmenpy.operations import AssignOperator
 from cmenpy.operations import ComputeOperator
 from cmenpy.operations import ExtractOperation
 from cmenpy.operations import SwapOperation
+from cmenpy.operations.base import OperationBase
+from cmenpy.population.agent import Agent, ImmutableAgent
 from cmenpy.population.people import (
     PeopleGenerator,
     PeopleMutableCollection,

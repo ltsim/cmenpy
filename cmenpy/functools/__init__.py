@@ -1,8 +1,8 @@
 import typing
 
+from cmenpy.functools.utils import sort_agents
 from cmenpy.population.agent import Agent
 from cmenpy.types.option import SenseType
-from cmenpy.functools.utils import sort_agents
 
 
 def is_best(ab: typing.Any, sense: SenseType = "min") -> bool:

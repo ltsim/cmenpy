@@ -1,7 +1,7 @@
 import functools
 import typing
 
-from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
+from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.context import MainContextManager, Context
 from cmenpy.kernel import KernelSize
 from cmenpy.model.optimizer.base import BaseOptimizer
@@ -14,7 +14,6 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.population.agent import Agent
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
 from cmenpy.types import DType, NDArrayType

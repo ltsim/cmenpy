@@ -1,7 +1,5 @@
 import typing
 
-import numpy as np
-
 from cmenpy.types import NDArrayType
 
 K = typing.TypeVar("K")

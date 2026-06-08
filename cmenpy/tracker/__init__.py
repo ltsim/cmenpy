@@ -1,7 +1,6 @@
 import collections
 
 from cmenpy.kernel import KernelBuffer
-from cmenpy.population import PopulationSwarm
 from cmenpy.tracker.epoch import EpochHistory
 
 

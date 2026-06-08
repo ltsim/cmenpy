@@ -1,10 +1,10 @@
 import typing
 
-from cmenpy.population import OperationBase, ExtractOperation
-from cmenpy.population.agent import Agent
 from cmenpy.operations import AssignOperator
 from cmenpy.operations import ComputeOperator
 from cmenpy.operations import SwapOperation
+from cmenpy.population import OperationBase, ExtractOperation
+from cmenpy.population.agent import Agent
 from cmenpy.population.people import (
     PeopleGenerator,
     PeopleMutableCollection,

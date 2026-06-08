@@ -1,11 +1,8 @@
-import numpy as np
-
 from cmenpy.kernel import KernelBuffer
 from cmenpy.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
 )
-from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 
 

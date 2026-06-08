@@ -1,5 +1,3 @@
-import typing
-
 from cmenpy.kernel import KernelBuffer
 from cmenpy.operations.stream import ReaderOperator
 from cmenpy.types import NDArrayType

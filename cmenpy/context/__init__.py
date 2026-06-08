@@ -2,14 +2,12 @@ import typing
 
 import numpy as np
 
-from cmenpy.kernel import low, KernelBuffer, KernelSize
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
-from cmenpy.population import PopulationSwarm
+from cmenpy.kernel import KernelBuffer, KernelSize
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
-from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
 
