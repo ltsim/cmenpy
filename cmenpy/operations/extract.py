@@ -18,4 +18,4 @@ class ExtractOperation(ReaderOperator):
         return other
 
     def __repr__(self) -> str:
-        return "Getter<ReaderOperator>()"
+        return "Extract<ReaderOperator>()"
