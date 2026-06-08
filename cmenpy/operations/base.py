@@ -1,12 +1,15 @@
 import abc
 
-from cmenpy.population.operations.assign import AssignOperator
-from cmenpy.population.operations.compute import ComputeOperator
-from cmenpy.population.operations.extract import ExtractOperation
-from cmenpy.population.operations.swap import SwapOperation
+from cmenpy.operations import (
+    SwapOperation,
+    ComputeOperator,
+    AssignOperator,
+    ExtractOperation,
+)
+from cmenpy.operations.access import AccessOperator
 
 
-class PopulationOperationBase(abc.ABC):
+class OperationBase(abc.ABC):
     @property
     @abc.abstractmethod
     def swap(self) -> SwapOperation: ...
@@ -22,3 +25,7 @@ class PopulationOperationBase(abc.ABC):
     @property
     @abc.abstractmethod
     def extract(self) -> ExtractOperation: ...
+
+    @property
+    @abc.abstractmethod
+    def access(self) -> AccessOperator: ...

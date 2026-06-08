@@ -2,14 +2,12 @@ import typing
 
 import numpy as np
 
-from cmenpy import low
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
-from cmenpy.population import PopulationManager
+from cmenpy.kernel import KernelBuffer, KernelSize
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
-from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
 
@@ -18,13 +16,13 @@ class Context:
         self,
         f: Target,
         bounds: Bounds,
-        population: PopulationManager,
+        buffer: KernelBuffer,
         generator: DefaultGenerator,
         sense: SenseType,
     ):
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
-        self.__population = population
+        self.__buff = buffer
         self.__generator = generator
         self.__sense = sense
 
@@ -37,8 +35,8 @@ class Context:
         return self.__bounds
 
     @property
-    def population(self) -> PopulationManager:
-        return self.__population
+    def buff(self) -> KernelBuffer:
+        return self.__buff
 
     @property
     def rng(self) -> np.random.Generator:
@@ -55,49 +53,31 @@ class MainContextManager:
         f: Target,
         bounds: Bounds,
         epochs: int,
-        pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]] = None,
+        size: KernelSize,
         seed: typing.Optional[int] = None,
         debug: bool = False,
         sense: SenseType = "min",
     ):
-        if pop_range is None:
-            pop_range = pop_size, pop_size
-
-        min_pop, max_pop = pop_range
-
+        self.__size = size
         self.__target = TargetFunction(f, bounds)
-        self.__buffer = low.init_buffer(max_pop, bounds.ndim)
         self.__bounds = bounds
-        self.__generator = DefaultGenerator(seed=seed)
-
-        self.__population: PopulationManager = PopulationManager(
-            self.__buffer,
-            self.__target,
-            pop_size,
-            pop_range,
-            sense,
-        )
-
-        self.__tracker: Tracker = Tracker(self.__population)
-        self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
         self.__sense = sense
+        self.__k_buff = KernelBuffer(size, self.__bounds, self.__target, self.__sense)
+        self.__generator = DefaultGenerator(seed=seed)
+        self.__tracker = Tracker(self.__k_buff)
+        self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
 
     @property
     def sense(self):
         return self.__sense
 
     @property
-    def population(self) -> PopulationManager:
-        return self.__population
-
-    @property
     def epoch_it(self) -> EpochIteration:
         return self.__epoch_it
 
     @property
-    def buffer(self) -> NDArrayType:
-        return self.__buffer
+    def buffer(self) -> KernelBuffer:
+        return self.__k_buff
 
     @property
     def target(self) -> TargetFunction:

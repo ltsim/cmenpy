@@ -1,6 +1,6 @@
 import abc
 
-from cmenpy.population.operations.stream.base import StreamOperator
+from cmenpy.operations.stream.base import StreamOperator
 from cmenpy.types import NDArrayType
 
 

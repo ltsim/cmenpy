@@ -1,13 +1,13 @@
 import collections
 
-from cmenpy.population import PopulationManager
+from cmenpy.kernel import KernelBuffer
 from cmenpy.tracker.epoch import EpochHistory
 
 
 class Tracker:
-    def __init__(self, population: PopulationManager):
+    def __init__(self, buff: KernelBuffer):
         self.___history = collections.deque()
-        self.___population = population
+        self.__k_buff = buff
 
     @property
     def history(self) -> list[EpochHistory]:
@@ -17,9 +17,9 @@ class Tracker:
         self.___history.append(
             EpochHistory(
                 epoch=e,
-                best=self.___population.best,
-                worst=self.___population.worst,
-                all=self.___population.all,
+                best_idx=self.__k_buff.idx.best,
+                worst_idx=self.__k_buff.idx.worst,
+                all=self.__k_buff.raw_data.copy(),
                 timeit=timeit,
             )
         )

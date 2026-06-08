@@ -1,14 +1,14 @@
 import dataclasses
 
-from cmenpy.population.agent import Agent
+from cmenpy.types import NDArrayType
 
 
 @dataclasses.dataclass(frozen=True)
 class EpochHistory:
     epoch: int
-    best: Agent
-    worst: Agent
-    all: list[Agent]
+    best_idx: int
+    worst_idx: int
+    all: NDArrayType
     timeit: int | float
 
     def __hash__(self) -> int:

@@ -2,10 +2,9 @@ import abc
 import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
-from cmenpy.population.agent import Agent
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.types import DType
+from cmenpy.types import DType, NDArrayType
 from cmenpy.types.option import SenseType
 
 
@@ -17,10 +16,10 @@ class BaseOptimizer(abc.ABC):
         bounds: Bounds | SequenceStructure[DType],
         epochs: int,
         pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]],
-        debug: typing.Optional[bool],
-        sense: typing.Optional[SenseType],
-    ) -> Agent: ...
+        pop_range: typing.Optional[tuple[int, int]] = None,
+        debug: typing.Optional[bool] = None,
+        sense: typing.Optional[SenseType] = None,
+    ) -> tuple[float, NDArrayType]: ...
 
     @abc.abstractmethod
     def __call__(self, *args, **kwargs) -> "BaseOptimizer": ...

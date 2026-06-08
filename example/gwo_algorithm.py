@@ -6,27 +6,24 @@ from opfunu.name_based import Ackley01
 
 @cm.declare(...)
 def gwo(args, epoch, ctx):
-    pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
+    buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
-    pop.compute << rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
+    pop = cm.TensorSwarm(buff, ctx.sense)
+    pop.compute << rng.uniform(bounds.low, bounds.up, (pop.size, bounds.ndim))
+
     X = np.full((pop.size, bounds.ndim), np.nan)
 
     for e in epoch:
-        sorted_pop = cm.sort_agents(pop)
-
-        n_pop = pop.view
-        b_pop = sorted_pop[:3]
+        n_pop = cm.TensorSwarm(buff.snapshot, ctx.sense)
+        b_pop = pop.X[pop.sort][:3]
 
         a = 2 - 2 * e / epoch.max
 
         A = a * (2 * rng.random(size=(pop.size, len(b_pop), bounds.ndim)) - 1)
         C = 2 * rng.random(size=(pop.size, len(b_pop), bounds.ndim))
 
-        for i, p in enumerate(sorted_pop):
-            D = [
-                b.solution - A[i][j] * np.abs(C[i][j] * b.solution - p.solution)
-                for j, b in enumerate(b_pop)
-            ]
+        for i, p in zip(pop.sort, pop.X[pop.sort]):
+            D = [b - A[i][j] * np.abs(C[i][j] * b - p) for j, b in enumerate(b_pop)]
 
             X[i] = np.sum(D, axis=0) / len(b_pop)
 
@@ -36,8 +33,9 @@ def gwo(args, epoch, ctx):
             bounds.up,
         )
 
-        for i, (a, b) in enumerate(zip(n_pop.agents, sorted_pop)):
-            pop.assign[i] << cm.best_of((a, b), ctx.sense).x
+        for i, (a, b) in enumerate(zip(n_pop.F, pop.F)):
+            if cm.is_best((a, b), ctx.sense):
+                pop.assign[i] << n_pop.access[i]
 
 
 if __name__ == "__main__":

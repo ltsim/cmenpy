@@ -1,27 +1,24 @@
-import typing
-
-from cmenpy.population.operations.stream import ReaderOperator
+from cmenpy.kernel import KernelBuffer
+from cmenpy.operations.stream import ReaderOperator
 from cmenpy.types import NDArrayType
 
 
-class ExtractOperation(ReaderOperator):
+class AccessOperator(ReaderOperator):
     def __init__(
         self,
-        mask: typing.List[bool],
-        buffer: NDArrayType,
+        buffer: KernelBuffer,
     ):
         super().__init__(buffer.shape)
-        self.__mask = mask
         self.__buffer = buffer
 
     def __getitem__(self, item: int | slice) -> NDArrayType:
-        return self.__buffer[item, 1:]
+        return self.__buffer.raw_data[item, :]
 
     def __invert__(self) -> NDArrayType:
-        return self.__buffer[self.__mask, 1:]
+        return self.__buffer.raw_data[self.__buffer.mask.founds, :]
 
     def __rshift__(self, other: NDArrayType) -> NDArrayType:
         return other
 
     def __repr__(self) -> str:
-        return "Getter<ReaderOperator>()"
+        return "Access<ReaderOperator>()"
