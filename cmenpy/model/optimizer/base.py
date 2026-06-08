@@ -16,9 +16,9 @@ class BaseOptimizer(abc.ABC):
         bounds: Bounds | SequenceStructure[DType],
         epochs: int,
         pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]],
-        debug: typing.Optional[bool],
-        sense: typing.Optional[SenseType],
+        pop_range: typing.Optional[tuple[int, int]] = None,
+        debug: typing.Optional[bool] = None,
+        sense: typing.Optional[SenseType] = None,
     ) -> tuple[float, NDArrayType]: ...
 
     @abc.abstractmethod
