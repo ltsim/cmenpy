@@ -7,6 +7,7 @@ from cmenpy.operations import (
     ComputeOperator,
     SwapOperation,
 )
+from cmenpy.operations.access import AccessOperator
 from cmenpy.operations.base import OperationBase
 from cmenpy.properties.base import BaseProperty
 from cmenpy.types.option import SenseType
@@ -39,3 +40,7 @@ class TensorSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
     @property
     def extract(self) -> ExtractOperation:
         return ExtractOperation(self.__buffer)
+
+    @property
+    def access(self) -> AccessOperator:
+        return AccessOperator(self.__buffer)
