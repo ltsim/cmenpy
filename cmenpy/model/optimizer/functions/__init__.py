@@ -3,6 +3,7 @@ import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.context import MainContextManager, Context
+from cmenpy.kernel import KernelSize
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions.params import (
     FunctionParamsArguments,
@@ -67,12 +68,13 @@ class FunctionOptimizerModel(BaseOptimizer):
                 raise IndexError("Population size is too large.")
 
             self.__sense = sense
+            self.__size = KernelSize(pop_size, min_size=min_pop, max_size=max_pop)
+            self.__bounds = Bounds[bounds]
             self.__resource = MainContextManager(
                 f,
-                create_bounds(bounds),
+                self.__bounds,
                 epochs,
-                pop_size,
-                pop_range,
+                self.__size,
                 self.__seed,
                 self.__debug,
                 self.__sense,
