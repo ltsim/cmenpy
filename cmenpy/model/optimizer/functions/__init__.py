@@ -56,7 +56,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             pop_size: int,
             pop_range: typing.Optional[tuple[int, int]] = None,
             sense: SenseType = "min",
-        ) -> tuple[DType, NDArrayType]:
+        ) -> tuple[float, NDArrayType]:
             if pop_range is None:
                 pop_range = pop_size, pop_size
 
@@ -97,7 +97,7 @@ class FunctionOptimizerModel(BaseOptimizer):
 
             X = self.__resource.buffer.raw_data[self.__resource.buffer.idx.best]
 
-            return X[0], X[1:]
+            return float(X[0]), X[1:]
 
         self.__alias = func.__name__
         self.__inner = wrapper
