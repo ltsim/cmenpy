@@ -23,7 +23,7 @@ class ComputeOperator(VectorizableOperator):
         super().__init__(buffer.shape)
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType):
+    def __lshift__(self, value: NDArrayType) -> "ComputeOperator":
         self.__buffer.apply(value)
         return self
 
