@@ -27,18 +27,18 @@ def is_worst(ab: AB, sense: SenseType = "min") -> bool:
     return a < b
 
 
-def best_of(agents: typing.Collection[A], sense: SenseType = "min") -> Agent:
+def best_of(a: typing.Collection[A], sense: SenseType = "min") -> A:
     if sense == "min":
-        return min(agents)
+        return min(a)
 
-    return max(agents)
+    return max(a)
 
 
-def worst_of(agents: typing.Collection[A], sense: SenseType = "min") -> Agent:
+def worst_of(a: typing.Collection[A], sense: SenseType = "min") -> A:
     if sense == "max":
-        return min(agents)
+        return min(a)
 
-    return max(agents)
+    return max(a)
 
 
 __all__ = ["sort_agents", "is_best", "is_worst", "best_of", "worst_of"]
