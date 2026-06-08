@@ -80,3 +80,7 @@ class KernelBuffer:
     @property
     def size(self) -> KernelSize:
         return self.__size
+
+    @property
+    def snapshot(self) -> "KernelBuffer":
+        return KernelBuffer(self.__size, self.__bounds, self.__target, self.__sense)
