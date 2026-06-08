@@ -25,7 +25,7 @@ class KernelBuffer:
         self.__target = target
         self.__sense = sense
 
-        self.__buffer: NDArrayType = init_buffer(size.size, bounds.ndim)
+        self.__buffer: NDArrayType = init_buffer(size.max, bounds.ndim)
         self.__mask = KernelMask(self.__size)
 
     def apply(
