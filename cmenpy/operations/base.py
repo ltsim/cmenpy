@@ -6,6 +6,7 @@ from cmenpy.operations import (
     AssignOperator,
     ExtractOperation,
 )
+from cmenpy.operations.access import AccessOperator
 
 
 class OperationBase(abc.ABC):
@@ -24,3 +25,7 @@ class OperationBase(abc.ABC):
     @property
     @abc.abstractmethod
     def extract(self) -> ExtractOperation: ...
+
+    @property
+    @abc.abstractmethod
+    def access(self) -> AccessOperator: ...
