@@ -16,7 +16,7 @@ class TensorSwarm(OperationBase, BaseProperty):
         buffer: KernelBuffer,
         sense: SenseType = "min",
     ):
-        super(BaseProperty).__init__(buffer)
+        super().__init__(buffer)
         self.__buffer = buffer
         self.__sense = sense
 
