@@ -11,7 +11,7 @@ class KernelMask:
         size: KernelSize,
     ):
         self.__size: KernelSize = size
-        self.__mask = np.ndarray(list(False for _ in range(0, size.max)), dtype=bool)
+        self.__mask = np.fromiter((False for _ in range(0, size.max)), dtype=bool)
         self.__mask[0 : self.__size.size] = True
 
     def __iter__(self):
