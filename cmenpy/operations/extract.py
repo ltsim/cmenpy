@@ -14,7 +14,7 @@ class ExtractOperation(ReaderOperator):
         return self.__buffer.raw_data[item, 1:]
 
     def __invert__(self) -> NDArrayType:
-        return self.__buffer.raw_data[[*self.__buffer.mask], 1:]
+        return self.__buffer.raw_data[self.__buffer.mask.founds, 1:]
 
     def __rshift__(self, other: NDArrayType) -> NDArrayType:
         return other
