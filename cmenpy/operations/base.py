@@ -8,7 +8,7 @@ from cmenpy.operations import (
 )
 
 
-class PopulationOperationBase(abc.ABC):
+class OperationBase(abc.ABC):
     @property
     @abc.abstractmethod
     def swap(self) -> SwapOperation: ...

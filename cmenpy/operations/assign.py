@@ -1,3 +1,4 @@
+from cmenpy.kernel import KernelBuffer
 from cmenpy.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
@@ -6,22 +7,20 @@ from cmenpy.types import NDArrayType
 
 
 class AssignPipeline(PipelineOperator):
-    def __init__(self, idx: int, buffer: NDArrayType):
+    def __init__(self, idx: int, buffer: KernelBuffer):
         self.__idx = idx
         self.__buffer = buffer
 
     def __lshift__(self, value: NDArrayType):
-        self.__buffer[self.__idx] = value
+        self.__buffer.buffer[self.__idx] = value
 
 
 class AssignOperator(VectorizableOperator):
     def __init__(
         self,
-        mask: list[int],
-        buffer: NDArrayType,
+        buffer: KernelBuffer,
     ):
         super().__init__(buffer.shape)
-        self.__mask = mask
         self.__buffer = buffer
 
     def __lshift__(self, value: NDArrayType) -> "VectorizableOperator":
@@ -30,7 +29,7 @@ class AssignOperator(VectorizableOperator):
                 "The buffer cannot be assigned a value; the sizes do not match."
             )
 
-        self.__buffer[:] = value
+        self.__buffer.buffer[:] = value
 
         return self
 
