@@ -43,7 +43,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         pop_range: typing.Optional[tuple[int, int]] = None,
         debug: bool = False,
         sense: SenseType = "min",
-    ) -> tuple[DType, NDArrayType]:
+    ) -> tuple[float, NDArrayType]:
         if self.__model is None:
             raise NotImplementedError()
 
@@ -98,9 +98,9 @@ class TemplateOptimizerModel(BaseOptimizer):
                 ),
             )
 
-            X = self.__resource.buffer.raw_data[self.__resource.buffer.idx.best]
+        X = self.__resource.buffer.raw_data[self.__resource.buffer.idx.best]
 
-            return X[0], X[1:]
+        return float(X[0]), X[1:]
 
     def __call__(
         self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any
