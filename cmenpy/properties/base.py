@@ -9,11 +9,11 @@ class BaseProperty:
 
     @property
     def F(self) -> NDArrayType:
-        return self.__buffer.buffer[[*self.__buffer.mask], 0].reshape(-1)
+        return self.__buffer.raw_data[:, 0].reshape(-1)
 
     @property
     def X(self) -> NDArrayType:
-        return self.__buffer.buffer[[*self.__buffer.mask], 1:]
+        return self.__buffer.raw_data[:, 1:]
 
     @property
     def idx(self) -> BufferIndex:

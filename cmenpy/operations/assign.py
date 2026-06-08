@@ -12,7 +12,7 @@ class AssignPipeline(PipelineOperator):
         self.__buffer = buffer
 
     def __lshift__(self, value: NDArrayType):
-        self.__buffer.buffer[self.__idx] = value
+        self.__buffer.raw_data[self.__idx] = value
 
 
 class AssignOperator(VectorizableOperator):
@@ -29,7 +29,7 @@ class AssignOperator(VectorizableOperator):
                 "The buffer cannot be assigned a value; the sizes do not match."
             )
 
-        self.__buffer.buffer[:] = value
+        self.__buffer.raw_data[:] = value
 
         return self
 

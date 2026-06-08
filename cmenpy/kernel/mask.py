@@ -15,7 +15,7 @@ class KernelMask:
         self.__mask[0 : self.__size.size] = True
 
     def __iter__(self):
-        return iter(self.__mask)
+        return iter(map(bool, self.__mask))
 
     def __setitem__(
         self,
@@ -36,3 +36,7 @@ class KernelMask:
     @property
     def passive(self):
         return len(self.__mask) - sum(self.__mask)
+
+    @property
+    def founds(self) -> list[bool]:
+        return [*map(bool, self.__mask)]

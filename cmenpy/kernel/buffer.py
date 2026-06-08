@@ -25,7 +25,7 @@ class KernelBuffer:
         self.__target = target
         self.__sense = sense
 
-        self.__buffer: NDArrayType = init_buffer(size.max, bounds.ndim)
+        self.__buffer: NDArrayType = init_buffer(self.__size.max, bounds.ndim)
         self.__mask = KernelMask(self.__size)
 
     def apply(
@@ -51,7 +51,7 @@ class KernelBuffer:
         -------
         None
         """
-        rows = [*self.__mask] if idx is None else idx
+        rows = self.__mask.founds if idx is None else idx
         self.__buffer[rows, 1:] = x
 
         if isinstance(idx, int):
@@ -70,12 +70,12 @@ class KernelBuffer:
         return self.__mask
 
     @property
-    def buffer(self) -> NDArrayType:
+    def raw_data(self) -> NDArrayType:
         return self.__buffer
 
     @property
     def idx(self) -> BufferIndex:
-        return BufferIndex(self.__buffer, self.__sense)
+        return BufferIndex(self.__buffer, self.__mask, self.__sense)
 
     @property
     def size(self) -> KernelSize:

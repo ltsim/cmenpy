@@ -18,13 +18,13 @@ class Context:
         self,
         f: Target,
         bounds: Bounds,
-        population: PopulationSwarm,
+        buffer: KernelBuffer,
         generator: DefaultGenerator,
         sense: SenseType,
     ):
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
-        self.__population = population
+        self.__buff = buffer
         self.__generator = generator
         self.__sense = sense
 
@@ -37,8 +37,8 @@ class Context:
         return self.__bounds
 
     @property
-    def population(self) -> PopulationSwarm:
-        return self.__population
+    def buff(self) -> KernelBuffer:
+        return self.__buff
 
     @property
     def rng(self) -> np.random.Generator:
@@ -64,10 +64,9 @@ class MainContextManager:
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
         self.__sense = sense
-        self.__buffer = KernelBuffer(size, self.__bounds, self.__target, self.__sense)
+        self.__k_buff = KernelBuffer(size, self.__bounds, self.__target, self.__sense)
         self.__generator = DefaultGenerator(seed=seed)
-        self.__population: PopulationSwarm = PopulationSwarm(self.__buffer, sense)
-        self.__tracker: Tracker = Tracker(self.__population)
+        self.__tracker = Tracker(self.__k_buff)
         self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
 
     @property
@@ -75,16 +74,12 @@ class MainContextManager:
         return self.__sense
 
     @property
-    def population(self) -> PopulationSwarm:
-        return self.__population
-
-    @property
     def epoch_it(self) -> EpochIteration:
         return self.__epoch_it
 
     @property
     def buffer(self) -> KernelBuffer:
-        return self.__buffer
+        return self.__k_buff
 
     @property
     def target(self) -> TargetFunction:

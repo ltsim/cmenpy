@@ -1,3 +1,5 @@
+from cmenpy.dynamic.base import DynamicBase
+from cmenpy.iterator.base import BaseIterator
 from cmenpy.kernel import KernelBuffer
 from cmenpy.operations.base import OperationBase
 from cmenpy.properties.base import BaseProperty
@@ -10,13 +12,15 @@ from cmenpy.operations import (
 )
 
 
-class TensorSwarm(OperationBase, BaseProperty):
+class TensorSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
     def __init__(
         self,
         buffer: KernelBuffer,
         sense: SenseType = "min",
     ):
-        super().__init__(buffer)
+        BaseProperty.__init__(self, buffer)
+        BaseIterator.__init__(self, buffer)
+        DynamicBase.__init__(self, buffer)
         self.__buffer = buffer
         self.__sense = sense
 

@@ -2,13 +2,14 @@ import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
 from cmenpy.context import MainContextManager, Context
+from cmenpy.kernel import KernelSize
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.population.agent import Agent
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.types import DType
+from cmenpy.types import DType, NDArrayType
 from cmenpy.types.option import SenseType
 
 
@@ -42,7 +43,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         pop_range: typing.Optional[tuple[int, int]] = None,
         debug: bool = False,
         sense: SenseType = "min",
-    ) -> Agent:
+    ) -> tuple[DType, NDArrayType]:
         if self.__model is None:
             raise NotImplementedError()
 
@@ -59,12 +60,13 @@ class TemplateOptimizerModel(BaseOptimizer):
             raise IndexError("Population size is too large.")
 
         self.__sense = sense
+        self.__size = KernelSize(pop_size, min_size=min_pop, max_size=max_pop)
+        self.__bounds = Bounds[bounds]
         self.__resource = MainContextManager(
             f,
-            create_bounds(bounds),
+            self.__bounds,
             epochs,
-            pop_size,
-            pop_range,
+            self.__size,
             self.__seed,
             self.__debug,
             self.__sense,
@@ -78,7 +80,7 @@ class TemplateOptimizerModel(BaseOptimizer):
                 ctx=Context(
                     f=self.__resource.target,
                     bounds=self.__resource.bounds,
-                    population=self.__resource.population,
+                    buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
                 ),
@@ -90,13 +92,15 @@ class TemplateOptimizerModel(BaseOptimizer):
                 ctx=Context(
                     f=self.__resource.target,
                     bounds=self.__resource.bounds,
-                    population=self.__resource.population,
+                    buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
                 ),
             )
 
-        return self.__resource.population.agents.best
+            X = self.__resource.buffer.raw_data[self.__resource.buffer.idx.best]
+
+            return X[0], X[1:]
 
     def __call__(
         self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any

@@ -17,7 +17,7 @@ from cmenpy.model.optimizer.functions.protocols import (
 from cmenpy.population.agent import Agent
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.types import DType
+from cmenpy.types import DType, NDArrayType
 from cmenpy.types.option import SenseType
 
 
@@ -56,7 +56,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             pop_size: int,
             pop_range: typing.Optional[tuple[int, int]] = None,
             sense: SenseType = "min",
-        ) -> Agent:
+        ) -> tuple[DType, NDArrayType]:
             if pop_range is None:
                 pop_range = pop_size, pop_size
 
@@ -89,13 +89,15 @@ class FunctionOptimizerModel(BaseOptimizer):
                 ctx=Context(
                     f=self.__resource.target,
                     bounds=self.__resource.bounds,
-                    population=self.__resource.population,
+                    buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
                 ),
             )
 
-            return self.__resource.population.agents.best
+            X = self.__resource.buffer.raw_data[self.__resource.buffer.idx.best]
+
+            return X[0], X[1:]
 
         self.__alias = func.__name__
         self.__inner = wrapper
