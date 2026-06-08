@@ -18,3 +18,7 @@ class BaseProperty:
     @property
     def idx(self) -> BufferIndex:
         return self.__buffer.idx
+
+    @property
+    def size(self):
+        return self.__buffer.mask.active
