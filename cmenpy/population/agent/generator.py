@@ -1,7 +1,15 @@
 from cmenpy.kernel import KernelBuffer
-from cmenpy.hints.option import SenseType
+
+
+class AgentIterator:
+    def __init__(self, buffer: KernelBuffer):
+        self.__buffer = buffer
 
 
 class AgentGenerator:
-    def __init__(self, buffer: KernelBuffer, sense: SenseType = "min"):
-        pass
+    def __init__(self, buffer: KernelBuffer):
+        self.__buffer = buffer
+
+    @property
+    def agent(self) -> AgentIterator:
+        return AgentIterator(self.__buffer)

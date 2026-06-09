@@ -14,7 +14,9 @@ from cmenpy.population.properties.base import BaseProperty
 from cmenpy.hints.option import SenseType
 
 
-class PopulationSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
+class PopulationSwarm(
+    OperationBase, BaseProperty, BaseIterator, DynamicBase, AgentGenerator
+):
     def __init__(
         self,
         buffer: KernelBuffer,
@@ -23,6 +25,7 @@ class PopulationSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
         BaseProperty.__init__(self, buffer)
         BaseIterator.__init__(self, buffer)
         DynamicBase.__init__(self, buffer)
+        AgentGenerator.__init__(self, buffer)
 
         self.__buffer = buffer
         self.__sense = sense
@@ -46,7 +49,3 @@ class PopulationSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
     @property
     def access(self) -> AccessOperator:
         return AccessOperator(self.__buffer)
-
-    @property
-    def agents(self):
-        return AgentGenerator()
