@@ -6,7 +6,7 @@ from cmenpy.hints import NDArrayType, ScalarType
 class ImmutableAgent(BaseAgent):
     def __init__(self, n: int, buffer: KernelBuffer):
         self.__i = n
-        self.__buffer = buffer.raw[n, :].copy()
+        self.__buffer = buffer.raw[n, 1:].copy()
 
     def __iter__(self):
         return iter(self.__buffer.copy())

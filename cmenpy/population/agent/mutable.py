@@ -9,7 +9,7 @@ class MutableAgent(BaseAgent):
         self.__buffer = buffer
 
     def __iter__(self):
-        return iter(self.__buffer.raw[self.__i, :].copy())
+        return iter(self.__buffer.raw[self.__i, 1:].copy())
 
     def __getitem__(self, key: int) -> ScalarType:
         return self.__buffer.raw[self.__i, key + 1]
