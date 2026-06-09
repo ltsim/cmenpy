@@ -1,4 +1,5 @@
 from cmenpy.kernel import KernelBuffer
+from cmenpy.population.agent import AgentGenerator
 from cmenpy.population.iterator.base import BaseIterator
 from cmenpy.population.dynamic.base import DynamicBase
 from cmenpy.population.operations import (
@@ -45,3 +46,7 @@ class PopulationSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
     @property
     def access(self) -> AccessOperator:
         return AccessOperator(self.__buffer)
+
+    @property
+    def agents(self):
+        return AgentGenerator()
