@@ -1,3 +1,5 @@
+import typing
+
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.agent import AgentGenerator
 from cmenpy.population.iterator.base import BaseIterator
@@ -17,18 +19,13 @@ from cmenpy.hints.option import SenseType
 class PopulationSwarm(
     OperationBase, BaseProperty, BaseIterator, DynamicBase, AgentGenerator
 ):
-    def __init__(
-        self,
-        buffer: KernelBuffer,
-        sense: SenseType = "min",
-    ) -> None:
+    def __init__(self, buffer: KernelBuffer, **options: typing.Any) -> None:
         BaseProperty.__init__(self, buffer)
         BaseIterator.__init__(self, buffer)
         DynamicBase.__init__(self, buffer)
         AgentGenerator.__init__(self, buffer)
 
         self.__buffer = buffer
-        self.__sense = sense
 
     @property
     def swap(self) -> SwapOperation:
