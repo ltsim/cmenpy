@@ -1,6 +1,6 @@
 import typing
 
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class AgentTemplate(typing.Protocol):

@@ -4,8 +4,8 @@ import typing
 from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.types import DType, NDArrayType
-from cmenpy.types.option import SenseType
+from cmenpy.hints import DType, NDArrayType
+from cmenpy.hints.option import SenseType
 
 
 class BaseOptimizer(abc.ABC):

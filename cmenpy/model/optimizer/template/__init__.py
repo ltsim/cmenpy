@@ -8,8 +8,8 @@ from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.types import DType, NDArrayType
-from cmenpy.types.option import SenseType
+from cmenpy.hints import DType, NDArrayType
+from cmenpy.hints.option import SenseType
 
 
 class TemplateOptimizerModel(BaseOptimizer):

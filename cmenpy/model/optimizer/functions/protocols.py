@@ -6,7 +6,7 @@ from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
 from cmenpy.agent.base import BaseAgent
 from cmenpy.target import Target
-from cmenpy.types import DType
+from cmenpy.hints import DType
 
 
 class AlgorithmFunction(typing.Protocol):

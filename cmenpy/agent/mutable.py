@@ -1,6 +1,6 @@
 from cmenpy.agent.base import BaseAgent
 from cmenpy.target import TargetFunction
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class MutableAgent(BaseAgent):

@@ -10,7 +10,7 @@ from cmenpy.operations import (
 from cmenpy.operations.access import AccessOperator
 from cmenpy.operations.base import OperationBase
 from cmenpy.properties.base import BaseProperty
-from cmenpy.types.option import SenseType
+from cmenpy.hints.option import SenseType
 
 
 class TensorSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):

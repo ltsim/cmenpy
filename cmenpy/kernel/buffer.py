@@ -8,8 +8,8 @@ from cmenpy.kernel.low import init_buffer
 from cmenpy.kernel.mask import KernelMask
 from cmenpy.kernel.size import KernelSize
 from cmenpy.target import TargetFunction
-from cmenpy.types import NDArrayType
-from cmenpy.types.option import SenseType
+from cmenpy.hints import NDArrayType
+from cmenpy.hints.option import SenseType
 
 
 class KernelBuffer:

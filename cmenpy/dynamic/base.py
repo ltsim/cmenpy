@@ -1,7 +1,7 @@
 import numpy as np
 
 from cmenpy.kernel import KernelBuffer
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class DynamicBase:

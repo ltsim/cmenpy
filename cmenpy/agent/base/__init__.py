@@ -1,6 +1,6 @@
 import abc
 
-from cmenpy.types import NDArrayType, DType
+from cmenpy.hints import NDArrayType, DType
 
 
 class BaseAgent(abc.ABC):

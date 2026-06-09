@@ -1,6 +1,6 @@
 import typing
 
-from cmenpy.types.option import SenseType
+from cmenpy.hints.option import SenseType
 
 A = typing.TypeVar("A")
 B = typing.TypeVar("B")

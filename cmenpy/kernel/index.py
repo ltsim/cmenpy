@@ -1,8 +1,8 @@
 import numpy as np
 
 from cmenpy.kernel.mask import KernelMask
-from cmenpy.types import NDArrayType
-from cmenpy.types.option import SenseType
+from cmenpy.hints import NDArrayType
+from cmenpy.hints.option import SenseType
 
 
 class BufferIndex:

@@ -1,5 +1,5 @@
 from cmenpy.agent.base import BaseAgent
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class ImmutableAgent(BaseAgent):

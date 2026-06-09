@@ -1,7 +1,7 @@
 import functools
 import typing
 
-from cmenpy.types import DType
+from cmenpy.hints import DType
 
 InnerSequence = typing.Union[typing.Tuple[DType, ...], typing.List[DType]]
 SequenceStructure = typing.List[InnerSequence[DType]]

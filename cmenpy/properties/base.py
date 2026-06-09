@@ -1,6 +1,6 @@
 from cmenpy.kernel import KernelBuffer
 from cmenpy.kernel.index import BufferIndex
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class BaseProperty:

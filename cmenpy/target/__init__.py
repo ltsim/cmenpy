@@ -3,7 +3,7 @@ import typing
 import numpy as np
 
 from cmenpy.bounds import Bounds
-from cmenpy.types import NDArrayType, ArrayIntegerType
+from cmenpy.hints import NDArrayType, ArrayIntegerType
 
 
 class MaxNumberOfCalls(Exception): ...

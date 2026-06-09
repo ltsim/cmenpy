@@ -3,7 +3,7 @@ from cmenpy.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
 )
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class ComputePipeline(PipelineOperator):

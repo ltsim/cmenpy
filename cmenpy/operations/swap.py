@@ -1,6 +1,6 @@
 from cmenpy.kernel import KernelBuffer
 from cmenpy.operations.stream import WriterOperator
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class SwapOperation(WriterOperator):
