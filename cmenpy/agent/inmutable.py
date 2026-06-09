@@ -5,7 +5,7 @@ from cmenpy.types import NDArrayType
 class ImmutableAgent(BaseAgent):
     def __init__(self, buffer: NDArrayType, n: int):
         self.__buffer = buffer[n, :].copy()
-        self.__id = n
+        self.__i = n
 
     def __iter__(self):
         return iter(self.__buffer.copy())
@@ -14,8 +14,8 @@ class ImmutableAgent(BaseAgent):
         return self.__buffer[key]
 
     @property
-    def id(self):
-        return self.__id
+    def i(self):
+        return self.__i
 
     @property
     def solution(self):

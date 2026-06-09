@@ -32,7 +32,7 @@ class MyAlgorithm:
         if population.best < b_pop and population.size > 1:
             b_pop = population.best
             w_pop = population.worst
-            id_pop = w_pop.id
+            id_pop = w_pop.i
 
             population.remove(id_pop)
         else:

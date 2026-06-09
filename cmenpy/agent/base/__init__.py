@@ -1,6 +1,6 @@
 import abc
 
-from cmenpy.types import NDArrayType
+from cmenpy.types import NDArrayType, DType
 
 
 class BaseAgent(abc.ABC):
@@ -28,15 +28,15 @@ class BaseAgent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def id(self) -> int: ...
+    def i(self) -> int: ...
 
     @property
     @abc.abstractmethod
-    def solution(self): ...
+    def solution(self) -> NDArrayType: ...
 
     @property
     @abc.abstractmethod
-    def fitness(self) -> int | float: ...
+    def fitness(self) -> DType: ...
 
     @property
     @abc.abstractmethod
@@ -46,7 +46,7 @@ class BaseAgent(abc.ABC):
     def __float__(self) -> float: ...
 
     def __repr__(self) -> str:
-        return f"Agent(id={self.id}, fitness={self.fitness}, solution={self.solution})"
+        return f"Agent(i={self.i}, fitness={self.fitness}, solution={self.solution})"
 
     def __hash__(self):
-        return hash(self.id)
+        return hash(self.i)
