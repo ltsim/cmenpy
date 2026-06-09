@@ -1,5 +1,5 @@
 from cmenpy.agent.base import BaseAgent
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import NDArrayType, ScalarType
 
 
 class ImmutableAgent(BaseAgent):
@@ -10,7 +10,7 @@ class ImmutableAgent(BaseAgent):
     def __iter__(self):
         return iter(self.__buffer.copy())
 
-    def __getitem__(self, key: int) -> float:
+    def __getitem__(self, key: int) -> ScalarType:
         return self.__buffer[key]
 
     @property
