@@ -1,13 +1,11 @@
 import abc
 import typing
 
-import numpy as np
-
+from cmenpy.kernel import KernelBuffer
 from cmenpy.population.agent import Agent, MutableAgent
 from cmenpy.population.people.collection.mutable import PeopleMutableCollection
 from cmenpy.population.people.collection.sequence import PeopleSequenceCollection
 from cmenpy.population.people.properties import GlobalPopulationProperty
-from cmenpy.target import TargetFunction
 from cmenpy.types import NDArrayType
 from cmenpy.types.option import SenseType
 
@@ -15,12 +13,11 @@ from cmenpy.types.option import SenseType
 class PeopleSequence(PeopleSequenceCollection, GlobalPopulationProperty):
     def __init__(
         self,
-        mask: list[bool],
-        buffer: NDArrayType,
-        target: TargetFunction,
+        buffer: KernelBuffer,
         agents: typing.List[Agent],
+        sense: SenseType = "min",
     ):
-        super().__init__(mask, buffer, target)
+        super().__init__(buffer, sense)
         self.__buffer = buffer
         self.__agents = agents
 
@@ -37,93 +34,29 @@ class PeopleSequence(PeopleSequenceCollection, GlobalPopulationProperty):
 class PeopleMutable(PeopleMutableCollection, GlobalPopulationProperty):
     def __init__(
         self,
-        mask: list[bool],
-        buffer: NDArrayType,
-        target: TargetFunction,
-        r_pop: tuple[int, int],
-        sense: SenseType,
-        d_class: typing.Type[Agent],
+        buffer: KernelBuffer,
+        sense: SenseType = "min",
+        d_class: typing.Optional[typing.Type[Agent]] = None,
     ):
-        super().__init__(mask, buffer, target)
-        self.__mask = mask
+        if d_class is None:
+            d_class = MutableAgent
+
+        PeopleMutableCollection.__init__(self, buffer)
+        GlobalPopulationProperty.__init__(self, buffer)
+
         self.__buffer = buffer
-        self.__target = target
-        self.__r_pop = r_pop
         self.__sense = sense
         self.__d_class = d_class
 
-    def append(self, value: NDArrayType) -> None:
-        founds = [i for i, x in enumerate(self.__mask) if not x]
+    def __getitem__(self, index: int) -> MutableAgent: ...
 
-        if not len(founds) > 0:
-            raise ValueError("Max agents in memory.")
+    def __setitem__(self, index: int, value: NDArrayType) -> None: ...
 
-        i = founds[0]
+    def __delitem__(self, index: int) -> None: ...
 
-        self.__mask[i] = True
-        self.__buffer[i, 1:] = value
-        self.__buffer[i, 0] = np.apply_along_axis(self.__target, 0, value)
+    def __len__(self): ...
 
-    def pop(self, index: int = -1) -> None:
-        self.__mask[index] = True
-        self.__buffer[index, :] = np.nan
-
-    def insert(self, index: int, value: NDArrayType) -> None:
-        self.__mask[index] = True
-        self.__buffer[index, 1:] = value
-        self.__buffer[index, 0] = np.apply_along_axis(self.__target, 0, value)
-
-    def __getitem__(self, index: int) -> MutableAgent:
-        return MutableAgent(self.__buffer, index, self.__target)
-
-    def __setitem__(self, index: int, value: NDArrayType) -> None:
-        self.insert(index, value)
-
-    def __delitem__(self, index: int) -> None:
-        self.pop(index)
-
-    def __len__(self):
-        return sum(self.__mask)
-
-    def __iter__(self):
-        return iter(
-            [
-                MutableAgent(self.__buffer, i, self.__target)
-                for i, k in enumerate(self.__mask)
-                if k
-            ]
-        )
-
-    @property
-    def min(self):
-        return self.__r_pop[0]
-
-    @property
-    def max(self):
-        return self.__r_pop[1]
-
-    @property
-    def size(self) -> int:
-        return sum(self.__mask)
-
-    @property
-    def free_space(self):
-        return sum(self.__mask) < self.max
-
-    @property
-    def sort(self) -> PeopleSequence:
-        idx = np.argsort(self.__buffer[self.__mask, 0])
-        agents = [MutableAgent(self.__buffer, i, self.__target) for i in idx]
-
-        if self.__sense == "max":
-            agents = agents[::-1]
-
-        return PeopleSequence(
-            self.__mask,
-            self.__buffer,
-            self.__target,
-            agents,
-        )
+    def __iter__(self): ...
 
 
 class PeopleGenerator(abc.ABC):
