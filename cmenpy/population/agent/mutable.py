@@ -1,5 +1,5 @@
 from cmenpy.kernel import KernelBuffer
-from cmenpy.agent.base import BaseAgent
+from cmenpy.population.agent.base import BaseAgent
 from cmenpy.hints import NDArrayType, ScalarType
 
 

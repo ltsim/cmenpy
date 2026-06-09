@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from cmenpy.agent.base import BaseAgent
+from cmenpy.population.agent.base import BaseAgent
 from cmenpy.hints import NDArrayType
 
 Source = NDArrayType | Iterable[float | int]

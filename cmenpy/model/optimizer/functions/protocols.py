@@ -4,7 +4,7 @@ from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.context import Context
 from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
-from cmenpy.agent.base import BaseAgent
+from cmenpy.population.agent.base import BaseAgent
 from cmenpy.target import Target
 from cmenpy.hints import ScalarType
 
