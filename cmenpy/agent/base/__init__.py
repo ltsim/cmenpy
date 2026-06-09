@@ -1,10 +1,11 @@
 import abc
+import typing
 
 from cmenpy.hints import NDArrayType, ScalarType
 
 
 class BaseAgent(abc.ABC):
-    def __lt__(self, other):
+    def __lt__(self, other: typing.Union["BaseAgent", ScalarType]):
         if isinstance(other, BaseAgent):
             return self.fitness < other.fitness
         elif any(isinstance(other, t) for t in (int, float)):
@@ -12,7 +13,7 @@ class BaseAgent(abc.ABC):
 
         return False
 
-    def __gt__(self, other):
+    def __gt__(self, other: typing.Union["BaseAgent", ScalarType]) -> bool:
         if isinstance(other, BaseAgent):
             return self.fitness > other.fitness
         elif any(isinstance(other, t) for t in (int, float)):
