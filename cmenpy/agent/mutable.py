@@ -1,13 +1,12 @@
+from cmenpy.kernel import KernelBuffer
 from cmenpy.agent.base import BaseAgent
-from cmenpy.target import TargetFunction
 from cmenpy.hints import NDArrayType, ScalarType
 
 
 class MutableAgent(BaseAgent):
-    def __init__(self, buffer: NDArrayType, n: int, target: TargetFunction):
-        self.__buffer = buffer
+    def __init__(self, n: int, buffer: KernelBuffer):
         self.__i = n
-        self.__target = target
+        self.__buffer = buffer
 
     def __iter__(self):
         return iter(self.__buffer.copy())
