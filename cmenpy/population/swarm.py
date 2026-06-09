@@ -18,7 +18,7 @@ class PopulationSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
         self,
         buffer: KernelBuffer,
         sense: SenseType = "min",
-    ):
+    ) -> None:
         BaseProperty.__init__(self, buffer)
         BaseIterator.__init__(self, buffer)
         DynamicBase.__init__(self, buffer)

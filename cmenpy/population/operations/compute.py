@@ -7,22 +7,21 @@ from cmenpy.hints import NDArrayType
 
 
 class ComputePipeline(PipelineOperator):
-    def __init__(self, idx: int, buffer: KernelBuffer):
+    def __init__(self, idx: int, buffer: KernelBuffer) -> None:
         self.__idx = idx
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType):
+    def __lshift__(self, value: NDArrayType) -> None:
         self.__buffer.apply(value, self.__idx)
 
 
 class ComputeOperator(VectorizableOperator):
-    def __init__(self, buffer: KernelBuffer):
+    def __init__(self, buffer: KernelBuffer) -> None:
         super().__init__(buffer.shape)
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType) -> "ComputeOperator":
+    def __lshift__(self, value: NDArrayType) -> None:
         self.__buffer.apply(value)
-        return self
 
     def __getitem__(self, item: int) -> "PipelineOperator":
         return ComputePipeline(item, self.__buffer)
