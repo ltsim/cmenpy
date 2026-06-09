@@ -1,12 +1,12 @@
 import abc
 
-from cmenpy.operations import (
+from cmenpy.tensor.operations import (
     SwapOperation,
     ComputeOperator,
     AssignOperator,
     ExtractOperation,
 )
-from cmenpy.operations.access import AccessOperator
+from cmenpy.tensor.operations.access import AccessOperator
 
 
 class OperationBase(abc.ABC):

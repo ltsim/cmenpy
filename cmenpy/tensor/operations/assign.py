@@ -1,5 +1,5 @@
 from cmenpy.kernel import KernelBuffer
-from cmenpy.operations.stream.vectorizable import (
+from cmenpy.tensor.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
 )

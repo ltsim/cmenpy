@@ -1,5 +1,5 @@
 from cmenpy.kernel import KernelBuffer
-from cmenpy.operations.stream import ReaderOperator
+from cmenpy.tensor.operations.stream import ReaderOperator
 from cmenpy.hints import NDArrayType
 
 

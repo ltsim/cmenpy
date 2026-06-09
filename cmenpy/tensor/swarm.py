@@ -1,15 +1,15 @@
-from cmenpy.dynamic.base import DynamicBase
-from cmenpy.iterator.base import BaseIterator
 from cmenpy.kernel import KernelBuffer
-from cmenpy.operations import (
+from cmenpy.iterator.base import BaseIterator
+from cmenpy.tensor.dynamic.base import DynamicBase
+from cmenpy.tensor.operations import (
     ExtractOperation,
     AssignOperator,
     ComputeOperator,
     SwapOperation,
 )
-from cmenpy.operations.access import AccessOperator
-from cmenpy.operations.base import OperationBase
-from cmenpy.properties.base import BaseProperty
+from cmenpy.tensor.operations.access import AccessOperator
+from cmenpy.tensor.operations.base import OperationBase
+from cmenpy.tensor.properties.base import BaseProperty
 from cmenpy.hints.option import SenseType
 
 
