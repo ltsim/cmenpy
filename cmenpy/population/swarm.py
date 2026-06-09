@@ -13,6 +13,7 @@ from cmenpy.population.agent import Agent, ImmutableAgent
 from cmenpy.population.people import (
     PeopleGenerator,
     PeopleMutableCollection,
+    PeopleMutable,
 )
 from cmenpy.properties.base import BaseProperty
 from cmenpy.types.option import SenseType
@@ -63,4 +64,4 @@ class PopulationSwarm(
 
     @property
     def agents(self) -> PeopleMutableCollection:
-        raise NotImplementedError("PopulationManager does not implement this method")
+        return PeopleMutable(self.__buffer, self.__sense, self.__d_class)
