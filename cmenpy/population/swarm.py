@@ -9,11 +9,10 @@ from cmenpy.population.operations import (
     AssignOperator,
     ComputeOperator,
     SwapOperation,
+    AccessOperator,
 )
-from cmenpy.population.operations.access import AccessOperator
 from cmenpy.population.operations.base import OperationBase
 from cmenpy.population.properties.base import BaseProperty
-from cmenpy.hints.option import SenseType
 
 
 class PopulationSwarm(
