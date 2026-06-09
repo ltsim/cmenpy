@@ -14,7 +14,7 @@ class DynamicBase:
 
     def remove(self, idx: int) -> None:
         self.__buffer.mask[idx] = False
-        self.__buffer.raw_data[idx, :] = np.nan
+        self.__buffer.raw[idx, :] = np.nan
 
     def insert(self, x: NDArrayType) -> int:
         founds = [i for i, x in enumerate(self.__buffer.mask.founds) if not x]

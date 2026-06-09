@@ -70,7 +70,7 @@ class KernelBuffer:
         return self.__mask
 
     @property
-    def raw_data(self) -> NDArrayType:
+    def raw(self) -> NDArrayType:
         return self.__buffer
 
     @property

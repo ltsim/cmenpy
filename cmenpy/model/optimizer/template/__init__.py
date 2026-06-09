@@ -97,7 +97,7 @@ class TemplateOptimizerModel(BaseOptimizer):
                 ),
             )
 
-        X = self.__resource.buffer.raw_data[self.__resource.buffer.idx.best]
+        X = self.__resource.buffer.raw[self.__resource.buffer.idx.best]
 
         return float(X[0]), X[1:]
 

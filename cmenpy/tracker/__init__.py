@@ -19,7 +19,7 @@ class Tracker:
                 epoch=e,
                 best_idx=self.__k_buff.idx.best,
                 worst_idx=self.__k_buff.idx.worst,
-                all=self.__k_buff.raw_data.copy(),
+                all=self.__k_buff.raw.copy(),
                 timeit=timeit,
             )
         )
