@@ -2,4 +2,4 @@ import typing
 
 import numpy as np
 
-DType = typing.TypeVar("DType", bound=np.number[typing.Any])
+ScalarType = typing.TypeVar("ScalarType", bound=np.number[typing.Any])

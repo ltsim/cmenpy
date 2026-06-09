@@ -6,7 +6,7 @@ from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
 from cmenpy.agent.base import BaseAgent
 from cmenpy.target import Target
-from cmenpy.hints import DType
+from cmenpy.hints import ScalarType
 
 
 class AlgorithmFunction(typing.Protocol):
@@ -24,7 +24,7 @@ class CallableFunction(typing.Protocol):
     def __call__(
         self,
         f: Target,
-        bounds: Bounds | SequenceStructure[DType],
+        bounds: Bounds | SequenceStructure[ScalarType],
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,

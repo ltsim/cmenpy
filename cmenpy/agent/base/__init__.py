@@ -1,6 +1,6 @@
 import abc
 
-from cmenpy.hints import NDArrayType, DType
+from cmenpy.hints import NDArrayType, ScalarType
 
 
 class BaseAgent(abc.ABC):
@@ -36,7 +36,7 @@ class BaseAgent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def fitness(self) -> DType: ...
+    def fitness(self) -> ScalarType: ...
 
     @property
     @abc.abstractmethod

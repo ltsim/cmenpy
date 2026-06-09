@@ -8,7 +8,7 @@ from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.hints import DType, NDArrayType
+from cmenpy.hints import ScalarType, NDArrayType
 from cmenpy.hints.option import SenseType
 
 
@@ -36,7 +36,7 @@ class TemplateOptimizerModel(BaseOptimizer):
     def solve(
         self,
         f: Target,
-        bounds: Bounds | SequenceStructure[DType],
+        bounds: Bounds | SequenceStructure[ScalarType],
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,

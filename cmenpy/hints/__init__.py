@@ -1,4 +1,4 @@
 from cmenpy.hints.array import NDArrayType, ArrayFloatType, ArrayIntegerType
-from cmenpy.hints.primitives import DType
+from cmenpy.hints.primitives import ScalarType
 
-__all__ = ["DType", "NDArrayType", "ArrayFloatType", "ArrayIntegerType"]
+__all__ = ["ScalarType", "NDArrayType", "ArrayFloatType", "ArrayIntegerType"]
