@@ -1,19 +1,19 @@
 from cmenpy.kernel import KernelBuffer
 from cmenpy.iterator.base import BaseIterator
-from cmenpy.tensor.dynamic.base import DynamicBase
-from cmenpy.tensor.operations import (
+from cmenpy.population.dynamic.base import DynamicBase
+from cmenpy.population.operations import (
     ExtractOperation,
     AssignOperator,
     ComputeOperator,
     SwapOperation,
 )
-from cmenpy.tensor.operations.access import AccessOperator
-from cmenpy.tensor.operations.base import OperationBase
-from cmenpy.tensor.properties.base import BaseProperty
+from cmenpy.population.operations.access import AccessOperator
+from cmenpy.population.operations.base import OperationBase
+from cmenpy.population.properties.base import BaseProperty
 from cmenpy.hints.option import SenseType
 
 
-class TensorSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
+class PopulationSwarm(OperationBase, BaseProperty, BaseIterator, DynamicBase):
     def __init__(
         self,
         buffer: KernelBuffer,

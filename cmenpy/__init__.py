@@ -7,7 +7,7 @@ from cmenpy.kernel import KernelSize, KernelBuffer
 from cmenpy.model import declare, template, template_check
 from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 from cmenpy.model.optimizer.variables import Argument, Variable
-from cmenpy.tensor.swarm import TensorSwarm
+from cmenpy.population.swarm import PopulationSwarm
 
 __all__ = [
     "declare",
@@ -23,7 +23,7 @@ __all__ = [
     "Epoch",
     "KernelBuffer",
     "KernelSize",
-    "TensorSwarm",
+    "PopulationSwarm",
     "FunctionOptimizerModel",
     "TemplateOptimizerModel",
 ]

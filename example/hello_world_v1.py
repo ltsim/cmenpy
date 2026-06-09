@@ -7,7 +7,7 @@ import cmenpy as cm
 def my_algorithm(args, epoch, ctx):
     buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
-    pop = cm.TensorSwarm(buff, ctx.sense)
+    pop = cm.PopulationSwarm(buff, ctx.sense)
 
     pop.compute << rng.uniform(bounds.low, bounds.up, (pop.size, bounds.ndim))
     b_pop = pop.F[pop.best]

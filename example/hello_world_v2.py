@@ -11,14 +11,14 @@ class MyAlgorithm:
 
     def initialize(self, ctx) -> None:
         buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
-        pop = cm.TensorSwarm(buff, ctx.sense)
+        pop = cm.PopulationSwarm(buff, ctx.sense)
 
         pop.compute << rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
     def evolve(self, e, ctx) -> None:
         buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
-        pop = cm.TensorSwarm(buff, ctx.sense)
+        pop = cm.PopulationSwarm(buff, ctx.sense)
         b_pop = pop.F[pop.best]
 
         pop.compute << (
