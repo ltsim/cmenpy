@@ -9,10 +9,10 @@ class MutableAgent(BaseAgent):
         self.__buffer = buffer
 
     def __iter__(self):
-        return iter(self.__buffer.copy())
+        return iter(self.__buffer.raw[self.__i, :].copy())
 
     def __getitem__(self, key: int) -> ScalarType:
-        return self.__buffer[self.__i, key]
+        return self.__buffer.raw[self.__i, key + 1]
 
     @property
     def i(self):
@@ -20,19 +20,19 @@ class MutableAgent(BaseAgent):
 
     @property
     def solution(self):
-        return self.__buffer[self.i, 1:]
+        return self.__buffer.raw[self.i, 1:]
 
     @solution.setter
     def solution(self, value: NDArrayType):
-        self.__buffer[self.i] = self.__target.evaluate(value)
+        self.__buffer.apply(value, self.__i)
 
     @property
     def fitness(self):
-        return self.__buffer[self.i, 0]
+        return self.__buffer.raw[self.i, 0]
 
     def __float__(self):
-        return self.__buffer[self.i, 0]
+        return self.__buffer.raw[self.i, 0]
 
     @property
     def x(self) -> NDArrayType:
-        return self.__buffer[self.i, :]
+        return self.__buffer.raw[self.i, :]
