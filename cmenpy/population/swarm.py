@@ -1,5 +1,5 @@
 from cmenpy.kernel import KernelBuffer
-from cmenpy.iterator.base import BaseIterator
+from cmenpy.population.iterator.base import BaseIterator
 from cmenpy.population.dynamic.base import DynamicBase
 from cmenpy.population.operations import (
     ExtractOperation,
