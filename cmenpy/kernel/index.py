@@ -14,7 +14,6 @@ class BufferIndex:
     @property
     def sort(self):
         _idx = np.argsort(self.__buffer[:, 0])
-        _idx = _idx[~np.isnan(self.__buffer[_idx, 0])]
 
         if self.__sense == "max":
             return _idx[::-1]

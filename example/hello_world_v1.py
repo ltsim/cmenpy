@@ -12,9 +12,11 @@ def my_algorithm(args, epoch, ctx):
     pop.compute << rng.uniform(bounds.low, bounds.up, (pop.size, bounds.ndim))
     b_pop = pop.F[pop.best]
 
+    print(np.array(pop.F))
+
     for _ in epoch:
         pop.compute << np.clip(
-            ~pop.extract + rng.uniform(-1, 1, (pop.size, bounds.ndim)), -1, 1
+            pop.X + rng.uniform(-1, 1, (pop.size, bounds.ndim)), -1, 1
         )
 
         if pop.F[pop.best] < b_pop and pop.size > 1:
@@ -22,8 +24,10 @@ def my_algorithm(args, epoch, ctx):
 
             pop.remove(pop.worst)
         else:
+            """
             if pop.free_space:
                 n_pop = pop.insert(rng.uniform(-1, 1, bounds.ndim))
+            """
 
 
 if __name__ == "__main__":

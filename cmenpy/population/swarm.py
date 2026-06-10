@@ -2,6 +2,8 @@ import typing
 
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.agent import AgentGenerator
+from cmenpy.population.attributes.base import BaseTensorAttributes
+from cmenpy.population.operations.base import OperationBase
 from cmenpy.population.iterator.base import BaseIterator
 from cmenpy.population.dynamic.base import DynamicBase
 from cmenpy.population.operations import (
@@ -11,15 +13,13 @@ from cmenpy.population.operations import (
     SwapOperation,
     AccessOperator,
 )
-from cmenpy.population.operations.base import OperationBase
-from cmenpy.population.properties.base import BaseProperty
 
 
 class PopulationSwarm(
-    OperationBase, BaseProperty, BaseIterator, DynamicBase, AgentGenerator
+    OperationBase, BaseTensorAttributes, BaseIterator, DynamicBase, AgentGenerator
 ):
-    def __init__(self, buffer: KernelBuffer, **options: typing.Any) -> None:
-        BaseProperty.__init__(self, buffer)
+    def __init__(self, buffer: KernelBuffer) -> None:
+        BaseTensorAttributes.__init__(self, buffer)
         BaseIterator.__init__(self, buffer)
         DynamicBase.__init__(self, buffer)
         AgentGenerator.__init__(self, buffer)
