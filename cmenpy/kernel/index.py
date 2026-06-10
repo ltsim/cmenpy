@@ -13,13 +13,13 @@ class BufferIndex:
 
     @property
     def sort(self):
-        idx = np.argsort(self.__buffer[:, 0])
-        idx = idx[~np.isnan(self.__buffer[idx, 0])]
+        _idx = np.argsort(self.__buffer[:, 0])
+        _idx = _idx[~np.isnan(self.__buffer[_idx, 0])]
 
         if self.__sense == "max":
-            return idx[::-1]
+            return _idx[::-1]
 
-        return idx
+        return _idx
 
     @property
     def best(self):
