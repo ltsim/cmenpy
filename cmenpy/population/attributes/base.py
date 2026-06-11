@@ -29,15 +29,21 @@ class TensorSolutions(TensorABC):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType: ...
+    def __getitem__(self, item: int) -> NDArrayType:
+        return self.__buffer.raw[:, 1:][item]
 
-    def __array__(self, dtype=None, copy=None) -> NDArrayType: ...
+    def __array__(self, dtype=None, copy=None) -> NDArrayType:
+        return self.__buffer.raw[:, 1:]
 
     def __repr__(self) -> str:
-        return "X"
+        _X = ", ".join(map(str, self.__buffer.raw[:, 1:]))
+
+        return f"X [{_X}]"
 
     def __str__(self) -> str:
-        return "X"
+        _X = ", ".join(map(str, self.__buffer.raw[:, 1:]))
+
+        return f"X [{_X}]"
 
 
 class BaseTensorAttributes:
@@ -49,9 +55,8 @@ class BaseTensorAttributes:
         return TensorFitness(self.__buffer)
 
     @property
-    def X(self) -> NDArrayType:
-        _X = self.__buffer.raw[:, 1:]
-        return _X[self.__buffer.mask.founds]
+    def X(self) -> TensorSolutions:
+        return TensorSolutions(self.__buffer)
 
     @property
     def idx(self) -> BufferIndex:
