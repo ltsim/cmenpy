@@ -1,10 +1,14 @@
-from cmenpy.hints.interface import TensorABC
 from cmenpy.kernel import KernelBuffer
 from cmenpy.kernel.index import BufferIndex
 from cmenpy.hints import NDArrayType
+from cmenpy.population.attributes.tensor import (
+    TensorAbstract,
+    TensorCompute,
+    TensorAccess,
+)
 
 
-class TensorFitness(TensorABC):
+class TensorFitness(TensorAbstract, TensorAccess):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
@@ -24,8 +28,11 @@ class TensorFitness(TensorABC):
 
         return f"F [{_F}]"
 
+    def __invert__(self) -> NDArrayType:
+        return self.__buffer.raw[:, 0].reshape(-1)[self.__buffer.mask.founds]
 
-class TensorSolutions(TensorABC):
+
+class TensorSolutions(TensorAbstract, TensorAccess, TensorCompute):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
@@ -44,6 +51,13 @@ class TensorSolutions(TensorABC):
         _X = ", ".join(map(str, self.__buffer.raw[:, 1:]))
 
         return f"X [{_X}]"
+
+    def __invert__(self) -> NDArrayType:
+        return self.__buffer.raw[:, 1:][self.__buffer.mask.founds]
+
+    def __lshift__(self, other):
+        self.__buffer.apply(other)
+        return self
 
 
 class BaseTensorAttributes:

@@ -1,9 +1,10 @@
 import abc
 
 from cmenpy.hints import NDArrayType
+from cmenpy.population.attributes.tensor.mixin import TensorCompute, TensorAccess
 
 
-class TensorABC(abc.ABC):
+class TensorAbstract(abc.ABC):
     @abc.abstractmethod
     def __getitem__(self, item: int) -> NDArrayType: ...
 
@@ -15,3 +16,6 @@ class TensorABC(abc.ABC):
 
     @abc.abstractmethod
     def __str__(self) -> str: ...
+
+
+__all__ = ["TensorAbstract", "TensorCompute", "TensorAccess"]
