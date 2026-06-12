@@ -60,7 +60,7 @@ class TensorSolutions(TensorAbstract, TensorAccess, TensorCompute):
         return self
 
 
-class BaseTensorAttributes:
+class TensorOperations:
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
