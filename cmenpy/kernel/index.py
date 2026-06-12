@@ -11,6 +11,14 @@ class BufferIndex:
         self.__sense = sense
         self.__mask = mask
 
+    def __iter__(self):
+        pop_size, _ = self.__buffer.shape
+
+        return iter(range(0, pop_size))
+
+    def __invert__(self):
+        return np.where(~np.isnan(self.__buffer[:, 0]))[0].astype(int)
+
     @property
     def sort(self):
         _idx = np.argsort(self.__buffer[:, 0])
