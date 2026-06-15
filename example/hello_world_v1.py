@@ -12,10 +12,6 @@ def my_algorithm(args, epoch, ctx):
     pop.compute << rng.uniform(bounds.low, bounds.up, (pop.size, bounds.ndim))
     b_pop = pop.F[pop.best]
 
-    print(list(pop))
-    print(list(pop.sort))
-    print(list(~pop))
-
     for _ in epoch:
         pop.compute << np.clip(
             ~pop.X + rng.uniform(-1, 1, (pop.size, bounds.ndim)), -1, 1
