@@ -10,6 +10,7 @@ class EpochHistory:
     worst_idx: int
     all: NDArrayType
     timeit: int | float
+    nfe: int
 
     def __hash__(self) -> int:
         return hash(self.epoch)

@@ -65,7 +65,7 @@ class MainContextManager:
         self.__k_buff = KernelBuffer(size, self.__bounds, self.__target, self.__sense)
         self.__generator = DefaultGenerator(seed=seed)
         self.__tracker = Tracker(self.__k_buff)
-        self.__epoch_it = EpochIteration(epochs, self.__tracker, debug)
+        self.__epoch_it = EpochIteration(epochs, self.__tracker, self.__target, debug)
 
     @property
     def sense(self):
