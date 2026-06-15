@@ -2,11 +2,10 @@ import typing
 
 import numpy as np
 
-from cmenpy.hints import ArrayFloatType
+from cmenpy.hints import ArrayFloatType, ScalarType
 from cmenpy.hints.array import ArrayObjectType, ArrayIntegerType, ArrayBoolType
 
-Scalar = typing.Union[int, float]
-BoundLike = typing.Union[Scalar, typing.Sequence[Scalar]]
+BoundLike = typing.Union[ScalarType, typing.Sequence[ScalarType]]
 
 R = typing.TypeVar("R")
 
@@ -171,7 +170,7 @@ class StringSpaceDecoder(BaseSpaceDecoder[typing.List[typing.Any]]):
         return [arr[i] for arr, i in zip(self.labels, idx)]
 
 
-class CategoricalSpace(StringSpaceDecoder):
+class CategoricalSpaceDecoder(StringSpaceDecoder):
     def generate(self) -> typing.List[typing.Any]:
         return [self.generator.choice(arr) for arr in self.labels]
 
