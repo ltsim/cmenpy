@@ -14,7 +14,7 @@ def my_algorithm(args, epoch, ctx):
 
     for _ in epoch:
         pop.compute << np.clip(
-            ~pop.extract + rng.uniform(-1, 1, (pop.size, bounds.ndim)), -1, 1
+            ~pop.X + rng.uniform(-1, 1, (pop.size, bounds.ndim)), -1, 1
         )
 
         if pop.F[pop.best] < b_pop and pop.size > 1:

@@ -8,13 +8,13 @@ from opfunu.name_based import Ackley01
 def gwo(args, epoch, ctx):
     buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
-    pop = cm.PopulationSwarm(buff, ctx.sense)
+    pop = cm.PopulationSwarm(buff)
     pop.compute << rng.uniform(bounds.low, bounds.up, (pop.size, bounds.ndim))
 
     X = np.full((pop.size, bounds.ndim), np.nan)
 
     for e in epoch:
-        n_pop = cm.PopulationSwarm(buff.snapshot, ctx.sense)
+        n_pop = cm.PopulationSwarm(buff.snapshot)
         b_pop = pop.X[pop.sort][:3]
 
         a = 2 - 2 * e / epoch.max

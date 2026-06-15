@@ -16,3 +16,13 @@ class BaseIterator:
     @property
     def sort(self):
         return self.__buffer.idx.sort
+
+    @property
+    def idx(self) -> list:
+        return iter(self.__buffer.idx)
+
+    def __iter__(self):
+        return iter(self.__buffer.idx)
+
+    def __invert__(self):
+        return iter(~self.__buffer.idx)
