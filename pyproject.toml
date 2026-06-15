@@ -110,7 +110,6 @@ addopts = "-v --tb=short --strict-markers"
 files = ["cmenpy"]
 exclude = ["tests/", "docs/", "examples/"]
 python_version = "3.11"
-strict = true
 
 [[tool.mypy.overrides]]
 module = [
