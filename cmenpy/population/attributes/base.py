@@ -1,6 +1,6 @@
 from cmenpy.kernel import KernelBuffer
 from cmenpy.kernel.index import BufferIndex
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 from cmenpy.population.attributes.tensor import (
     TensorAbstract,
     TensorCompute,
@@ -12,10 +12,10 @@ class TensorFitness(TensorAbstract, TensorAccess):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType:
+    def __getitem__(self, item: int) -> ArrayType:
         return self.__buffer.raw[:, 0].reshape(-1)[item]
 
-    def __array__(self, dtype=None, copy=None) -> NDArrayType:
+    def __array__(self, dtype=None, copy=None) -> ArrayType:
         return self.__buffer.raw[:, 0].reshape(-1)
 
     def __repr__(self) -> str:
@@ -28,7 +28,7 @@ class TensorFitness(TensorAbstract, TensorAccess):
 
         return f"F [{_F}]"
 
-    def __invert__(self) -> NDArrayType:
+    def __invert__(self) -> ArrayType:
         return self.__buffer.raw[:, 0].reshape(-1)[self.__buffer.mask.founds]
 
 
@@ -36,10 +36,10 @@ class TensorSolutions(TensorAbstract, TensorAccess, TensorCompute):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType:
+    def __getitem__(self, item: int) -> ArrayType:
         return self.__buffer.raw[:, 1:][item]
 
-    def __array__(self, dtype=None, copy=None) -> NDArrayType:
+    def __array__(self, dtype=None, copy=None) -> ArrayType:
         return self.__buffer.raw[:, 1:]
 
     def __repr__(self) -> str:
@@ -52,7 +52,7 @@ class TensorSolutions(TensorAbstract, TensorAccess, TensorCompute):
 
         return f"X [{_X}]"
 
-    def __invert__(self) -> NDArrayType:
+    def __invert__(self) -> ArrayType:
         return self.__buffer.raw[:, 1:][self.__buffer.mask.founds]
 
     def __lshift__(self, other):

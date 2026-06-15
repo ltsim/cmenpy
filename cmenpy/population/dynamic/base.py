@@ -1,7 +1,7 @@
 import numpy as np
 
 from cmenpy.kernel import KernelBuffer
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 
 
 class DynamicBase:
@@ -16,7 +16,7 @@ class DynamicBase:
         self.__buffer.mask[idx] = False
         self.__buffer.raw[idx, :] = np.nan
 
-    def insert(self, x: NDArrayType) -> int:
+    def insert(self, x: ArrayType) -> int:
         founds = [i for i, x in enumerate(self.__buffer.mask.founds) if not x]
 
         if not len(founds) > 0:

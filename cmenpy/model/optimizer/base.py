@@ -4,7 +4,7 @@ import typing
 from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.hints import ScalarType, NDArrayType
+from cmenpy.hints import ScalarType, ArrayType
 from cmenpy.hints.option import SenseType
 
 
@@ -19,7 +19,7 @@ class BaseOptimizer(abc.ABC):
         pop_range: typing.Optional[tuple[int, int]] = None,
         debug: typing.Optional[bool] = None,
         sense: typing.Optional[SenseType] = None,
-    ) -> tuple[float, NDArrayType]: ...
+    ) -> tuple[float, ArrayType]: ...
 
     @abc.abstractmethod
     def __call__(self, *args, **kwargs) -> "BaseOptimizer": ...

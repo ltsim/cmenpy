@@ -8,7 +8,7 @@ from cmenpy.kernel.low import init_buffer
 from cmenpy.kernel.mask import KernelMask
 from cmenpy.kernel.size import KernelSize
 from cmenpy.target import TargetFunction
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 from cmenpy.hints.option import SenseType
 
 
@@ -25,12 +25,12 @@ class KernelBuffer:
         self.__target = target
         self.__sense = sense
 
-        self.__buffer: NDArrayType = init_buffer(self.__size.max, bounds.ndim)
+        self.__buffer: ArrayType = init_buffer(self.__size.max, bounds.ndim)
         self.__mask = KernelMask(self.__size)
 
     def apply(
         self,
-        x: NDArrayType,
+        x: ArrayType,
         idx: typing.Union[int, slice, typing.List[int], None] = None,
     ) -> None:
         """Vectorizes the target function to evaluate and update the solutions matrix.
@@ -70,7 +70,7 @@ class KernelBuffer:
         return self.__mask
 
     @property
-    def raw(self) -> NDArrayType:
+    def raw(self) -> ArrayType:
         return self.__buffer
 
     @property

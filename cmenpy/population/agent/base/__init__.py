@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from cmenpy.hints import NDArrayType, ScalarType
+from cmenpy.hints import ArrayType, ScalarType
 
 
 class BaseAgent(abc.ABC):
@@ -33,7 +33,7 @@ class BaseAgent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def solution(self) -> NDArrayType: ...
+    def solution(self) -> ArrayType: ...
 
     @property
     @abc.abstractmethod
@@ -41,7 +41,7 @@ class BaseAgent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def x(self) -> NDArrayType: ...
+    def x(self) -> ArrayType: ...
 
     @abc.abstractmethod
     def __float__(self) -> float: ...

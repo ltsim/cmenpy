@@ -3,21 +3,21 @@ import typing
 import numpy as np
 
 from cmenpy.bounds import Bounds
-from cmenpy.hints import NDArrayType, ArrayIntegerType
+from cmenpy.hints import ArrayType, ArrayIntegerType
 
 
 class MaxNumberOfCalls(Exception): ...
 
 
 class Target(typing.Protocol):
-    def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any: ...
+    def __call__(self, x: ArrayType) -> ArrayType | typing.Any: ...
 
 
 class TargetFunction:
     def __init__(
         self, target: Target, bounds: Bounds, max_nfe: typing.Optional[int] = None
     ) -> None:
-        def wrapper(x: NDArrayType) -> NDArrayType | typing.Any:
+        def wrapper(x: ArrayType) -> ArrayType | typing.Any:
             if not self.__max_nfe > self.__nfe:
                 raise MaxNumberOfCalls("Max number of function calls exceeded.")
 
@@ -30,13 +30,13 @@ class TargetFunction:
         self.__nfe = 0
         self.__max_nfe = np.inf if max_nfe is None else max_nfe
 
-    def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any:
+    def __call__(self, x: ArrayType) -> ArrayType | typing.Any:
         return self.__target(x)
 
-    def evaluate(self, x: NDArrayType) -> NDArrayType | typing.Any:
+    def evaluate(self, x: ArrayType) -> ArrayType | typing.Any:
         return self.__target(x)
 
-    def apply_axis(self, x: NDArrayType, mask: ArrayIntegerType) -> NDArrayType:
+    def apply_axis(self, x: ArrayType, mask: ArrayIntegerType) -> ArrayType:
         return np.apply_along_axis(self.__target, 1, x[mask, 1:])
 
     @property

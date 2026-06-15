@@ -1,6 +1,6 @@
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.agent.base import BaseAgent
-from cmenpy.hints import NDArrayType, ScalarType
+from cmenpy.hints import ArrayType, ScalarType
 
 
 class ImmutableAgent(BaseAgent):
@@ -30,5 +30,5 @@ class ImmutableAgent(BaseAgent):
         return self.__buffer[0]
 
     @property
-    def x(self) -> NDArrayType:
+    def x(self) -> ArrayType:
         return self.__buffer

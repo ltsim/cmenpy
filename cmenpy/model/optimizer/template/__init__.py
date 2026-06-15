@@ -8,7 +8,7 @@ from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.hints import ScalarType, NDArrayType
+from cmenpy.hints import ScalarType, ArrayType
 from cmenpy.hints.option import SenseType
 
 
@@ -42,7 +42,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         pop_range: typing.Optional[tuple[int, int]] = None,
         debug: bool = False,
         sense: SenseType = "min",
-    ) -> tuple[float, NDArrayType]:
+    ) -> tuple[float, ArrayType]:
         if self.__model is None:
             raise NotImplementedError()
 

@@ -1,6 +1,6 @@
 import dataclasses
 
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 
 
 @dataclasses.dataclass(frozen=True)
@@ -8,7 +8,7 @@ class EpochHistory:
     epoch: int
     best_idx: int
     worst_idx: int
-    all: NDArrayType
+    all: ArrayType
     timeit: int | float
     nfe: int
 

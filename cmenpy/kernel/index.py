@@ -1,12 +1,12 @@
 import numpy as np
 
 from cmenpy.kernel.mask import KernelMask
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 from cmenpy.hints.option import SenseType
 
 
 class BufferIndex:
-    def __init__(self, buffer: NDArrayType, mask: KernelMask, sense: SenseType):
+    def __init__(self, buffer: ArrayType, mask: KernelMask, sense: SenseType):
         self.__buffer = buffer
         self.__sense = sense
         self.__mask = mask

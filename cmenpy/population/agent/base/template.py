@@ -1,9 +1,9 @@
 import typing
 
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 
 
 class AgentTemplate(typing.Protocol):
     id: int
-    solution: NDArrayType
+    solution: ArrayType
     fitness: float

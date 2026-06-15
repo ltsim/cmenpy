@@ -3,7 +3,7 @@ from cmenpy.population.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
 )
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 
 
 class AssignPipeline(PipelineOperator):
@@ -11,7 +11,7 @@ class AssignPipeline(PipelineOperator):
         self.__idx = idx
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType):
+    def __lshift__(self, value: ArrayType):
         self.__buffer.raw[self.__idx] = value
 
 
@@ -23,7 +23,7 @@ class AssignOperator(VectorizableOperator):
         super().__init__(buffer.shape)
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType) -> "VectorizableOperator":
+    def __lshift__(self, value: ArrayType) -> "VectorizableOperator":
         if self.shape != value.shape:
             raise IndexError(
                 "The buffer cannot be assigned a value; the sizes do not match."

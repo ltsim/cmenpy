@@ -3,7 +3,7 @@ from cmenpy.population.operations.stream.vectorizable import (
     VectorizableOperator,
     PipelineOperator,
 )
-from cmenpy.hints import NDArrayType
+from cmenpy.hints import ArrayType
 
 
 class ComputePipeline(PipelineOperator):
@@ -11,7 +11,7 @@ class ComputePipeline(PipelineOperator):
         self.__idx = idx
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType) -> None:
+    def __lshift__(self, value: ArrayType) -> None:
         self.__buffer.apply(value, self.__idx)
 
 
@@ -20,7 +20,7 @@ class ComputeOperator(VectorizableOperator):
         super().__init__(buffer.shape)
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType) -> None:
+    def __lshift__(self, value: ArrayType) -> None:
         self.__buffer.apply(value)
 
     def __getitem__(self, item: int) -> "PipelineOperator":

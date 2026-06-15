@@ -16,7 +16,7 @@ from cmenpy.model.optimizer.functions.protocols import (
 )
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.hints import ScalarType, NDArrayType
+from cmenpy.hints import ScalarType, ArrayType
 from cmenpy.hints.option import SenseType
 
 
@@ -55,7 +55,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             pop_size: int,
             pop_range: typing.Optional[tuple[int, int]] = None,
             sense: SenseType = "min",
-        ) -> tuple[float, NDArrayType]:
+        ) -> tuple[float, ArrayType]:
             if pop_range is None:
                 pop_range = pop_size, pop_size
 
