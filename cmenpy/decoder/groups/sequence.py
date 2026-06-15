@@ -21,6 +21,7 @@ class SequenceDecoder(BaseDecoder[R]):
         name: str = "sequence",
     ) -> None:
         super().__init__(name)
+
         self.return_type = return_type
         self.sequences = tuple(tuple(seq) for seq in valid_sets)
         self.index = {seq: i for i, seq in enumerate(self.sequences)}

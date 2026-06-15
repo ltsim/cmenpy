@@ -12,6 +12,7 @@ class BoolDecoder(BaseDecoder[ArrayBoolType]):
         super().__init__(name)
         if not isinstance(n_vars, int) or n_vars < 1:
             raise ValueError("n_vars must be a positive integer.")
+
         self.n_vars = n_vars
         self.lb = np.zeros(n_vars, dtype=np.float64)
         self.ub = np.full(n_vars, 2.0 - self.epsilon, dtype=np.float64)

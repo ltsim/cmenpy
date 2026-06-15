@@ -23,7 +23,9 @@ def as_bound_pair(
     if isinstance(lb, typing.Sequence) and isinstance(ub, typing.Sequence):
         if len(lb) != len(ub):
             raise ValueError("lb and ub must have the same length.")
+
         return np.array(lb, dtype=np.float64), np.array(ub, dtype=np.float64)
+
     raise TypeError("lb and ub must both be scalars or both be sequences.")
 
 
@@ -60,8 +62,8 @@ class BaseDecoder(typing.Generic[R], abc.ABC):
 
     name: str
     n_vars: int
-    lb: ArrayFloatType
-    ub: ArrayFloatType
+    low: ArrayFloatType
+    up: ArrayFloatType
     generator: np.random.Generator
 
     def __init__(

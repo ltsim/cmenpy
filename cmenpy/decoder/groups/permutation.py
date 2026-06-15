@@ -17,6 +17,7 @@ class PermutationDecoder(BaseDecoder[ArrayObjectType]):
         super().__init__(name)
         if len(valid_set) < 2:
             raise ValueError("Permutation needs at least two elements.")
+
         self.labels, self.index = as_label_set(valid_set)
         self.n_vars = len(self.labels)
         self.lb = np.zeros(self.n_vars, dtype=np.float64)
