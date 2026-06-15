@@ -1,6 +1,6 @@
 import dataclasses
 
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 @dataclasses.dataclass(frozen=True)

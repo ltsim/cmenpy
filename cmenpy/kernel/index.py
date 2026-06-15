@@ -1,8 +1,8 @@
 import numpy as np
 
 from cmenpy.kernel.mask import KernelMask
-from cmenpy.types import NDArrayType
-from cmenpy.types.option import SenseType
+from cmenpy.hints import NDArrayType
+from cmenpy.hints.option import SenseType
 
 
 class BufferIndex:
@@ -11,15 +11,22 @@ class BufferIndex:
         self.__sense = sense
         self.__mask = mask
 
+    def __iter__(self):
+        pop_size, _ = self.__buffer.shape
+
+        return iter(range(0, pop_size))
+
+    def __invert__(self):
+        return np.where(~np.isnan(self.__buffer[:, 0]))[0].astype(int)
+
     @property
     def sort(self):
-        idx = np.argsort(self.__buffer[:, 0])
-        idx = idx[self.__mask.founds]
+        _idx = np.argsort(self.__buffer[:, 0])
 
         if self.__sense == "max":
-            return idx[::-1]
+            return _idx[::-1]
 
-        return idx
+        return _idx
 
     @property
     def best(self):

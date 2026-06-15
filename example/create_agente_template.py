@@ -1,6 +1,6 @@
 import numpy as np
 import cmenpy as cm
-from cmenpy.population.agent import AgentTemplate
+from cmenpy.population.agent.base import AgentTemplate
 
 
 class MyAgent(AgentTemplate):
@@ -32,7 +32,7 @@ class MyAlgorithm:
         if population.best < b_pop and population.size > 1:
             b_pop = population.best
             w_pop = population.worst
-            id_pop = w_pop.id
+            id_pop = w_pop.i
 
             population.remove(id_pop)
         else:

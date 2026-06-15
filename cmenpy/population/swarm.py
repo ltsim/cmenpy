@@ -1,60 +1,19 @@
-import typing
-
 from cmenpy.kernel import KernelBuffer
-from cmenpy.operations import AssignOperator
-from cmenpy.operations import ComputeOperator
-from cmenpy.operations import ExtractOperation
-from cmenpy.operations import SwapOperation
-from cmenpy.operations.access import AccessOperator
-from cmenpy.operations.base import OperationBase
-from cmenpy.population.agent import Agent, ImmutableAgent
-from cmenpy.population.people import (
-    PeopleGenerator,
-    PeopleMutableCollection,
-)
-from cmenpy.properties.base import BaseProperty
-from cmenpy.types.option import SenseType
+from cmenpy.population.agent import AgentGenerator
+from cmenpy.population.attributes import TensorOperations
+from cmenpy.population.iterator.base import BaseIterator
+from cmenpy.population.dynamic.base import DynamicBase
+from cmenpy.population.operations import StreamOperations
 
 
-class PopulationSwarm(OperationBase, PeopleGenerator, BaseProperty):
-    def __init__(
-        self,
-        buffer: KernelBuffer,
-        sense: SenseType = "min",
-        d_class: typing.Optional[typing.Type[Agent]] = None,
-    ):
-        if d_class is None:
-            d_class = ImmutableAgent
-
-        super().__init__(buffer)
+class PopulationSwarm(
+    StreamOperations, TensorOperations, BaseIterator, DynamicBase, AgentGenerator
+):
+    def __init__(self, buffer: KernelBuffer) -> None:
+        StreamOperations.__init__(self, buffer)
+        TensorOperations.__init__(self, buffer)
+        BaseIterator.__init__(self, buffer)
+        DynamicBase.__init__(self, buffer)
+        AgentGenerator.__init__(self, buffer)
 
         self.__buffer = buffer
-        self.__sense = sense
-        self.__d_class = d_class
-
-    def __repr__(self):
-        return f"Population()"
-
-    @property
-    def swap(self) -> SwapOperation:
-        return SwapOperation(self.__buffer)
-
-    @property
-    def compute(self) -> ComputeOperator:
-        return ComputeOperator(self.__buffer)
-
-    @property
-    def assign(self) -> AssignOperator:
-        return AssignOperator(self.__buffer)
-
-    @property
-    def extract(self) -> ExtractOperation:
-        return ExtractOperation(self.__buffer)
-
-    @property
-    def access(self) -> AccessOperator:
-        return AccessOperator(self.__buffer)
-
-    @property
-    def agents(self) -> PeopleMutableCollection:
-        raise NotImplementedError("PopulationManager does not implement this method")

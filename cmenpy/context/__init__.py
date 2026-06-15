@@ -8,7 +8,7 @@ from cmenpy.generator import DefaultGenerator
 from cmenpy.kernel import KernelBuffer, KernelSize
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
-from cmenpy.types.option import SenseType
+from cmenpy.hints.option import SenseType
 
 
 class Context:

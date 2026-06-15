@@ -1,14 +1,14 @@
 import functools
 import typing
 
-from cmenpy.types import DType
+from cmenpy.hints import ScalarType
 
-InnerSequence = typing.Union[typing.Tuple[DType, ...], typing.List[DType]]
-SequenceStructure = typing.List[InnerSequence[DType]]
+InnerSequence = typing.Union[typing.Tuple[ScalarType, ...], typing.List[ScalarType]]
+SequenceStructure = typing.List[InnerSequence[ScalarType]]
 
 
 class Bounds:
-    def __init__(self, bounds: SequenceStructure[DType]):
+    def __init__(self, bounds: SequenceStructure[ScalarType]):
         self.__bounds = bounds
 
     @functools.cached_property
@@ -33,7 +33,7 @@ class Bounds:
         return create_bounds(params)
 
 
-def create_bounds(bounds: SequenceStructure[DType] | Bounds) -> Bounds:
+def create_bounds(bounds: SequenceStructure[ScalarType] | Bounds) -> Bounds:
     if isinstance(bounds, Bounds):
         return bounds
 
