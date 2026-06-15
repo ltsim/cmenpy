@@ -1,7 +1,6 @@
 import collections
 
 from cmenpy.kernel import KernelBuffer
-from cmenpy.target import Target
 from cmenpy.tracker.epoch import EpochHistory
 
 
