@@ -33,9 +33,9 @@ def gwo(args, epoch, ctx):
             bounds.up,
         )
 
-        for i, (a, b) in enumerate(zip(n_pop.F, pop.F)):
-            if cm.is_best((a, b), ctx.sense):
-                pop.assign[i] << n_pop.access[i]
+        mask = np.array(pop.F) > np.array(n_pop.F)
+        mask = np.flatnonzero(mask)
+        pop.assign[mask] << n_pop.access[mask]
 
 
 if __name__ == "__main__":
