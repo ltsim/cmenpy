@@ -19,15 +19,17 @@ class SequenceDecoder(BaseDecoder[R]):
             "typing.Callable[[typing.Any], R]", tuple
         ),
         name: str = "sequence",
+        generator: typing.Optional[np.random.Generator] = None,
+        seed: typing.Optional[int] = None,
     ) -> None:
-        super().__init__(name)
+        super().__init__(name, generator=generator, seed=seed)
 
         self.return_type = return_type
         self.sequences = tuple(tuple(seq) for seq in valid_sets)
         self.index = {seq: i for i, seq in enumerate(self.sequences)}
         self.n_vars = 1
-        self.lb = np.zeros(1, dtype=np.float64)
-        self.ub = np.array([len(self.sequences) - self.epsilon], dtype=np.float64)
+        self.low = np.zeros(1, dtype=np.float64)
+        self.up = np.array([len(self.sequences) - self.epsilon], dtype=np.float64)
 
     def generate(self) -> R:
         choice = int(self.generator.integers(0, len(self.sequences)))
@@ -37,7 +39,7 @@ class SequenceDecoder(BaseDecoder[R]):
         return np.array([self.index[tuple(values)]], dtype=np.float64)
 
     def correct(self, x: ArrayFloatType) -> ArrayIntegerType:
-        return np.array(np.clip(x, self.lb, self.ub), dtype=np.int_)
+        return np.array(np.clip(x, self.low, self.up), dtype=np.int_)
 
     def decode(self, x: ArrayFloatType) -> R:
         idx: ArrayIntegerType = self.correct(x)

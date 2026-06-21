@@ -1,6 +1,6 @@
 import typing
 
-from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.bounds import Bounds
 from cmenpy.context import Context
 from cmenpy.epoch import EpochIteration
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
@@ -24,7 +24,7 @@ class CallableFunction(typing.Protocol):
     def __call__(
         self,
         f: Target,
-        bounds: Bounds | SequenceStructure[ScalarType],
+        bounds: Bounds,
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,

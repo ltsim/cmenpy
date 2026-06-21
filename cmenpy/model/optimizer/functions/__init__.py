@@ -1,7 +1,7 @@
 import functools
 import typing
 
-from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.bounds import Bounds
 from cmenpy.context import MainContextManager, Context
 from cmenpy.kernel import KernelSize
 from cmenpy.model.optimizer.base import BaseOptimizer
@@ -50,7 +50,7 @@ class FunctionOptimizerModel(BaseOptimizer):
         @functools.wraps(func)
         def wrapper(
             f: Target,
-            bounds: Bounds | SequenceStructure[ScalarType],
+            bounds: Bounds,
             epochs: int,
             pop_size: int,
             pop_range: typing.Optional[tuple[int, int]] = None,
@@ -106,7 +106,7 @@ class FunctionOptimizerModel(BaseOptimizer):
     def solve(
         self,
         f: Target,
-        bounds: Bounds | SequenceStructure[ScalarType],
+        bounds: Bounds,
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,

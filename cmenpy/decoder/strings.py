@@ -15,13 +15,18 @@ class StringDecoder(BaseDecoder[typing.List[typing.Any]]):
     index: typing.Tuple[typing.Dict[typing.Any, int], ...]
 
     def __init__(
-        self, valid_sets: typing.Sequence[typing.Any], name: str = "string"
+        self,
+        valid_sets: typing.Sequence[typing.Any],
+        name: str = "string",
+        generator: typing.Optional[np.random.Generator] = None,
+        seed: typing.Optional[int] = None,
     ) -> None:
-        super().__init__(name)
+        super().__init__(name, generator=generator, seed=seed)
+
         self.labels, self.index = as_label_sets(valid_sets)
         self.n_vars = len(self.labels)
-        self.lb = np.zeros(self.n_vars, dtype=np.float64)
-        self.ub = np.array(
+        self.low = np.zeros(self.n_vars, dtype=np.float64)
+        self.up = np.array(
             [len(arr) - self.epsilon for arr in self.labels], dtype=np.float64
         )
 
@@ -34,7 +39,7 @@ class StringDecoder(BaseDecoder[typing.List[typing.Any]]):
         )
 
     def correct(self, x: ArrayFloatType) -> ArrayIntegerType:
-        return np.array(np.clip(x, self.lb, self.ub), dtype=np.int_)
+        return np.array(np.clip(x, self.low, self.up), dtype=np.int_)
 
     def decode(self, x: ArrayFloatType) -> typing.List[typing.Any]:
         idx: ArrayIntegerType = self.correct(x)

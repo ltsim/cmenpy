@@ -1,14 +1,14 @@
 import functools
 import typing
 
-from cmenpy.hints import ScalarType
+from cmenpy.decoder import BaseDecoder
+from cmenpy.hints import ScalarType, ArrayFloatType
 
 InnerSequence = typing.Union[typing.Tuple[ScalarType, ...], typing.List[ScalarType]]
-SequenceStructure = typing.List[InnerSequence[ScalarType]]
 
 
 class Bounds:
-    def __init__(self, bounds: SequenceStructure[ScalarType]):
+    def __init__(self, bounds: ArrayFloatType):
         self.__bounds = bounds
 
     @functools.cached_property
@@ -33,8 +33,15 @@ class Bounds:
         return create_bounds(params)
 
 
-def create_bounds(bounds: SequenceStructure[ScalarType] | Bounds) -> Bounds:
-    if isinstance(bounds, Bounds):
-        return bounds
+def create_bounds(
+    spaces: ArrayFloatType | Bounds | list[BaseDecoder] | tuple[BaseDecoder, ...],
+) -> Bounds:
+    def create_bound_from_space(space: list[BaseDecoder]) -> Bounds:
+        pass
 
-    return Bounds(bounds)
+    if isinstance(spaces, Bounds):
+        return spaces
+    elif isinstance(spaces, tuple) or isinstance(spaces, list):
+        return create_bound_from_space(list(spaces))
+
+    return Bounds(spaces)

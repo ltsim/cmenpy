@@ -1,7 +1,7 @@
 import abc
 import typing
 
-from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.bounds import Bounds
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
 from cmenpy.hints import ScalarType, ArrayType
@@ -13,7 +13,7 @@ class BaseOptimizer(abc.ABC):
     def solve(
         self,
         f: Target,
-        bounds: Bounds | SequenceStructure[ScalarType],
+        bounds: Bounds,
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,

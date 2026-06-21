@@ -12,16 +12,21 @@ class PermutationDecoder(BaseDecoder[ArrayObjectType]):
     index: typing.Dict[typing.Any, int]
 
     def __init__(
-        self, valid_set: typing.Sequence[typing.Any], name: str = "permutation"
+        self,
+        valid_set: typing.Sequence[typing.Any],
+        name: str = "permutation",
+        generator: typing.Optional[np.random.Generator] = None,
+        seed: typing.Optional[int] = None,
     ) -> None:
-        super().__init__(name)
+        super().__init__(name, generator=generator, seed=seed)
+
         if len(valid_set) < 2:
             raise ValueError("Permutation needs at least two elements.")
 
         self.labels, self.index = as_label_set(valid_set)
         self.n_vars = len(self.labels)
-        self.lb = np.zeros(self.n_vars, dtype=np.float64)
-        self.ub = np.full(self.n_vars, self.n_vars - self.epsilon, dtype=np.float64)
+        self.low = np.zeros(self.n_vars, dtype=np.float64)
+        self.up = np.full(self.n_vars, self.n_vars - self.epsilon, dtype=np.float64)
 
     def generate(self) -> ArrayObjectType:
         return self.generator.permutation(self.labels)

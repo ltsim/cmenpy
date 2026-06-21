@@ -49,50 +49,50 @@ class TestHelpers:
 
 class TestFloatSpace:
     def test_bounds(self):
-        sp = FloatingDecoder(lb=[-5.0, 0.0], ub=[5.0, 1.0])
+        sp = FloatingDecoder(low=[-5.0, 0.0], up=[5.0, 1.0])
         assert sp.n_vars == 2
-        assert sp.lb.tolist() == [-5.0, 0.0]
-        assert sp.ub.tolist() == [5.0, 1.0]
+        assert sp.low.tolist() == [-5.0, 0.0]
+        assert sp.up.tolist() == [5.0, 1.0]
 
     def test_scalar_bounds(self):
-        sp = FloatingDecoder(lb=-3.0, ub=3.0)
+        sp = FloatingDecoder(low=-3.0, up=3.0)
         assert sp.n_vars == 1
 
     def test_clip_high_and_low(self):
-        sp = FloatingDecoder(lb=[-5.0, 0.0], ub=[5.0, 1.0])
+        sp = FloatingDecoder(low=[-5.0, 0.0], up=[5.0, 1.0])
         np.testing.assert_array_equal(sp.decode(np.array([9.9, -3.0])), [5.0, 0.0])
 
     def test_generate_in_bounds(self):
-        sp = FloatingDecoder(lb=0.0, ub=1.0)
+        sp = FloatingDecoder(low=0.0, up=1.0)
         sp.set_seed(0)
         for _ in range(100):
             v = sp.generate()
-            assert (v >= sp.lb).all() and (v <= sp.ub).all()
+            assert (v >= sp.low).all() and (v <= sp.up).all()
 
     def test_encode_identity(self):
-        sp = FloatingDecoder(lb=0.0, ub=10.0)
+        sp = FloatingDecoder(low=0.0, up=10.0)
         np.testing.assert_array_equal(sp.encode([3.5]), [3.5])
 
 
 class TestIntegerSpace:
     def test_shifted_bounds(self):
-        sp = IntegerDecoder(lb=16, ub=256)
-        assert sp.lb[0] == pytest.approx(15.5)
-        assert sp.ub[0] == pytest.approx(256.5 - sp.epsilon)
+        sp = IntegerDecoder(low=16, up=256)
+        assert sp.low[0] == pytest.approx(15.5)
+        assert sp.up[0] == pytest.approx(256.5 - sp.epsilon)
 
     def test_round_half_up(self):
-        sp = IntegerDecoder(lb=0, ub=1000)
+        sp = IntegerDecoder(low=0, up=1000)
         assert sp.decode(np.array([128.4]))[0] == 128
         assert sp.decode(np.array([128.6]))[0] == 129
         assert sp.decode(np.array([128.5]))[0] == 129
 
     def test_clip(self):
-        sp = IntegerDecoder(lb=16, ub=256)
+        sp = IntegerDecoder(low=16, up=256)
         assert sp.decode(np.array([9999.0]))[0] == 256
         assert sp.decode(np.array([-9999.0]))[0] == 16
 
     def test_generate_range(self):
-        sp = IntegerDecoder(lb=1, ub=6)
+        sp = IntegerDecoder(low=1, up=6)
         sp.set_seed(0)
         seen = {int(sp.generate()[0]) for _ in range(500)}
         assert seen == {1, 2, 3, 4, 5, 6, 7}
@@ -120,7 +120,7 @@ class TestStringSpace:
 
     def test_ub_never_overflows(self):
         sp = StringDecoder(valid_sets=("a", "b", "c", "d"))
-        assert sp.decode(sp.ub)[0] == "d"
+        assert sp.decode(sp.up)[0] == "d"
 
 
 class TestCategoricalSpace:
@@ -225,8 +225,8 @@ class TestBoolSpace:
 
 
 ALL_SPACES = [
-    lambda: FloatingDecoder(lb=0.0, ub=1.0),
-    lambda: IntegerDecoder(lb=1, ub=10),
+    lambda: FloatingDecoder(low=0.0, up=1.0),
+    lambda: IntegerDecoder(low=1, up=10),
     lambda: StringDecoder(valid_sets=("a", "b", "c")),
     lambda: CategoricalDecoder(valid_sets=((1, 2, 3),)),
     lambda: SequenceDecoder(valid_sets=([1, 2], [3, 4])),
@@ -261,11 +261,11 @@ class TestContract:
     @pytest.mark.parametrize("factory", ALL_SPACES)
     def test_bounds_shape(self, factory):
         sp = factory()
-        assert sp.lb.shape == sp.ub.shape == (sp.n_vars,)
-        assert (sp.lb <= sp.ub).all()
+        assert sp.low.shape == sp.up.shape == (sp.n_vars,)
+        assert (sp.low <= sp.up).all()
 
     @pytest.mark.parametrize("factory", ALL_SPACES)
     def test_decode_accepts_lb_and_ub(self, factory):
         sp = factory()
-        sp.decode(sp.lb.copy())
-        sp.decode(sp.ub.copy())
+        sp.decode(sp.low.copy())
+        sp.decode(sp.up.copy())

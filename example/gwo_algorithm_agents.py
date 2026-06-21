@@ -17,10 +17,16 @@ def gwo(args, epoch, ctx):
         n_pop = cm.PopulationSwarm(buff.snapshot)
         b_pop = pop.X[pop.sort][:3]
 
-        a = 2 - 2 * e / epoch.max
+        # a = 2 - 2 * e / epoch.max
+        # a = 2 * (1 - (e / epoch.max) ** 2)
+
+        n = e / epoch.max
+        # k = 3
+        k = rng.integers(3, 7)
+        a = 2 * (1 - (n ** (n + k)))
 
         A = a * (2 * rng.random(size=(pop.size, len(b_pop), bounds.ndim)) - 1)
-        C = 2 * rng.random(size=(pop.size, len(b_pop), bounds.ndim))
+        C = a * rng.random(size=(pop.size, len(b_pop), bounds.ndim))
 
         for i, p in zip(pop.sort, pop.X[pop.sort]):
             D = [b - A[i][j] * np.abs(C[i][j] * b - p) for j, b in enumerate(b_pop)]
@@ -42,5 +48,5 @@ if __name__ == "__main__":
     model = gwo()
     f = Ackley01(ndim=30)
 
-    b_pop = model.solve(f.evaluate, f.bounds, 150, 75)
+    b_pop = model.solve(f.evaluate, f.bounds, 100, 75)
     print(b_pop)
