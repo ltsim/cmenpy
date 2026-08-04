@@ -1,10 +1,10 @@
 import abc
 
 from cmenpy.hints import NDArrayType
-from cmenpy.population.attributes.tensor.mixin import TensorCompute, TensorAccess
+from cmenpy.population.attributes.matrix.mixin import BufferMatrixCompute, BufferMatrixAccess
 
 
-class TensorAbstract(abc.ABC):
+class BufferMatrixAbstract(abc.ABC):
     @abc.abstractmethod
     def __getitem__(self, item: int) -> NDArrayType: ...
 
@@ -18,4 +18,4 @@ class TensorAbstract(abc.ABC):
     def __str__(self) -> str: ...
 
 
-__all__ = ["TensorAbstract", "TensorCompute", "TensorAccess"]
+__all__ = ["BufferMatrixAbstract", "BufferMatrixCompute", "BufferMatrixAccess"]

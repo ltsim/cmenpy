@@ -1,14 +1,14 @@
 from cmenpy.kernel import KernelBuffer
 from cmenpy.kernel.index import BufferIndex
 from cmenpy.hints import NDArrayType
-from cmenpy.population.attributes.tensor import (
-    TensorAbstract,
-    TensorCompute,
-    TensorAccess,
+from cmenpy.population.attributes.matrix import (
+    BufferMatrixAbstract,
+    BufferMatrixCompute,
+    BufferMatrixAccess,
 )
 
 
-class TensorFitness(TensorAbstract, TensorAccess):
+class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
@@ -32,7 +32,7 @@ class TensorFitness(TensorAbstract, TensorAccess):
         return self.__buffer.raw[:, 0].reshape(-1)[self.__buffer.mask.founds]
 
 
-class TensorSolutions(TensorAbstract, TensorAccess, TensorCompute):
+class BufferMatrixSolutions(BufferMatrixAbstract, BufferMatrixAccess, BufferMatrixCompute):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
@@ -60,17 +60,17 @@ class TensorSolutions(TensorAbstract, TensorAccess, TensorCompute):
         return self
 
 
-class TensorOperations:
+class BufferMatrixOperations:
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
     @property
-    def F(self) -> TensorFitness:
-        return TensorFitness(self.__buffer)
+    def F(self) -> BufferMatrixFitness:
+        return BufferMatrixFitness(self.__buffer)
 
     @property
-    def X(self) -> TensorSolutions:
-        return TensorSolutions(self.__buffer)
+    def X(self) -> BufferMatrixSolutions:
+        return BufferMatrixSolutions(self.__buffer)
 
     @property
     def idx(self) -> BufferIndex:
