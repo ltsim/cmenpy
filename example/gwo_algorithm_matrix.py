@@ -33,8 +33,7 @@ def gwo(args, epoch, ctx):
             bounds.up,
         )
 
-        mask = np.array(pop.F) > np.array(n_pop.F)
-        mask = np.flatnonzero(mask)
+        mask = cm.is_best((n_pop.F, pop.F), ctx.sense)
         pop.assign[mask] << n_pop.access[mask]
 
 

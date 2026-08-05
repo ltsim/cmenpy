@@ -1,5 +1,7 @@
 import typing
 
+import numpy as np
+
 from cmenpy.hints.option import SenseType
 
 A = typing.TypeVar("A")
@@ -7,22 +9,27 @@ B = typing.TypeVar("B")
 AB = tuple[A, B]
 
 
-def is_best(ab: AB, sense: SenseType = "min") -> bool:
+def is_best(ab: AB, sense: SenseType = "min"):
     a, b = ab
 
     if sense == "min":
-        return a < b
+        mask = np.array(a) < np.array(b)
+    else:
+        mask = np.array(a) > np.array(b)
 
-    return a > b
+    return np.flatnonzero(mask)
 
 
-def is_worst(ab: AB, sense: SenseType = "min") -> bool:
+def is_worst(ab: AB, sense: SenseType = "min"):
     a, b = ab
 
     if sense == "min":
-        return a > b
+        mask = np.array(a) > np.array(b)
+    else:
+        mask = np.array(a) < np.array(b)
 
-    return a < b
+    return np.flatnonzero(mask)
+
 
 
 def best_of(a: typing.Collection[A], sense: SenseType = "min") -> A:
