@@ -32,18 +32,13 @@ def is_worst(ab: AB, sense: SenseType = "min"):
 
 
 
-def best_of(a: typing.Collection[A], sense: SenseType = "min") -> A:
-    if sense == "min":
-        return min(a)
-
-    return max(a)
+def best_of(a: A, sense: SenseType = "min"):
+    return a.best
 
 
-def worst_of(a: typing.Collection[A], sense: SenseType = "min") -> A:
-    if sense == "max":
-        return min(a)
 
-    return max(a)
+def worst_of(a: A, sense: SenseType = "min"):
+    return a.worst
 
 
 __all__ = ["is_best", "is_worst", "best_of", "worst_of"]
