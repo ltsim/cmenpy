@@ -33,7 +33,7 @@ keywords = [
 
 classifiers = [
     "Typing :: Typed",
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 1 - Planning",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
