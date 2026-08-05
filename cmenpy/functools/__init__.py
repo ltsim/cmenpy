@@ -32,12 +32,12 @@ def is_worst(ab: AB, sense: SenseType = "min"):
 
 
 
-def best_of(a: A, sense: SenseType = "min"):
+def best_of(a: A) -> int:
     return a.best
 
 
 
-def worst_of(a: A, sense: SenseType = "min"):
+def worst_of(a: A) -> int:
     return a.worst
 
 
