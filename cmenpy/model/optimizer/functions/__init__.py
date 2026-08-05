@@ -1,8 +1,9 @@
 import functools
 import typing
 
-from cmenpy.bounds import Bounds, SequenceStructure, create_bounds
+from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.context import MainContextManager, Context
+from cmenpy.kernel import KernelSize
 from cmenpy.model.optimizer.base import BaseOptimizer
 from cmenpy.model.optimizer.functions.params import (
     FunctionParamsArguments,
@@ -13,11 +14,10 @@ from cmenpy.model.optimizer.functions.protocols import (
     CallableFunction,
     AlgorithmFunction,
 )
-from cmenpy.population.agent import Agent
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.types import DType
-from cmenpy.types.option import SenseType
+from cmenpy.hints import ScalarType, NDArrayType
+from cmenpy.hints.option import SenseType
 
 
 class FunctionOptimizerModel(BaseOptimizer):
@@ -50,12 +50,12 @@ class FunctionOptimizerModel(BaseOptimizer):
         @functools.wraps(func)
         def wrapper(
             f: Target,
-            bounds: Bounds | SequenceStructure[DType],
+            bounds: Bounds | SequenceStructure[ScalarType],
             epochs: int,
             pop_size: int,
             pop_range: typing.Optional[tuple[int, int]] = None,
             sense: SenseType = "min",
-        ) -> Agent:
+        ) -> tuple[float, NDArrayType]:
             if pop_range is None:
                 pop_range = pop_size, pop_size
 
@@ -67,12 +67,13 @@ class FunctionOptimizerModel(BaseOptimizer):
                 raise IndexError("Population size is too large.")
 
             self.__sense = sense
+            self.__size = KernelSize(pop_size, min_size=min_pop, max_size=max_pop)
+            self.__bounds = Bounds[bounds]
             self.__resource = MainContextManager(
                 f,
-                create_bounds(bounds),
+                self.__bounds,
                 epochs,
-                pop_size,
-                pop_range,
+                self.__size,
                 self.__seed,
                 self.__debug,
                 self.__sense,
@@ -87,13 +88,15 @@ class FunctionOptimizerModel(BaseOptimizer):
                 ctx=Context(
                     f=self.__resource.target,
                     bounds=self.__resource.bounds,
-                    population=self.__resource.population,
+                    buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
                 ),
             )
 
-            return self.__resource.population.agents.best
+            X = self.__resource.buffer.raw[self.__resource.buffer.idx.best]
+
+            return float(X[0]), X[1:]
 
         self.__alias = func.__name__
         self.__inner = wrapper
@@ -103,7 +106,7 @@ class FunctionOptimizerModel(BaseOptimizer):
     def solve(
         self,
         f: Target,
-        bounds: Bounds | SequenceStructure[DType],
+        bounds: Bounds | SequenceStructure[ScalarType],
         epochs: int,
         pop_size: int,
         pop_range: typing.Optional[tuple[int, int]] = None,

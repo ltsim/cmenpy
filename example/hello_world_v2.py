@@ -10,36 +10,32 @@ class MyAlgorithm:
     w: cm.Variable[np.array]
 
     def initialize(self, ctx) -> None:
-        pop = ctx.population
-        rng = ctx.rng
-        bounds = ctx.bounds
+        buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
+        pop = cm.PopulationSwarm(buff)
 
         pop.compute << rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
     def evolve(self, e, ctx) -> None:
-        pop = ctx.population
-        rng = ctx.rng
-        bounds = ctx.bounds
+        buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
-        b_pop = pop.agents.best
+        pop = cm.PopulationSwarm(buff)
+        b_pop = pop.F[pop.best]
 
         pop.compute << (
             np.clip(
-                ~pop.extract + rng.uniform(-1, 1, (len(pop), bounds.ndim)),
+                ~pop.extract + rng.uniform(-1, 1, (pop.size, bounds.ndim)),
                 -1,
                 1,
             )
         )
 
-        if pop.agents.best < b_pop and pop.size > 1:
-            b_pop = pop.agents.best
-            w_pop = pop.agents.worst
-            id_pop = w_pop.id
+        if pop.F[pop.best] < b_pop and pop.size > 1:
+            w_pop = pop.F[pop.worst]
 
-            pop.agents.pop(id_pop)
+            pop.remove(pop.worst)
         else:
-            if pop.agents.free_space:
-                n_pop = pop.agents.append(rng.uniform(-1, 1, bounds.ndim))
+            if pop.free_space:
+                n_pop = pop.insert(rng.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":
@@ -68,5 +64,7 @@ if __name__ == "__main__":
 
         return a + b + c
 
-    best_pop = model.solve(sphere, cm.Bounds[(-1, 1), (-1, 1)], 1500, 15, (1, 20))
+    best_pop = model.solve(
+        sphere, cm.Bounds[(-1, 1), (-1, 1)], 1500, 15, (1, 20), debug=True
+    )
     print("Best population:", best_pop)

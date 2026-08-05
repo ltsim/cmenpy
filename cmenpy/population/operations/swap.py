@@ -1,20 +1,17 @@
+from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream import WriterOperator
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 class SwapOperation(WriterOperator):
-    def __init__(
-        self,
-        buffer: NDArrayType,
-    ):
+    def __init__(self, buffer: KernelBuffer):
         super().__init__(buffer.shape)
         self.__buffer = buffer
 
     def __setitem__(self, key: int, value: NDArrayType):
-        buff_cpy = self.__buffer[key].copy()
-        self.__buffer[key] = value
-
-        value[:] = buff_cpy
+        cp_mem_buff = self.__buffer.raw[key].copy()
+        self.__buffer.raw[key] = value
+        self.__buffer.raw[:] = cp_mem_buff
 
     def __repr__(self) -> str:
         return "Swap<WriterOperator>()"

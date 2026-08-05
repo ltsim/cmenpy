@@ -1,8 +1,8 @@
 from collections.abc import Iterable
 
-from cmenpy.population.agent import Agent
-from cmenpy.types import NDArrayType
+from cmenpy.population.agent.base import BaseAgent
+from cmenpy.hints import NDArrayType
 
 Source = NDArrayType | Iterable[float | int]
-SourceIterable = Agent | NDArrayType
+SourceIterable = BaseAgent | NDArrayType
 DualSource = tuple[SourceIterable, SourceIterable]

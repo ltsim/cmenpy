@@ -1,6 +1,6 @@
 import numpy as np
 
-from cmenpy.types import NDArrayType
+from cmenpy.hints import NDArrayType
 
 
 def expand_buffer(

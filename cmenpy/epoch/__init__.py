@@ -1,5 +1,6 @@
 import time
 
+from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
 
 
@@ -22,6 +23,7 @@ class EpochIteration:
         self,
         epochs: int,
         tracker: Tracker,
+        target: TargetFunction,
         debug: bool = False,
     ):
         if epochs <= 0:
@@ -31,6 +33,7 @@ class EpochIteration:
         self.__current_epoch: int = 0
         self.__cpu_time: float = 0
         self.__tracker: Tracker = tracker
+        self.__target: TargetFunction = target
         self.__debug: bool = debug
 
     def __iter__(self):
@@ -42,7 +45,7 @@ class EpochIteration:
             self.__cpu_time = time.process_time() - start
 
             if self.__debug:
-                self.__tracker.track(e, self.cpu_time)
+                self.__tracker.track(e, self.cpu_time, self.__target.nfe)
 
     @property
     def current(self):

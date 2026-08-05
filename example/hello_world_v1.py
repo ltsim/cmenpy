@@ -5,28 +5,29 @@ import cmenpy as cm
 
 @cm.declare(x=cm.Argument[int, (0, 3), 2])
 def my_algorithm(args, epoch, ctx):
-    pop, bounds, rng = ctx.population, ctx.bounds, ctx.rng
+    buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
-    pop.compute << rng.uniform(bounds.low, bounds.up, (len(pop), bounds.ndim))
-    b_pop = pop.agents.best
+    pop = cm.PopulationSwarm(buff)
+
+    pop.compute << rng.uniform(bounds.low, bounds.up, (pop.size, bounds.ndim))
+    b_pop = pop.F[pop.best]
 
     for _ in epoch:
         pop.compute << np.clip(
-            ~pop.extract + rng.uniform(-1, 1, (len(pop), bounds.ndim)), -1, 1
+            ~pop.X + rng.uniform(-1, 1, (pop.size, bounds.ndim)), -1, 1
         )
 
-        if pop.agents.best < b_pop and pop.size > 1:
-            b_pop = pop.agents.best
-            w_pop = pop.agents.worst
+        if pop.F[pop.best] < b_pop and pop.size > 1:
+            w_pop = pop.F[pop.worst]
 
-            pop.agents.pop(w_pop.id)
+            pop.remove(pop.worst)
         else:
-            if pop.agents.free_space:
-                n_pop = pop.agents.append(rng.uniform(-1, 1, bounds.ndim))
+            if pop.free_space:
+                n_pop = pop.insert(rng.uniform(-1, 1, bounds.ndim))
 
 
 if __name__ == "__main__":
-    model = my_algorithm(x=1, seed=1)
+    model = my_algorithm(x=1)
 
     def sphere(x):
         return np.sum(x**2)
@@ -52,6 +53,6 @@ if __name__ == "__main__":
         return a + b + c
 
     best_pop = my_algorithm.solve(
-        sphere, cm.Bounds([(-1, 1), (-1, 1)]), 150, 15, (1, 25)
+        sphere, cm.Bounds([(-1, 1), (-1, 1), (-1, 1)]), 150, 15, (1, 25)
     )
     print("Best population:", best_pop)
