@@ -15,6 +15,13 @@ class MyAlgorithm:
 
         pop.compute << rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
+        M = np.array([1, 2, 3])
+        r = self.test_vectorize(M, M)
+        print(r)
+
+        r = self.test_jit(M)
+        print(r)
+
     def evolve(self, e, ctx) -> None:
         buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
@@ -36,6 +43,14 @@ class MyAlgorithm:
         else:
             if pop.free_space:
                 n_pop = pop.insert(rng.uniform(-1, 1, bounds.ndim))
+
+    @cm.vectorize()
+    def test_vectorize(x, y):
+        return x * 2.0 + y ** 2.0
+
+    @cm.jit()
+    def test_jit(A):
+        return A ** 2
 
 
 if __name__ == "__main__":

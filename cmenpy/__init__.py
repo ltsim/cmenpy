@@ -8,10 +8,15 @@ from cmenpy.model import declare, template, template_check
 from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 from cmenpy.model.optimizer.variables import Argument, Variable
 from cmenpy.population.swarm import PopulationSwarm
+from cmenpy.compile import vectorize, parallel, jit
+
 
 __all__ = [
     "declare",
     "template",
+    "vectorize",
+    "parallel",
+    "jit",
     "template_check",
     "is_best",
     "is_worst",
@@ -25,5 +30,5 @@ __all__ = [
     "KernelSize",
     "PopulationSwarm",
     "FunctionOptimizerModel",
-    "TemplateOptimizerModel",
+    "TemplateOptimizerModel"
 ]

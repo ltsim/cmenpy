@@ -66,6 +66,7 @@ classifiers = [
 
 requires-python = ">=3.11"
 dependencies = [
+    "numba>=0.67.0",
     "numpy>=2.0.2",
 ]
 
