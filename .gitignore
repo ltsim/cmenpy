@@ -65,3 +65,44 @@ desktop.ini
 # Graphify generated artefacts
 graphify-out/
 .graphify/
+
+# AI assistants: per-tool configuration, rules and skills
+.agents/
+.aiassistant/
+.aiignore
+.amazonq/
+.aider.chat.history.md
+.aider.conf.yml
+.aider.input.history
+.aider.tags.cache.v*/
+.claude/
+.clinerules/
+.codex/
+.continue/
+.cursor/
+.cursorrules
+.gemini/
+.geminiignore
+.kimi/
+.junie/
+.mcp.json
+.openchamber/
+.opencode/
+.roo/
+.trae/
+.windsurf/
+.windsurfrules
+.zetarc
+
+# AI assistant instructions
+#
+# Kept out of version control on purpose: this checkout is driven from a
+# personal agent setup living in the user's home directory, and these files
+# are regenerated per repository. Teams that do want to share agent
+# guidelines with collaborators or CI should delete this section.
+AGENTS.local.md
+AGENTS.md
+CLAUDE.local.md
+CLAUDE.md
+GEMINI.md
+SKILL.md
