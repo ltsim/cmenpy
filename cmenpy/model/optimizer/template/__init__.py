@@ -1,24 +1,23 @@
 import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
-from cmenpy.context import MainContextManager, Context
-from cmenpy.kernel import KernelSize
-from cmenpy.model.optimizer.base import BaseOptimizer
+from cmenpy.context import Context, MainContextManager
+from cmenpy.hints import NDArrayType, ScalarType
+from cmenpy.hints.option import SenseType
+from cmenpy.model.optimizer.base import BaseOptimizer, build_context_manager
 from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
-from cmenpy.hints import ScalarType, NDArrayType
-from cmenpy.hints.option import SenseType
 
 
 class TemplateOptimizerModel(BaseOptimizer):
-    def __init__(self, cls_model: typing.Type[ModelProtocol]) -> None:
+    def __init__(self, cls_model: type[ModelProtocol]) -> None:
         self.__alias = str(cls_model.__name__)
-        self.__cls_model: typing.Type[ModelProtocol] = cls_model
-        self.__inner: typing.Optional[CallableFunction] = None
-        self.__resource: typing.Optional[MainContextManager] = None
-        self.__seed: typing.Optional[int] = None
+        self.__cls_model: type[ModelProtocol] = cls_model
+        self.__inner: CallableFunction | None = None
+        self.__resource: MainContextManager | None = None
+        self.__seed: int | None = None
         self.__debug = False
         self.__sense: SenseType = "min"
 
@@ -39,7 +38,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         bounds: Bounds | SequenceStructure[ScalarType],
         epochs: int,
         pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]] = None,
+        pop_range: tuple[int, int] | None = None,
         debug: bool = False,
         sense: SenseType = "min",
     ) -> tuple[float, NDArrayType]:
@@ -47,32 +46,10 @@ class TemplateOptimizerModel(BaseOptimizer):
             raise NotImplementedError()
 
         self.__debug = debug
-
-        if pop_range is None:
-            pop_range = pop_size, pop_size
-
-        min_pop, max_pop = pop_range
-
-        if min_pop > max_pop or pop_size < min_pop:
-            raise IndexError("Population size is too small.")
-        elif pop_size > max_pop:
-            raise IndexError("Population size is too large.")
-
         self.__sense = sense
-        self.__size = KernelSize(pop_size, min_size=min_pop, max_size=max_pop)
-        self.__bounds = Bounds[bounds]
-        self.__resource = MainContextManager(
-            f,
-            self.__bounds,
-            epochs,
-            self.__size,
-            self.__seed,
-            self.__debug,
-            self.__sense,
+        self.__resource = build_context_manager(
+            f, bounds, epochs, pop_size, pop_range, self.__seed, debug, sense
         )
-
-        if self.__resource is None:
-            raise NotImplementedError("Function not implemented.")
 
         if hasattr(self.__model, "initialize"):
             self.__model.initialize(
@@ -102,7 +79,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         return float(X[0]), X[1:]
 
     def __call__(
-        self, seed: typing.Optional[int] = None, *args: typing.Any, **kwargs: typing.Any
+        self, seed: int | None = None, *args: typing.Any, **kwargs: typing.Any
     ) -> "BaseOptimizer":
         self.__seed = seed
         self.__model = self.__cls_model(*args, **kwargs)
