@@ -1,7 +1,7 @@
 import abc
 
-from cmenpy.population.operations.stream.base import StreamOperator
 from cmenpy.hints import NDArrayType
+from cmenpy.population.operations.stream.base import StreamOperator
 
 
 class WriterOperator(StreamOperator):

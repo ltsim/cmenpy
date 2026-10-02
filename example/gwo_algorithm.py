@@ -1,7 +1,7 @@
 import numpy as np
-import cmenpy as cm
-
 from opfunu.name_based import Ackley01
+
+import cmenpy as cm
 
 
 @cm.declare(...)

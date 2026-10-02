@@ -1,4 +1,5 @@
 import numpy as np
+
 import cmenpy as cm
 
 
@@ -37,12 +38,10 @@ class MyAlgorithm:
         )
 
         if pop.F[pop.best] < b_pop and pop.size > 1:
-            w_pop = pop.F[pop.worst]
-
             pop.remove(pop.worst)
         else:
             if pop.free_space:
-                n_pop = pop.insert(rng.uniform(-1, 1, bounds.ndim))
+                pop.insert(rng.uniform(-1, 1, bounds.ndim))
 
     @cm.vectorize()
     def test_vectorize(x, y):

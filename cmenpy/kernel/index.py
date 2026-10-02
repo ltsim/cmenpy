@@ -1,8 +1,11 @@
-import numpy as np
+import typing
 
-from cmenpy.kernel.mask import KernelMask
+import numpy as np
+import numpy.typing as npt
+
 from cmenpy.hints import NDArrayType
 from cmenpy.hints.option import SenseType
+from cmenpy.kernel.mask import KernelMask
 
 
 class BufferIndex:
@@ -11,16 +14,16 @@ class BufferIndex:
         self.__sense = sense
         self.__mask = mask
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Iterator[int]:
         pop_size, _ = self.__buffer.shape
 
-        return iter(range(0, pop_size))
+        return iter(range(pop_size))
 
-    def __invert__(self):
+    def __invert__(self) -> npt.NDArray[np.intp]:
         return np.where(~np.isnan(self.__buffer[:, 0]))[0].astype(int)
 
     @property
-    def sort(self):
+    def sort(self) -> npt.NDArray[np.intp]:
         _idx = np.argsort(self.__buffer[:, 0])
 
         if self.__sense == "max":
@@ -29,15 +32,15 @@ class BufferIndex:
         return _idx
 
     @property
-    def best(self):
+    def best(self) -> np.intp:
         if self.__sense == "max":
-            return self.sort[-1]
+            return typing.cast(np.intp, self.sort[-1])
 
-        return self.sort[0]
+        return typing.cast(np.intp, self.sort[0])
 
     @property
-    def worst(self):
+    def worst(self) -> np.intp:
         if self.__sense == "max":
-            return self.sort[0]
+            return typing.cast(np.intp, self.sort[0])
 
-        return self.sort[-1]
+        return typing.cast(np.intp, self.sort[-1])
