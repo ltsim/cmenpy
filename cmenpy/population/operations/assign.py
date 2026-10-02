@@ -1,9 +1,9 @@
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream.vectorizable import (
-    VectorizableOperator,
     PipelineOperator,
+    VectorizableOperator,
 )
-from cmenpy.hints import NDArrayType
 
 
 class AssignPipeline(PipelineOperator):
@@ -11,7 +11,7 @@ class AssignPipeline(PipelineOperator):
         self.__idx = idx
         self.__buffer = buffer
 
-    def __lshift__(self, value: NDArrayType):
+    def __lshift__(self, value: NDArrayType) -> None:
         self.__buffer.raw[self.__idx] = value
 
 

@@ -1,12 +1,11 @@
-import typing
 
 
 class KernelSize:
     def __init__(
         self,
         size: int,
-        min_size: typing.Optional[int] = None,
-        max_size: typing.Optional[int] = None,
+        min_size: int | None = None,
+        max_size: int | None = None,
     ):
         if min_size is None:
             min_size = size

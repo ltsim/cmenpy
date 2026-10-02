@@ -1,15 +1,14 @@
-import typing
 
 import numpy as np
 
 from cmenpy.bounds import Bounds
+from cmenpy.hints import NDArrayType
+from cmenpy.hints.option import SenseType
 from cmenpy.kernel.index import BufferIndex
 from cmenpy.kernel.low import init_buffer
 from cmenpy.kernel.mask import KernelMask
 from cmenpy.kernel.size import KernelSize
 from cmenpy.target import TargetFunction
-from cmenpy.hints import NDArrayType
-from cmenpy.hints.option import SenseType
 
 
 class KernelBuffer:
@@ -31,7 +30,7 @@ class KernelBuffer:
     def apply(
         self,
         x: NDArrayType,
-        idx: typing.Union[int, slice, typing.List[int], None] = None,
+        idx: int | slice | list[int] | None = None,
     ) -> None:
         """Vectorizes the target function to evaluate and update the solutions matrix.
 
@@ -62,7 +61,7 @@ class KernelBuffer:
             )
 
     @property
-    def shape(self):
+    def shape(self) -> tuple[int, ...]:
         return self.__buffer.shape
 
     @property
