@@ -355,3 +355,6 @@ poetry.toml
 
 # LSP config files
 pyrightconfig.json
+
+# graphify generated artefacts
+graphify-out/
