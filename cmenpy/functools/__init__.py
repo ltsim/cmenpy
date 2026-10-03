@@ -29,4 +29,16 @@ def is_worst(ab: AB[typing.Any, typing.Any], sense: SenseType = "min") -> npt.ND
     return _compare(ab, sense, better=False)
 
 
-__all__ = ["is_best", "is_worst"]
+def best_index(values: npt.ArrayLike, sense: SenseType = "min") -> int:
+    _values = np.asarray(values)
+
+    return int(np.argmin(_values)) if sense == "min" else int(np.argmax(_values))
+
+
+def worst_index(values: npt.ArrayLike, sense: SenseType = "min") -> int:
+    _values = np.asarray(values)
+
+    return int(np.argmax(_values)) if sense == "min" else int(np.argmin(_values))
+
+
+__all__ = ["best_index", "is_best", "is_worst", "worst_index"]

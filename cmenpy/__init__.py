@@ -11,7 +11,7 @@ from cmenpy.compile import (
     vectorize,
 )
 from cmenpy.epoch import EpochIteration
-from cmenpy.functools import is_best, is_worst
+from cmenpy.functools import best_index, is_best, is_worst, worst_index
 from cmenpy.kernel import KernelBuffer, KernelSize
 from cmenpy.model import declare, template
 from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
@@ -30,6 +30,7 @@ __all__ = [
     "Scalar",
     "TemplateOptimizerModel",
     "Variable",
+    "best_index",
     "declare",
     "guvectorize",
     "is_best",
@@ -39,4 +40,5 @@ __all__ = [
     "prepare",
     "template",
     "vectorize",
+    "worst_index",
 ]
