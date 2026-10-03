@@ -17,6 +17,7 @@ from cmenpy.model import declare, template
 from cmenpy.model.optimizer import FunctionOptimizerModel, TemplateOptimizerModel
 from cmenpy.model.optimizer.variables import Argument, Variable
 from cmenpy.population.swarm import PopulationSwarm
+from cmenpy.target import VectorizedTarget, vectorized_target
 
 __all__ = [
     "Argument",
@@ -30,6 +31,7 @@ __all__ = [
     "Scalar",
     "TemplateOptimizerModel",
     "Variable",
+    "VectorizedTarget",
     "best_index",
     "declare",
     "guvectorize",
@@ -40,5 +42,6 @@ __all__ = [
     "prepare",
     "template",
     "vectorize",
+    "vectorized_target",
     "worst_index",
 ]

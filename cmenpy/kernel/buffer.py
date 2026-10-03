@@ -38,6 +38,9 @@ class KernelBuffer:
         from column 1 onwards. Supports updating a single row, a slice, a list/array
         of indices, or the entire active matrix if `idx` is None.
 
+        Targets wrapped with `cmenpy.target.vectorized_target` score the whole block
+        with a single call; the others fall back to a row-by-row evaluation.
+
         Parameters
         ----------
         x : NDArrayType
@@ -55,6 +58,10 @@ class KernelBuffer:
 
         if isinstance(idx, int):
             self.__buffer[rows, 0] = self.__target.evaluate(x)
+        elif self.__target.vectorized:
+            self.__buffer[rows, 0] = self.__target.evaluate_matrix(
+                self.__buffer[rows, 1:]
+            )
         else:
             self.__buffer[rows, 0] = np.apply_along_axis(
                 self.__target, 1, self.__buffer[rows, 1:]
