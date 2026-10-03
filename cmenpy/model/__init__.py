@@ -23,7 +23,7 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
     original_init = cls.__init__
 
     def dynamic_init(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> None:
-        hints = typing.get_type_hints(cls)
+        hints = typing.get_type_hints(cls, include_extras=True)
         field_names = [k for k in hints if k not in methods_to_check]
 
         pos_arguments = dict(zip(field_names, args))
