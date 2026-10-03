@@ -1,5 +1,3 @@
-import typing
-
 import numpy.typing as npt
 
 from cmenpy.hints import NDArrayType
@@ -16,8 +14,8 @@ class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType:
-        return typing.cast(NDArrayType, self.__buffer.raw[:, 0].reshape(-1)[item])
+    def __getitem__(self, item: int | slice) -> NDArrayType:
+        return self.__buffer.raw[:, 0].reshape(-1)[item]
 
     def __array__(
         self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
@@ -39,8 +37,8 @@ class BufferMatrixSolutions(BufferMatrixAbstract, BufferMatrixAccess, BufferMatr
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType:
-        return typing.cast(NDArrayType, self.__buffer.raw[:, 1:][item])
+    def __getitem__(self, item: int | slice) -> NDArrayType:
+        return self.__buffer.raw[:, 1:][item]
 
     def __array__(
         self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
