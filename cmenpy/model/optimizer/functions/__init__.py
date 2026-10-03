@@ -69,6 +69,8 @@ class FunctionOptimizerModel(BaseOptimizer):
                     buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
+                    epoch=self.__resource.epoch_it.current,
+                    epochs=self.__resource.epoch_it.max,
                 ),
             )
 

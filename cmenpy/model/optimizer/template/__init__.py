@@ -1,6 +1,7 @@
 import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
+from cmenpy.compile import kernels
 from cmenpy.context import Context, MainContextManager
 from cmenpy.hints import NDArrayType, ScalarType
 from cmenpy.hints.option import SenseType
@@ -32,6 +33,14 @@ class TemplateOptimizerModel(BaseOptimizer):
 
         return self.__resource.tracker.history
 
+    def prepare(self) -> dict[str, list[str]]:
+        """Return the numba kernels declared on the wrapped class.
+
+        Declared kernels compile eagerly when the class is defined; this hook
+        reports their signatures and can be used to verify/warm the cache.
+        """
+        return kernels(self.__cls_model)
+
     def solve(
         self,
         f: Target,
@@ -41,9 +50,13 @@ class TemplateOptimizerModel(BaseOptimizer):
         pop_range: tuple[int, int] | None = None,
         debug: bool = False,
         sense: SenseType = "min",
+        prepare: bool = False,
     ) -> tuple[float, NDArrayType]:
         if self.__model is None:
             raise NotImplementedError()
+
+        if prepare:
+            self.prepare()
 
         self.__debug = debug
         self.__sense = sense
@@ -59,6 +72,8 @@ class TemplateOptimizerModel(BaseOptimizer):
                     buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
+                    epoch=self.__resource.epoch_it.current,
+                    epochs=self.__resource.epoch_it.max,
                 ),
             )
 
@@ -71,6 +86,8 @@ class TemplateOptimizerModel(BaseOptimizer):
                     buffer=self.__resource.buffer,
                     generator=self.__resource.default_generator,
                     sense=self.__sense,
+                    epoch=self.__resource.epoch_it.current,
+                    epochs=self.__resource.epoch_it.max,
                 ),
             )
 

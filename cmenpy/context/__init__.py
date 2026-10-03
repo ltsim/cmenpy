@@ -17,12 +17,16 @@ class Context:
         buffer: KernelBuffer,
         generator: DefaultGenerator,
         sense: SenseType,
+        epoch: int = 0,
+        epochs: int = 0,
     ):
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
         self.__buff = buffer
         self.__generator = generator
         self.__sense = sense
+        self.__epoch = epoch
+        self.__epochs = epochs
 
     @property
     def target(self) -> TargetFunction:
@@ -43,6 +47,14 @@ class Context:
     @property
     def sense(self) -> SenseType:
         return self.__sense
+
+    @property
+    def epoch(self) -> int:
+        return self.__epoch
+
+    @property
+    def epochs(self) -> int:
+        return self.__epochs
 
 
 class MainContextManager:
