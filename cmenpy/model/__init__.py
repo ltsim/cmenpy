@@ -8,6 +8,9 @@ from cmenpy.model.optimizer import (
 )
 from cmenpy.model.optimizer.functions import AlgorithmFunction
 
+#: Compile options a model can set at instantiation; forwarded to its kernels.
+_COMPILE_OPTION_KEYS = ("parallel", "fastmath", "cache")
+
 
 def declare_from_func(
     func: AlgorithmFunction, **kwargs: typing.Any
@@ -23,6 +26,11 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
     original_init = cls.__init__
 
     def dynamic_init(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> None:
+        compile_options = {
+            key: bool(kwargs.pop(key, False)) for key in _COMPILE_OPTION_KEYS
+        }
+        self._compile_options = compile_options
+
         hints = typing.get_type_hints(cls, include_extras=True)
         field_names = [k for k in hints if k not in methods_to_check]
 

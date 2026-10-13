@@ -17,6 +17,7 @@ class TemplateOptimizerModel(BaseOptimizer):
         self.__alias = str(cls_model.__name__)
         self.__cls_model: type[ModelProtocol] = cls_model
         self.__inner: CallableFunction | None = None
+        self.__model: ModelProtocol | None = None
         self.__resource: MainContextManager | None = None
         self.__seed: int | None = None
         self.__debug = False
@@ -27,19 +28,29 @@ class TemplateOptimizerModel(BaseOptimizer):
         return self.__alias
 
     @property
+    def model_class(self) -> type[ModelProtocol]:
+        """The class wrapped by :func:`cmenpy.template`."""
+        return self.__cls_model
+
+    @property
     def tracker(self) -> list[EpochHistory]:
         if self.__resource is None:
             return []
 
         return self.__resource.tracker.history
 
+    @property
+    def compile_options(self) -> dict[str, bool]:
+        """Compile options (``parallel``/``fastmath``/``cache``) of the model."""
+        return dict(getattr(self.__model, "_compile_options", {}))
+
     def prepare(self) -> dict[str, list[str]]:
         """Return the numba kernels declared on the wrapped class.
 
-        Declared kernels compile eagerly when the class is defined; this hook
-        reports their signatures and can be used to verify/warm the cache.
+        Kernels compile on first use; this hook forces compilation with the
+        model's compile options and reports their signatures.
         """
-        return kernels(self.__cls_model)
+        return kernels(self.__cls_model, self.compile_options)
 
     def solve(
         self,
