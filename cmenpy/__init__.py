@@ -3,11 +3,12 @@ __version__ = "2026a0"
 from cmenpy.bounds import Bounds
 from cmenpy.compile import (
     Array,
+    Contract,
     Scalar,
-    guvectorize,
     jit,
-    parallel,
+    precompile,
     prepare,
+    reduce,
     vectorize,
 )
 from cmenpy.epoch import EpochIteration
@@ -23,6 +24,7 @@ __all__ = [
     "Argument",
     "Array",
     "Bounds",
+    "Contract",
     "EpochIteration",
     "FunctionOptimizerModel",
     "KernelBuffer",
@@ -34,12 +36,12 @@ __all__ = [
     "VectorizedTarget",
     "best_index",
     "declare",
-    "guvectorize",
     "is_best",
     "is_worst",
     "jit",
-    "parallel",
+    "precompile",
     "prepare",
+    "reduce",
     "template",
     "vectorize",
     "vectorized_target",
