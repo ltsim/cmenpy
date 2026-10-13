@@ -26,3 +26,17 @@ It provides the clean, abstractions necessary to build custom evolutionary algor
 ---
 
 * Developed by: [LTSIM](mailto:tsim@cucei.udg.mx) @ 2026
+
+---
+
+## Documentation
+
+Full guides and API reference live in `docs/` (MkDocs + Material):
+
+```bash
+uv sync --extra docs
+.venv/bin/mkdocs serve
+```
+
+Start with the [Quickstart](docs/quickstart.md), then the
+[Numba kernels](docs/compile.md) and [Models](docs/models.md) guides.

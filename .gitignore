@@ -66,6 +66,9 @@ desktop.ini
 graphify-out/
 .graphify/
 
+# MkDocs build output
+site/
+
 # AI assistants: per-tool configuration, rules and skills
 .agents/
 .aiassistant/
