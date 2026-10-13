@@ -1,7 +1,7 @@
 import abc
+import typing
 
 from cmenpy.hints import NDArrayType
-import typing
 
 
 class BufferMatrixAccess(abc.ABC):

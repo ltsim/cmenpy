@@ -1,14 +1,12 @@
-import typing
-
 import numpy as np
 
 from cmenpy.bounds import Bounds
 from cmenpy.epoch import EpochIteration
 from cmenpy.generator import DefaultGenerator
+from cmenpy.hints.option import SenseType
 from cmenpy.kernel import KernelBuffer, KernelSize
 from cmenpy.target import Target, TargetFunction
 from cmenpy.tracker import Tracker
-from cmenpy.hints.option import SenseType
 
 
 class Context:
@@ -19,12 +17,16 @@ class Context:
         buffer: KernelBuffer,
         generator: DefaultGenerator,
         sense: SenseType,
+        epoch: int = 0,
+        epochs: int = 0,
     ):
         self.__target = TargetFunction(f, bounds)
         self.__bounds = bounds
         self.__buff = buffer
         self.__generator = generator
         self.__sense = sense
+        self.__epoch = epoch
+        self.__epochs = epochs
 
     @property
     def target(self) -> TargetFunction:
@@ -46,6 +48,14 @@ class Context:
     def sense(self) -> SenseType:
         return self.__sense
 
+    @property
+    def epoch(self) -> int:
+        return self.__epoch
+
+    @property
+    def epochs(self) -> int:
+        return self.__epochs
+
 
 class MainContextManager:
     def __init__(
@@ -54,7 +64,7 @@ class MainContextManager:
         bounds: Bounds,
         epochs: int,
         size: KernelSize,
-        seed: typing.Optional[int] = None,
+        seed: int | None = None,
         debug: bool = False,
         sense: SenseType = "min",
     ):
@@ -68,7 +78,7 @@ class MainContextManager:
         self.__epoch_it = EpochIteration(epochs, self.__tracker, self.__target, debug)
 
     @property
-    def sense(self):
+    def sense(self) -> SenseType:
         return self.__sense
 
     @property

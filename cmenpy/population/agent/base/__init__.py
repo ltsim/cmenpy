@@ -1,31 +1,33 @@
 import abc
 import typing
 
+import numpy as np
+
 from cmenpy.hints import NDArrayType, ScalarType
 
 
 class BaseAgent(abc.ABC):
-    def __lt__(self, other: typing.Union["BaseAgent", ScalarType]):
+    def __lt__(self, other: typing.Union["BaseAgent", ScalarType]) -> bool:
         if isinstance(other, BaseAgent):
-            return self.fitness < other.fitness
+            return bool(self.fitness < other.fitness)
         elif any(isinstance(other, t) for t in (int, float)):
-            return self.fitness < other
+            return bool(self.fitness < other)
 
         return False
 
     def __gt__(self, other: typing.Union["BaseAgent", ScalarType]) -> bool:
         if isinstance(other, BaseAgent):
-            return self.fitness > other.fitness
+            return bool(self.fitness > other.fitness)
         elif any(isinstance(other, t) for t in (int, float)):
-            return self.fitness > other
+            return bool(self.fitness > other)
 
         return False
 
     @abc.abstractmethod
-    def __iter__(self): ...
+    def __iter__(self) -> typing.Iterator[np.number[typing.Any]]: ...
 
     @abc.abstractmethod
-    def __getitem__(self, key: int) -> ScalarType: ...
+    def __getitem__(self, key: int) -> np.number[typing.Any]: ...
 
     @property
     @abc.abstractmethod
@@ -37,7 +39,7 @@ class BaseAgent(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def fitness(self) -> ScalarType: ...
+    def fitness(self) -> np.number[typing.Any]: ...
 
     @property
     @abc.abstractmethod
@@ -49,5 +51,5 @@ class BaseAgent(abc.ABC):
     def __repr__(self) -> str:
         return f"Agent(i={self.i}, fitness={self.fitness}, solution={self.solution})"
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.i)

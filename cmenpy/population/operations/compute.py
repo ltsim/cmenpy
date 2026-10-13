@@ -1,9 +1,9 @@
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream.vectorizable import (
-    VectorizableOperator,
     PipelineOperator,
+    VectorizableOperator,
 )
-from cmenpy.hints import NDArrayType
 
 
 class ComputePipeline(PipelineOperator):

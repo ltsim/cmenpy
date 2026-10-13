@@ -1,3 +1,8 @@
+import typing
+
+import numpy as np
+import numpy.typing as npt
+
 from cmenpy.kernel import KernelBuffer
 
 
@@ -6,23 +11,19 @@ class BaseIterator:
         self.__buffer = buffer
 
     @property
-    def best(self):
+    def best(self) -> np.intp:
         return self.__buffer.idx.best
 
     @property
-    def worst(self):
+    def worst(self) -> np.intp:
         return self.__buffer.idx.worst
 
     @property
-    def sort(self):
+    def sort(self) -> npt.NDArray[np.intp]:
         return self.__buffer.idx.sort
 
-    @property
-    def idx(self) -> list:
+    def __iter__(self) -> typing.Iterator[int]:
         return iter(self.__buffer.idx)
 
-    def __iter__(self):
-        return iter(self.__buffer.idx)
-
-    def __invert__(self):
+    def __invert__(self) -> typing.Iterator[np.intp]:
         return iter(~self.__buffer.idx)

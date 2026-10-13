@@ -3,10 +3,9 @@ import typing
 from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.context import Context
 from cmenpy.epoch import EpochIteration
+from cmenpy.hints import NDArrayType, ScalarType
 from cmenpy.model.optimizer.functions import FunctionParamsArguments
-from cmenpy.population.agent.base import BaseAgent
 from cmenpy.target import Target
-from cmenpy.hints import ScalarType
 
 
 class AlgorithmFunction(typing.Protocol):
@@ -27,5 +26,5 @@ class CallableFunction(typing.Protocol):
         bounds: Bounds | SequenceStructure[ScalarType],
         epochs: int,
         pop_size: int,
-        pop_range: typing.Optional[tuple[int, int]] = None,
-    ) -> BaseAgent: ...
+        pop_range: tuple[int, int] | None = None,
+    ) -> tuple[float, NDArrayType]: ...
