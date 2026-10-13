@@ -43,13 +43,13 @@ class MyAlgorithm:
             if pop.free_space:
                 pop.insert(rng.uniform(-1, 1, bounds.ndim))
 
-    @cm.vectorize()
-    def test_vectorize(x, y):
-        return x * 2.0 + y ** 2.0
+    @cm.vectorize
+    def test_vectorize(x: "Scalar[float]", y: "Scalar[float]") -> "Scalar[float]":
+        return x * 2.0 + y**2.0
 
-    @cm.jit()
-    def test_jit(A):
-        return A ** 2
+    @cm.precompile
+    def test_jit(A: "Array[float, 1]"):
+        return A**2
 
 
 if __name__ == "__main__":

@@ -4,11 +4,12 @@ This is a class-based copy of ``example/gwo_algorithm.py`` that delegates the
 heavy matrix math to numba through the compile decorators:
 
 * ``@cm.vectorize``  -> elementwise ufunc with automatic casting.
-* ``@cm.parallel``   -> ``numba.njit(parallel=True)`` over ``nb.prange``.
-* ``@cm.jit``        -> ``numba.njit`` for plain matrix algebra.
+* ``@cm.precompile(parallel=True)`` -> ``numba.njit(parallel=True)`` over
+  ``nb.prange``; the model enables it with ``GreyWolfOptimizer(parallel=True)``.
+* ``@cm.precompile`` -> ``numba.njit`` for plain matrix algebra.
 
-The ``cm.Array``/``cm.Scalar`` markers tell the decorators how to cast each
-argument (``numpy.asarray`` / ``float``) before calling the compiled kernel.
+The ``Array``/``Scalar`` annotations tell the decorators how to cast and type
+each argument (``numpy.asarray`` / ``float``) before calling the compiled kernel.
 """
 
 import numba as nb
@@ -51,21 +52,21 @@ class GreyWolfOptimizer:
         mask = cm.is_best((n_pop.F, pop.F), ctx.sense)
         pop.assign[mask] << n_pop.access[mask]
 
-    @cm.vectorize(cm.Scalar[float, [cm.Scalar[float], cm.Scalar[float]]])
-    def scale(r, a):
+    @cm.vectorize
+    def scale(r: "Scalar[float]", a: "Scalar[float]") -> "Scalar[float]":
         return a * (2.0 * r - 1.0)
 
-    @cm.vectorize(cm.Scalar[float, [cm.Scalar[float]]])
-    def sweep(r):
+    @cm.vectorize
+    def sweep(r: "Scalar[float]") -> "Scalar[float]":
         return 2.0 * r
 
-    @cm.parallel(
-        cm.Array[float, 2],
-        cm.Array[float, 2],
-        cm.Array[float, 3],
-        cm.Array[float, 3],
-    )
-    def hunt(X, leaders, A, C):
+    @cm.precompile(parallel=True)
+    def hunt(
+        X: "Array[float, 2]",
+        leaders: "Array[float, 2]",
+        A: "Array[float, 3]",
+        C: "Array[float, 3]",
+    ):
         out = np.empty_like(X)
 
         for i in nb.prange(X.shape[0]):
@@ -79,22 +80,19 @@ class GreyWolfOptimizer:
 
         return out
 
-    @cm.guvectorize(
-        [
-            cm.Array[float, 1],
-            cm.Scalar[float],
-            cm.Scalar[float],
-            cm.Array[float, 1],
-        ],
-        "(n),(),()->(n)",
-    )
-    def clip(row, low, up, out):
+    @cm.reduce
+    def clip(
+        row: "Array[float, 'n']",
+        low: "Scalar[float]",
+        up: "Scalar[float]",
+        out: "Array[float, 'n']",
+    ):
         for i in range(row.shape[0]):
             out[i] = min(max(row[i], low), up)
 
 
 if __name__ == "__main__":
-    model = GreyWolfOptimizer()
+    model = GreyWolfOptimizer(parallel=True)
     f = Ackley01(ndim=30)
 
     best_pop = model.solve(f.evaluate, f.bounds, 150, 75)

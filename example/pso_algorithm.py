@@ -2,11 +2,12 @@
 
 Swarm state (velocity, personal bests and global best) is kept as public class
 attributes declared with ``cm.Variable``. The update kernels are compiled with
-numba and use the ``cm.Array``/``cm.Scalar`` casting markers:
+numba and use ``Array``/``Scalar`` annotations for casting and typing:
 
-* ``@cm.jit``       -> matrix algebra for the velocity update.
-* ``@cm.vectorize`` -> elementwise position update (clip).
-* ``@cm.parallel``  -> ``nb.prange`` velocity clamp.
+* ``@cm.precompile`` -> matrix algebra for the velocity update.
+* ``@cm.vectorize``  -> elementwise position update (clip).
+* ``@cm.precompile(parallel=True)`` -> ``nb.prange`` velocity clamp; the model
+  enables it with ``ParticleSwarmOptimization(parallel=True)``.
 """
 
 import numba as nb
@@ -70,36 +71,31 @@ class ParticleSwarmOptimization:
 
         self.gbest = self.pbest[cm.best_index(self.pbest_f, ctx.sense)].copy()
 
-    @cm.jit(
-        cm.Array[float, 2],
-        cm.Array[float, 2],
-        cm.Array[float, 2],
-        cm.Array[float, 1],
-        cm.Array[float, 2],
-        cm.Array[float, 2],
-        cm.Scalar[float],
-        cm.Scalar[float],
-        cm.Scalar[float],
-    )
-    def velocity(x, v, pbest, gbest, r1, r2, w, c1, c2):
+    @cm.precompile
+    def velocity(
+        x: "Array[float, 2]",
+        v: "Array[float, 2]",
+        pbest: "Array[float, 2]",
+        gbest: "Array[float, 1]",
+        r1: "Array[float, 2]",
+        r2: "Array[float, 2]",
+        w: "Scalar[float]",
+        c1: "Scalar[float]",
+        c2: "Scalar[float]",
+    ):
         return w * v + c1 * r1 * (pbest - x) + c2 * r2 * (gbest - x)
 
-    @cm.vectorize(
-        cm.Scalar[
-            float,
-            [
-                cm.Scalar[float],
-                cm.Scalar[float],
-                cm.Scalar[float],
-                cm.Scalar[float],
-            ],
-        ]
-    )
-    def position(x, v, low, up):
+    @cm.vectorize
+    def position(
+        x: "Scalar[float]",
+        v: "Scalar[float]",
+        low: "Scalar[float]",
+        up: "Scalar[float]",
+    ) -> "Scalar[float]":
         return min(max(x + v, low), up)
 
-    @cm.parallel(cm.Array[float, 2], cm.Scalar[float])
-    def limit(v, vmax):
+    @cm.precompile(parallel=True)
+    def limit(v: "Array[float, 2]", vmax: "Scalar[float]"):
         out = np.empty_like(v)
 
         for i in nb.prange(v.shape[0]):
@@ -110,7 +106,7 @@ class ParticleSwarmOptimization:
 
 
 if __name__ == "__main__":
-    model = ParticleSwarmOptimization(seed=1)
+    model = ParticleSwarmOptimization(seed=1, parallel=True)
     f = Ackley01(ndim=30)
 
     best_pop = model.solve(f.evaluate, f.bounds, 300, 40)
