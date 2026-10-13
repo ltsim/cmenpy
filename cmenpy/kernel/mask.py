@@ -11,30 +11,30 @@ class KernelMask:
         size: KernelSize,
     ):
         self.__size: KernelSize = size
-        self.__mask = np.fromiter((False for _ in range(0, size.max)), dtype=bool)
+        self.__mask = np.fromiter((False for _ in range(size.max)), dtype=bool)
         self.__mask[0 : self.__size.size] = True
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Iterator[bool]:
         return iter(map(bool, self.__mask))
 
     def __setitem__(
         self,
-        key: typing.Union[int, slice, typing.List[int], None],
+        key: int | slice | list[int] | None,
         value: bool,
-    ):
+    ) -> None:
         self.__mask[key] = value
 
     def __getitem__(
-        self, key: typing.Union[int, slice, typing.List[int], None]
+        self, key: int | slice | list[int] | None
     ) -> typing.Any:
         return self.__mask[key]
 
     @property
-    def active(self):
+    def active(self) -> int:
         return sum(self.__mask)
 
     @property
-    def passive(self):
+    def passive(self) -> int:
         return len(self.__mask) - sum(self.__mask)
 
     @property

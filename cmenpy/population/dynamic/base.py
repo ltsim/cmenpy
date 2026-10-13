@@ -1,7 +1,7 @@
 import numpy as np
 
-from cmenpy.kernel import KernelBuffer
 from cmenpy.hints import NDArrayType
+from cmenpy.kernel import KernelBuffer
 
 
 class DynamicBase:
@@ -9,7 +9,7 @@ class DynamicBase:
         self.__buffer = buffer
 
     @property
-    def free_space(self):
+    def free_space(self) -> bool:
         return sum(self.__buffer.mask) < self.__buffer.size.max
 
     def remove(self, idx: int) -> None:

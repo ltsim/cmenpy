@@ -1,6 +1,6 @@
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream import ReaderOperator
-from cmenpy.hints import NDArrayType
 
 
 class AccessOperator(ReaderOperator):

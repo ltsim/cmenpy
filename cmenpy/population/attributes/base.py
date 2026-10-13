@@ -1,10 +1,12 @@
+import numpy.typing as npt
+
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.kernel.index import BufferIndex
-from cmenpy.hints import NDArrayType
 from cmenpy.population.attributes.matrix import (
     BufferMatrixAbstract,
-    BufferMatrixCompute,
     BufferMatrixAccess,
+    BufferMatrixCompute,
 )
 
 
@@ -12,10 +14,12 @@ class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType:
+    def __getitem__(self, item: int | slice) -> NDArrayType:
         return self.__buffer.raw[:, 0].reshape(-1)[item]
 
-    def __array__(self, dtype=None, copy=None) -> NDArrayType:
+    def __array__(
+        self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
+    ) -> NDArrayType:
         return self.__buffer.raw[:, 0].reshape(-1)
 
     def __repr__(self) -> str:
@@ -23,10 +27,7 @@ class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
 
         return f"F [{_F}]"
 
-    def __str__(self) -> str:
-        _F = ", ".join(map(str, self.__buffer.raw[:, 0].reshape(-1)))
-
-        return f"F [{_F}]"
+    __str__ = __repr__
 
     def __invert__(self) -> NDArrayType:
         return self.__buffer.raw[:, 0].reshape(-1)[self.__buffer.mask.founds]
@@ -36,10 +37,12 @@ class BufferMatrixSolutions(BufferMatrixAbstract, BufferMatrixAccess, BufferMatr
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
-    def __getitem__(self, item: int) -> NDArrayType:
+    def __getitem__(self, item: int | slice) -> NDArrayType:
         return self.__buffer.raw[:, 1:][item]
 
-    def __array__(self, dtype=None, copy=None) -> NDArrayType:
+    def __array__(
+        self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
+    ) -> NDArrayType:
         return self.__buffer.raw[:, 1:]
 
     def __repr__(self) -> str:
@@ -47,15 +50,12 @@ class BufferMatrixSolutions(BufferMatrixAbstract, BufferMatrixAccess, BufferMatr
 
         return f"X [{_X}]"
 
-    def __str__(self) -> str:
-        _X = ", ".join(map(str, self.__buffer.raw[:, 1:]))
-
-        return f"X [{_X}]"
+    __str__ = __repr__
 
     def __invert__(self) -> NDArrayType:
         return self.__buffer.raw[:, 1:][self.__buffer.mask.founds]
 
-    def __lshift__(self, other):
+    def __lshift__(self, other: NDArrayType) -> "BufferMatrixSolutions":
         self.__buffer.apply(other)
         return self
 
@@ -77,5 +77,5 @@ class BufferMatrixOperations:
         return self.__buffer.idx
 
     @property
-    def size(self):
+    def size(self) -> int:
         return self.__buffer.mask.active

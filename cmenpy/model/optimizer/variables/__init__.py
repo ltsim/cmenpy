@@ -2,7 +2,7 @@ import typing
 
 
 class Argument:
-    def __class_getitem__(cls, params: typing.Any):
+    def __class_getitem__(cls, params: typing.Any) -> typing.Any:
         if not isinstance(params, tuple):
             params = (params,)
 
@@ -35,5 +35,5 @@ class Argument:
 
 
 class Variable:
-    def __class_getitem__(cls, target_type: typing.Any):
+    def __class_getitem__(cls, target_type: typing.Any) -> typing.Any:
         return typing.Annotated[target_type, {"delayed_init": True}]

@@ -2,19 +2,19 @@ import abc
 
 
 class StreamOperator(abc.ABC):
-    def __init__(self, shape: tuple[int, int]):
+    def __init__(self, shape: tuple[int, ...]):
         self.__shape = shape
 
     @property
-    def shape(self) -> tuple[int, int]:
+    def shape(self) -> tuple[int, ...]:
         return self.__shape
 
     @property
-    def rows(self):
+    def rows(self) -> int:
         return self.__shape[0]
 
     @property
-    def columns(self):
+    def columns(self) -> int:
         return self.__shape[1]
 
     @abc.abstractmethod

@@ -1,7 +1,12 @@
 import abc
 
+import numpy.typing as npt
+
 from cmenpy.hints import NDArrayType
-from cmenpy.population.attributes.matrix.mixin import BufferMatrixCompute, BufferMatrixAccess
+from cmenpy.population.attributes.matrix.mixin import (
+    BufferMatrixAccess,
+    BufferMatrixCompute,
+)
 
 
 class BufferMatrixAbstract(abc.ABC):
@@ -9,7 +14,9 @@ class BufferMatrixAbstract(abc.ABC):
     def __getitem__(self, item: int) -> NDArrayType: ...
 
     @abc.abstractmethod
-    def __array__(self, dtype=None, copy=None) -> NDArrayType: ...
+    def __array__(
+        self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
+    ) -> NDArrayType: ...
 
     @abc.abstractmethod
     def __repr__(self) -> str: ...
@@ -18,4 +25,4 @@ class BufferMatrixAbstract(abc.ABC):
     def __str__(self) -> str: ...
 
 
-__all__ = ["BufferMatrixAbstract", "BufferMatrixCompute", "BufferMatrixAccess"]
+__all__ = ["BufferMatrixAbstract", "BufferMatrixAccess", "BufferMatrixCompute"]

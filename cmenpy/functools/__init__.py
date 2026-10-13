@@ -1,6 +1,7 @@
 import typing
 
 import numpy as np
+import numpy.typing as npt
 
 from cmenpy.hints.option import SenseType
 
@@ -9,36 +10,35 @@ B = typing.TypeVar("B")
 AB = tuple[A, B]
 
 
-def is_best(ab: AB, sense: SenseType = "min"):
-    a, b = ab
+def _compare(ab: AB[typing.Any, typing.Any], sense: SenseType, better: bool) -> npt.NDArray[np.intp]:
+    a, b = np.array(ab[0]), np.array(ab[1])
 
-    if sense == "min":
-        mask = np.array(a) < np.array(b)
+    if (sense == "min") == better:
+        mask = a < b
     else:
-        mask = np.array(a) > np.array(b)
+        mask = a > b
 
     return np.flatnonzero(mask)
 
 
-def is_worst(ab: AB, sense: SenseType = "min"):
-    a, b = ab
-
-    if sense == "min":
-        mask = np.array(a) > np.array(b)
-    else:
-        mask = np.array(a) < np.array(b)
-
-    return np.flatnonzero(mask)
+def is_best(ab: AB[typing.Any, typing.Any], sense: SenseType = "min") -> npt.NDArray[np.intp]:
+    return _compare(ab, sense, better=True)
 
 
-
-def best_of(a: A) -> int:
-    return a.best
-
+def is_worst(ab: AB[typing.Any, typing.Any], sense: SenseType = "min") -> npt.NDArray[np.intp]:
+    return _compare(ab, sense, better=False)
 
 
-def worst_of(a: A) -> int:
-    return a.worst
+def best_index(values: npt.ArrayLike, sense: SenseType = "min") -> int:
+    _values = np.asarray(values)
+
+    return int(np.argmin(_values)) if sense == "min" else int(np.argmax(_values))
 
 
-__all__ = ["is_best", "is_worst", "best_of", "worst_of"]
+def worst_index(values: npt.ArrayLike, sense: SenseType = "min") -> int:
+    _values = np.asarray(values)
+
+    return int(np.argmax(_values)) if sense == "min" else int(np.argmin(_values))
+
+
+__all__ = ["best_index", "is_best", "is_worst", "worst_index"]

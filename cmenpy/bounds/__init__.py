@@ -3,33 +3,33 @@ import typing
 
 from cmenpy.hints import ScalarType
 
-InnerSequence = typing.Union[typing.Tuple[ScalarType, ...], typing.List[ScalarType]]
-SequenceStructure = typing.List[InnerSequence[ScalarType]]
+InnerSequence = tuple[ScalarType, ...] | list[ScalarType]
+SequenceStructure = list[InnerSequence[ScalarType]]
 
 
 class Bounds:
     def __init__(self, bounds: SequenceStructure[ScalarType]):
-        self.__bounds = bounds
+        self.__bounds: SequenceStructure[typing.Any] = bounds
 
     @functools.cached_property
-    def ndim(self):
+    def ndim(self) -> int:
         return len(self.__bounds)
 
     @property
-    def low(self):
+    def low(self) -> typing.Any:
         return self.__bounds[0][0]
 
     @property
-    def up(self):
+    def up(self) -> typing.Any:
         return self.__bounds[0][1]
 
-    def __iter__(self):
-        return (b for b in self.__bounds)
+    def __iter__(self) -> typing.Iterator[InnerSequence[typing.Any]]:
+        return iter(self.__bounds)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.__bounds)
 
-    def __class_getitem__(cls, params):
+    def __class_getitem__(cls, params: typing.Any) -> "Bounds":
         return create_bounds(params)
 
 

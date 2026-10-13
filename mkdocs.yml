@@ -1,0 +1,27 @@
+site_name: cmenpy
+site_description: Compute Metaheuristic Engine for Python — a NumPy/Numba framework for population-based metaheuristics
+site_author: LTSIM
+repo_url: https://github.com/ltsim/cmenpy
+
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            members_order: source
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Numba kernels: compile.md
+  - Models: models.md
+  - Population DSL: population.md
+  - Target functions: target.md
+  - Examples: examples.md
+  - API reference: api.md
+  - Changelog: changelog.md

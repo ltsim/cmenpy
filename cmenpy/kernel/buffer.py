@@ -1,15 +1,14 @@
-import typing
 
 import numpy as np
 
 from cmenpy.bounds import Bounds
+from cmenpy.hints import NDArrayType
+from cmenpy.hints.option import SenseType
 from cmenpy.kernel.index import BufferIndex
 from cmenpy.kernel.low import init_buffer
 from cmenpy.kernel.mask import KernelMask
 from cmenpy.kernel.size import KernelSize
 from cmenpy.target import TargetFunction
-from cmenpy.hints import NDArrayType
-from cmenpy.hints.option import SenseType
 
 
 class KernelBuffer:
@@ -31,13 +30,16 @@ class KernelBuffer:
     def apply(
         self,
         x: NDArrayType,
-        idx: typing.Union[int, slice, typing.List[int], None] = None,
+        idx: int | slice | list[int] | None = None,
     ) -> None:
         """Vectorizes the target function to evaluate and update the solutions matrix.
 
         The internal buffer stores "fitness" in column 0 and "solutions" or "x"
         from column 1 onwards. Supports updating a single row, a slice, a list/array
         of indices, or the entire active matrix if `idx` is None.
+
+        Targets wrapped with `cmenpy.target.vectorized_target` score the whole block
+        with a single call; the others fall back to a row-by-row evaluation.
 
         Parameters
         ----------
@@ -56,13 +58,17 @@ class KernelBuffer:
 
         if isinstance(idx, int):
             self.__buffer[rows, 0] = self.__target.evaluate(x)
+        elif self.__target.vectorized:
+            self.__buffer[rows, 0] = self.__target.evaluate_matrix(
+                self.__buffer[rows, 1:]
+            )
         else:
             self.__buffer[rows, 0] = np.apply_along_axis(
                 self.__target, 1, self.__buffer[rows, 1:]
             )
 
     @property
-    def shape(self):
+    def shape(self) -> tuple[int, ...]:
         return self.__buffer.shape
 
     @property
