@@ -1,4 +1,4 @@
-__version__ = "2026a0"
+__version__ = "2026b0"
 
 from cmenpy.bounds import Bounds
 from cmenpy.compile import (

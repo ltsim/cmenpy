@@ -1,4 +1,4 @@
-# Version 2026
+# Version 2026b0
 
 + A decent and civilized version, compatible with GNU GPLv3
 + Numba decorators accept parameter annotations (`"Array[float, 2]"`,
