@@ -5,6 +5,7 @@ from cmenpy.population.operations.stream.base import StreamOperator
 
 
 class ReaderOperator(StreamOperator):
+    """Read-only operator: indexing, ``~`` (active rows) and ``>>``."""
     @abc.abstractmethod
     def __getitem__(self, item: int | slice) -> NDArrayType: ...
 

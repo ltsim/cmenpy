@@ -11,6 +11,17 @@ from cmenpy.population.attributes.matrix import (
 
 
 class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
+    """Read view over the buffer's fitness column (column 0).
+
+    Supports ``pop.F[i]``, ``np.asarray(pop.F)`` for the full column and
+    ``~pop.F`` for the active rows only.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
@@ -34,6 +45,17 @@ class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
 
 
 class BufferMatrixSolutions(BufferMatrixAbstract, BufferMatrixAccess, BufferMatrixCompute):
+    """Read/write view over the solution columns (columns ``1:``).
+
+    Supports ``pop.X[i]``, ``np.asarray(pop.X)``, ``~pop.X`` for the active
+    rows, and the write-back ``pop.X << values`` (which scores the block).
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
@@ -61,6 +83,25 @@ class BufferMatrixSolutions(BufferMatrixAbstract, BufferMatrixAccess, BufferMatr
 
 
 class BufferMatrixOperations:
+    """Exposes the ``F``/``X`` matrix views, ``idx`` ranking and ``size``.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+
+    Attributes
+    ----------
+    F : BufferMatrixFitness
+        Fitness-column view.
+    X : BufferMatrixSolutions
+        Solution-block view.
+    idx : BufferIndex
+        Best/worst/sort lookups.
+    size : int
+        Number of active individuals.
+    """
+
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 

@@ -13,6 +13,29 @@ from cmenpy.tracker import EpochHistory
 
 
 class TemplateOptimizerModel(BaseOptimizer):
+    """Model built by ``@cm.template`` from a class.
+
+    The class supplies ``initialize``/``evolve``; compile options
+    (``parallel``/``fastmath``/``cache``) are set at instantiation and
+    propagate to the class's numba kernels.
+
+    Parameters
+    ----------
+    cls_model : type
+        The wrapped class implementing ``initialize``/``evolve``.
+
+    Attributes
+    ----------
+    alias : str
+        The wrapped class name.
+    model_class : type
+        The wrapped class.
+    compile_options : dict[str, bool]
+        Resolved compile options of the model.
+    tracker : list[EpochHistory]
+        Per-epoch history (empty before the first ``solve``).
+    """
+
     def __init__(self, cls_model: type[ModelProtocol]) -> None:
         self.__alias = str(cls_model.__name__)
         self.__cls_model: type[ModelProtocol] = cls_model
@@ -29,7 +52,7 @@ class TemplateOptimizerModel(BaseOptimizer):
 
     @property
     def model_class(self) -> type[ModelProtocol]:
-        """The class wrapped by :func:`cmenpy.template`."""
+        """The class wrapped by `cmenpy.template`."""
         return self.__cls_model
 
     @property

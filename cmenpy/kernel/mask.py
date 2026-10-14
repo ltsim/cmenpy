@@ -6,6 +6,26 @@ from cmenpy.kernel.size import KernelSize
 
 
 class KernelMask:
+    """Boolean active/passive mask over the buffer rows.
+
+    A row is *active* while it holds a live individual. The mask starts
+    with the first ``size.size`` rows active; deactivating a row (see
+    ``PopulationSwarm.remove``) frees it for later insertion.
+
+    Parameters
+    ----------
+    size : KernelSize
+        Supplies the total (max) row count and the initial active count.
+
+    Attributes
+    ----------
+    active : int
+        Number of active rows.
+    passive : int
+        Number of inactive (free) rows.
+    founds : list[bool]
+        Copy of the mask as a plain list of booleans.
+    """
     def __init__(
         self,
         size: KernelSize,

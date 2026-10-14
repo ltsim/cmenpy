@@ -92,7 +92,7 @@ docs = [
 "Homepage" = "https://github.com/ltsim/cmenpy"
 "Source Code" = "https://github.com/ltsim/cmenpy"
 "Bug Tracker" = "https://github.com/ltsim/cmenpy/issues"
-"Change Log" = "https://github.com/ltsim/cmenpy/blob/master/CHANGELOG.md"
+"Change Log" = "https://github.com/ltsim/cmenpy/blob/main/CHANGELOG.md"
 
 [tool.isort]
 profile = "black"

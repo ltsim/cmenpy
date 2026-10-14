@@ -7,6 +7,15 @@ from cmenpy.population.operations.stream.vectorizable import (
 
 
 class AssignPipeline(PipelineOperator):
+    """Per-row assign target: ``pop.assign[i] << row``.
+
+    Parameters
+    ----------
+    idx : int
+        The row to write.
+    buffer : KernelBuffer
+        The backing buffer.
+    """
     def __init__(self, idx: int, buffer: KernelBuffer):
         self.__idx = idx
         self.__buffer = buffer
@@ -16,6 +25,19 @@ class AssignPipeline(PipelineOperator):
 
 
 class AssignOperator(VectorizableOperator):
+    """Raw row writer (no scoring): ``pop.assign << rows`` / ``pop.assign[i] << row``.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+
+    Raises
+    ------
+    IndexError
+        If the assigned block's shape does not match the buffer.
+    """
+
     def __init__(
         self,
         buffer: KernelBuffer,

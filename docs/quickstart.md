@@ -67,6 +67,8 @@ Some examples import `opfunu`, which must be installed separately:
 
 ```bash
 uv pip install opfunu
-.venv/bin/python -m example.benchmark_gwo   # (if present in your checkout)
+.venv/bin/python example/hello_world_v1.py
 .venv/bin/python example/reduce_demo.py
 ```
+
+See [Examples](examples.md) for the full catalogue of runnable algorithms.

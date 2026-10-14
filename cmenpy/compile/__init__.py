@@ -621,7 +621,7 @@ def precompile(
     parallel: bool = False,
     **kwargs: typing.Any,
 ) -> typing.Any:
-    """Precompile a static method with :func:`numba.njit`.
+    """Precompile a static method with `numba.njit`.
 
     Specs can be passed positionally (``cm.Array``, ``cm.Array[float, 2]``) or
     declared as annotations in the decorated function::
@@ -629,8 +629,8 @@ def precompile(
         @cm.precompile
         def hunt(X: "Array[float, 2]", a: "Scalar[float]"): ...
 
-    ``fastmath`` and ``parallel`` map to the :func:`numba.njit` options of the
-    same name (``parallel`` also needs :func:`numba.prange` in the body). A model
+    ``fastmath`` and ``parallel`` map to the `numba.njit` options of the
+    same name (``parallel`` also needs `numba.prange` in the body). A model
     can also enable them for every kernel at instantiation. Any other numba
     option (``cache=True``, ``boundscheck=False``, ...) is forwarded through
     keyword arguments.
@@ -650,7 +650,7 @@ def jit(
     parallel: bool = False,
     **kwargs: typing.Any,
 ) -> typing.Any:
-    """Deprecated alias of :func:`precompile`."""
+    """Deprecated alias of `precompile`."""
     warnings.warn(
         "cm.jit is deprecated; use cm.precompile instead.",
         DeprecationWarning,
@@ -767,7 +767,7 @@ class _ContractSpec:
 
 
 class Contract:
-    """Signature marker for :func:`reduce`, e.g. ``Contract[[...], out]``.
+    """Signature marker for `reduce`, e.g. ``Contract[[...], out]``.
 
     Each input/output is a cast spec (``Array`` / ``Scalar``) or a plain dtype.
     A plain dtype is shorthand for ``Array[dtype, "n"]``; ``...`` is a scalar of
@@ -837,7 +837,7 @@ def _annotated_signature(
 def _contract_from_annotations(
     func: typing.Callable[..., typing.Any],
 ) -> _ContractSpec:
-    """Infer a :class:`Contract` signature from the annotations of ``func``.
+    """Infer a `Contract` signature from the annotations of ``func``.
 
     Every parameter must be annotated; the last one is the output.
     """
@@ -926,7 +926,7 @@ def reduce(
     * Legacy numba style: a list of core type specs plus a layout, e.g.
       ``[cm.Array[float, 1], cm.Scalar[float], cm.Array[float, 1]]`` with
       ``"(n),()->(n)"``.
-    * The :class:`Contract` marker, which encodes the core types and layout::
+    * The `Contract` marker, which encodes the core types and layout::
 
           @cm.reduce(Contract[[Array[float, "m,n"],
                                      Array[float, "n,k"]],

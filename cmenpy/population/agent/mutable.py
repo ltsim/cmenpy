@@ -8,6 +8,18 @@ from cmenpy.population.agent.base import BaseAgent
 
 
 class MutableAgent(BaseAgent):
+    """A live agent bound to a buffer row; writes propagate back.
+
+    Assigning `solution` re-evaluates the row through the buffer.
+
+    Parameters
+    ----------
+    n : int
+        Row index to bind to.
+    buffer : KernelBuffer
+        The buffer to read from and write to.
+    """
+
     def __init__(self, n: int, buffer: KernelBuffer) -> None:
         self.__i = n
         self.__buffer = buffer

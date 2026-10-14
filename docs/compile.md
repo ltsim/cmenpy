@@ -36,8 +36,9 @@ Maps to `numba.njit`. `fastmath` and `parallel` are first-class options
 (`parallel` also needs `nb.prange` in the body); any other numba option
 (`cache=True`, `boundscheck=False`, …) is forwarded as a keyword.
 
-`cm.jit` remains as a **deprecated alias** that emits a `DeprecationWarning`.
-The old `@cm.parallel` is gone — use `@cm.precompile(parallel=True)`.
+!!! warning "Deprecated / removed"
+    `cm.jit` remains as a **deprecated alias** that emits a `DeprecationWarning`.
+    The old `@cm.parallel` is gone — use `@cm.precompile(parallel=True)`.
 
 ## `@cm.vectorize` (ufunc)
 
@@ -94,12 +95,5 @@ cm.prepare(SomeClass)        # same for a standalone kernel holder
 
 ## API
 
-::: cmenpy.precompile
-::: cmenpy.vectorize
-::: cmenpy.reduce
-::: cmenpy.Contract
-::: cmenpy.Array
-::: cmenpy.Scalar
-::: cmenpy.prepare
-::: cmenpy.compile.kernels
-::: cmenpy.jit
+Autodoc for the compile decorators, markers and introspection helpers lives in
+the [API Reference → Compile](api/compile.md).

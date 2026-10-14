@@ -5,10 +5,12 @@ import numpy as np
 ANNOTATED_KIND = typing.get_origin(typing.Annotated[int, int])
 
 
-class ExceptionValueParams(Exception): ...
+class ExceptionValueParams(Exception):
+    """Raised when an argument value falls outside its declared range."""
 
 
-class ExceptionTypeParams(Exception): ...
+class ExceptionTypeParams(Exception):
+    """Raised when an argument value does not match its declared type."""
 
 
 def _validate_range_and_type(
@@ -53,6 +55,25 @@ def _validate_range_and_type(
 
 
 class FunctionParamsArguments:
+    """Holds the declared ``cm.Argument`` fields and their bound values.
+
+    Parameters
+    ----------
+    type_dict : dict[str, type]
+        Mapping of field name to declared type (``Annotated`` metadata
+        carries the range/default).
+
+    Raises
+    ------
+    AttributeError
+        On loading a name that was never declared, or reading an
+        uninitialized declared field.
+    ExceptionValueParams
+        If a value falls outside its declared range.
+    ExceptionTypeParams
+        If a value does not match its declared type.
+    """
+
     def __init__(self, type_dict: dict[str, type[typing.Any]]) -> None:
         self.__annotations__ = {
             attr_name: attr_type for attr_name, attr_type in type_dict.items()

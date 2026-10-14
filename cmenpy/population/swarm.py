@@ -8,6 +8,28 @@ from cmenpy.population.operations import StreamOperations
 class PopulationSwarm(
     StreamOperations, BufferMatrixOperations, BaseIterator, DynamicBase
 ):
+    """Main handle over a `KernelBuffer`.
+
+    A swarm layers a readable/writable matrix view (``X``/``F``), stream
+    operators (``compute``/``assign``/``access``/``extract``/``swap``),
+    ranking (``best``/``worst``/``sort``) and roster management
+    (``insert``/``remove``/``free_space``) on top of the flat buffer.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The buffer backing this population.
+
+    Examples
+    --------
+    ::
+
+        pop = cm.PopulationSwarm(ctx.buff)
+        pop.compute << ctx.rng.uniform(bounds.low, bounds.up,
+                                       (pop.size, bounds.ndim))
+        best_rows = pop.X[pop.sort][:3]
+    """
+
     def __init__(self, buffer: KernelBuffer) -> None:
         StreamOperations.__init__(self, buffer)
         BufferMatrixOperations.__init__(self, buffer)

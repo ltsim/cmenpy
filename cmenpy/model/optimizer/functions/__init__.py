@@ -20,6 +20,28 @@ from cmenpy.tracker import EpochHistory
 
 
 class FunctionOptimizerModel(BaseOptimizer):
+    """Model built by ``@cm.declare`` from a function.
+
+    The wrapped function receives ``(args, epoch, ctx)`` and drives the
+    whole run. Bind parameters by calling the model, then `solve`.
+
+    Parameters
+    ----------
+    alias : str, optional
+        Display name; overwritten by the function name on ``define``.
+    seed : int, optional
+        Random seed forwarded to the run.
+    **kwargs
+        ``name=cm.Argument[...]`` field declarations.
+
+    Attributes
+    ----------
+    alias : str
+        The model name.
+    tracker : list[EpochHistory]
+        Per-epoch history (empty before the first ``solve``).
+    """
+
     def __init__(
         self,
         alias: str = "Optimizer",

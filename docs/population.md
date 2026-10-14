@@ -1,4 +1,4 @@
-# Population DSL
+# Population
 
 `cm.PopulationSwarm(buffer)` is the main handle over a `KernelBuffer` — a
 `(pop_size, ndim+1)` store with fitness in column 0 and the solution vector from
@@ -22,11 +22,7 @@ pop.assign[mask] << pop.access[mask]   # copy rows (access = read-only, assign =
 
 ## API
 
-::: cmenpy.PopulationSwarm
-::: cmenpy.KernelBuffer
-::: cmenpy.KernelSize
-::: cmenpy.is_best
-::: cmenpy.is_worst
-::: cmenpy.best_index
-::: cmenpy.worst_index
-::: cmenpy.Bounds
+Autodoc for the swarm handle, operators, matrix views and agents lives in the
+[API Reference → Population](api/population.md). The buffer types are under
+[Kernel](api/kernel.md), the comparators under [Utilities](api/utilities.md),
+and `Bounds` under [Bounds](api/bounds.md).

@@ -11,6 +11,12 @@ from cmenpy.tracker import EpochHistory
 
 
 class BaseOptimizer(abc.ABC):
+    """Abstract base every optimizer model satisfies.
+
+    Defines the `solve` contract, the ``__call__`` configuration
+    hook, the `alias` name, and the `tracker` history.
+    """
+
     @abc.abstractmethod
     def solve(
         self,
@@ -48,6 +54,37 @@ def build_context_manager(
     debug: bool,
     sense: SenseType,
 ) -> MainContextManager:
+    """Validate the population size and build a `MainContextManager`.
+
+    Parameters
+    ----------
+    f : Target
+        The objective callable.
+    bounds : Bounds | SequenceStructure[ScalarType]
+        The search space (or bounds sequence).
+    epochs : int
+        Total number of epochs.
+    pop_size : int
+        Initial population size.
+    pop_range : tuple[int, int], optional
+        ``(min, max)`` allowed population sizes.
+    seed : int, optional
+        Random seed.
+    debug : bool, optional
+        Record per-epoch history.
+    sense : SenseType, optional
+        ``"min"`` (default) or ``"max"``.
+
+    Returns
+    -------
+    MainContextManager
+        The wired per-run resource holder.
+
+    Raises
+    ------
+    IndexError
+        If ``pop_size`` falls outside ``pop_range``.
+    """
     if pop_range is None:
         pop_range = pop_size, pop_size
 

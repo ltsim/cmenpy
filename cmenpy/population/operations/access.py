@@ -4,6 +4,14 @@ from cmenpy.population.operations.stream import ReaderOperator
 
 
 class AccessOperator(ReaderOperator):
+    """Whole-row reader: ``pop.access[i]``, ``~pop.access``.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(
         self,
         buffer: KernelBuffer,

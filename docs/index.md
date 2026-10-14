@@ -32,18 +32,22 @@ Requires Python `>=3.11`.
 
 ## Layout
 
-| Path             | Contents |
-| ---------------- | -------- |
-| `cmenpy/`        | The package: `compile`, `model`, `population`, `target`, `kernel`, `context`, `functools`, `bounds` |
-| `tests/`         | Test suite mirroring the package (`pytest`) |
-| `example/`       | Runnable algorithms and demos (not shipped in the wheel) |
-| `docs/`          | This site (MkDocs + Material) |
+| Path       | Contents |
+| ---------- | -------- |
+| `cmenpy/`  | The package. Public subpackages: `compile` (numba kernels), `model` (declaration styles), `population` (population handling), `target` (objectives), `kernel` (buffers), `bounds` (search space), `context` (the `ctx` object), `functools` (comparators). Internal support: `epoch`, `generator`, `hints`, `tracker`. |
+| `tests/`   | Test suite mirroring the package (`pytest`) |
+| `example/` | Runnable algorithms and demos (not shipped in the wheel) |
+| `docs/`    | This site (MkDocs + Material) |
 
 ## Next steps
 
 - [Quickstart](quickstart.md) — solve your first problem in minutes.
+- [Models](models.md) — `@cm.declare` vs `@cm.template`, and the `ctx` object.
+- [Build a custom model](tutorial-custom-model.md) — a step-by-step tutorial implementing your own optimizer.
 - [Numba kernels](compile.md) — `@cm.precompile`, `@cm.vectorize`, `@cm.reduce`.
-- [Models](models.md) — `@cm.declare` vs `@cm.template`.
-- [API reference](api.md) — full autodoc for every public symbol.
+- [Population](population.md) — `PopulationSwarm`, buffers, selection and ranking.
+- [Target functions](target.md) — objectives, NFE budget, vectorized targets.
+- [Examples](examples.md) — runnable algorithms in `example/`.
+- [API reference](api/index.md) — full autodoc for every public symbol, grouped by category.
 
 Developed by [LTSIM](mailto:tsim@cucei.udg.mx) @ 2026.

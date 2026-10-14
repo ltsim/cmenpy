@@ -5,10 +5,14 @@ from cmenpy.hints import NDArrayType
 
 
 class BufferMatrixAccess(abc.ABC):
+    """Read access via ``~`` (the active rows of a matrix view)."""
+
     @abc.abstractmethod
     def __invert__(self) -> NDArrayType: ...
 
 
 class BufferMatrixCompute(abc.ABC):
+    """Write-back via ``<<`` (assign and score a block of solutions)."""
+
     @abc.abstractmethod
     def __lshift__(self, other: NDArrayType) -> typing.Self: ...

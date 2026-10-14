@@ -4,6 +4,14 @@ from cmenpy.population.operations.stream import WriterOperator
 
 
 class SwapOperation(WriterOperator):
+    """Row swap writer: ``pop.swap[i] = row`` (moves the old row to the end).
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(self, buffer: KernelBuffer):
         super().__init__(buffer.shape)
         self.__buffer = buffer

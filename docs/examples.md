@@ -22,7 +22,6 @@ uv pip install opfunu
 | ---- | --------- |
 | `gwo_algorithm.py` | Grey Wolf Optimizer (pure Python reference) |
 | `gwo_algorithm_vectorized.py` | GWO with numba kernels (`GreyWolfOptimizer(parallel=True)`) |
-| `gwo_hunt_variants.py` | `hunt` variants: parallel vs `reduce` vs vectorized `precompile` + numpy reference |
 | `pso_algorithm.py` | Particle Swarm Optimization |
 | `de_algorithm.py` | Differential Evolution (jDE-style self-adaptive) |
 | `ga_algorithm.py` | Real-coded Genetic Algorithm (self-adaptive, elitist) |
@@ -35,5 +34,5 @@ Run any of them from the repo root, e.g.:
 
 ```bash
 .venv/bin/python example/reduce_demo.py
-.venv/bin/python -m example.benchmark_gwo   # only if the file exists in your checkout
+.venv/bin/python example/hello_world_v1.py
 ```

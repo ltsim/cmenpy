@@ -10,6 +10,29 @@ from cmenpy.tracker import Tracker
 
 
 class Context:
+    """Read-only view of the run handed to ``initialize``/``evolve``.
+
+    A fresh ``Context`` is built for every epoch. It exposes the search
+    space, the population buffer, the random generator, the optimization
+    sense, and the current/total epoch counters.
+
+    Attributes
+    ----------
+    target : TargetFunction
+        The wrapped objective (counts NFE, enforces any budget).
+    bounds : Bounds
+        The search space (``low``, ``up``, ``ndim``).
+    buff : KernelBuffer
+        The buffer backing the population.
+    rng : numpy.random.Generator
+        Seeded random generator.
+    sense : SenseType
+        ``"min"`` or ``"max"``.
+    epoch : int
+        Current epoch index.
+    epochs : int
+        Total number of epochs.
+    """
     def __init__(
         self,
         f: Target,
@@ -58,6 +81,46 @@ class Context:
 
 
 class MainContextManager:
+    """Owns every per-run resource and builds the per-epoch ``Context``.
+
+    This is the internal orchestrator created by ``solve``. It wires the
+    objective, bounds, buffer, generator, tracker and epoch iterator
+    together and hands out `Context` views.
+
+    Parameters
+    ----------
+    f : Target
+        The objective callable.
+    bounds : Bounds
+        The search space.
+    epochs : int
+        Total number of epochs.
+    size : KernelSize
+        Population size (current, min, max).
+    seed : int, optional
+        Random seed forwarded to the generator.
+    debug : bool, optional
+        Record per-epoch history. Default ``False``.
+    sense : SenseType, optional
+        ``"min"`` (default) or ``"max"``.
+
+    Attributes
+    ----------
+    sense : SenseType
+        The optimization sense.
+    epoch_it : EpochIteration
+        The epoch iterator driving the run.
+    buffer : KernelBuffer
+        The population buffer.
+    target : TargetFunction
+        The wrapped objective.
+    bounds : Bounds
+        The search space.
+    default_generator : DefaultGenerator
+        The seeded random generator.
+    tracker : Tracker
+        The per-epoch history recorder.
+    """
     def __init__(
         self,
         f: Target,

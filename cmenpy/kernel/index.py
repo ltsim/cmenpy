@@ -9,6 +9,26 @@ from cmenpy.kernel.mask import KernelMask
 
 
 class BufferIndex:
+    """Ranking and best/worst lookups over the buffer's fitness column.
+
+    Parameters
+    ----------
+    buffer : NDArrayType
+        The raw ``(pop, ndim + 1)`` buffer (fitness in column 0).
+    mask : KernelMask
+        The active-row mask.
+    sense : SenseType
+        ``"min"`` or ``"max"``; selects the direction of "best".
+
+    Attributes
+    ----------
+    sort : numpy.ndarray
+        Row indices ordered best-first (respecting ``sense``).
+    best : numpy.intp
+        Row index of the best individual.
+    worst : numpy.intp
+        Row index of the worst individual.
+    """
     def __init__(self, buffer: NDArrayType, mask: KernelMask, sense: SenseType):
         self.__buffer = buffer
         self.__sense = sense

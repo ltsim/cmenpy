@@ -8,6 +8,16 @@ from cmenpy.population.agent.base import BaseAgent
 
 
 class ImmutableAgent(BaseAgent):
+    """A snapshot agent: copies its row out of the buffer at construction.
+
+    Parameters
+    ----------
+    n : int
+        Row index to snapshot.
+    buffer : KernelBuffer
+        The buffer to read from.
+    """
+
     def __init__(self, n: int, buffer: KernelBuffer) -> None:
         self.__i = n
         self.__buffer = buffer.raw[n, :].copy()

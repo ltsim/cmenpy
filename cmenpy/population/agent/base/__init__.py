@@ -7,6 +7,11 @@ from cmenpy.hints import NDArrayType, ScalarType
 
 
 class BaseAgent(abc.ABC):
+    """Abstract individual: fitness, solution vector and ordering.
+
+    Agents compare by fitness (``<``/``>`` against another agent or a
+    scalar), so populations can be ranked element-wise.
+    """
     def __lt__(self, other: typing.Union["BaseAgent", ScalarType]) -> bool:
         if isinstance(other, BaseAgent):
             return bool(self.fitness < other.fitness)

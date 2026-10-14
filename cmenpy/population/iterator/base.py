@@ -7,6 +7,26 @@ from cmenpy.kernel import KernelBuffer
 
 
 class BaseIterator:
+    """Iteration and ranking over the population's active rows.
+
+    Iterating a population (or its ``~`` form) yields the active row
+    indices; ``best``/``worst``/``sort`` expose the sense-aware ranking.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The buffer to iterate.
+
+    Attributes
+    ----------
+    best : numpy.intp
+        Row index of the best individual.
+    worst : numpy.intp
+        Row index of the worst individual.
+    sort : numpy.ndarray
+        Row indices ordered best-first.
+    """
+
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 

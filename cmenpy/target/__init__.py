@@ -6,10 +6,13 @@ from cmenpy.bounds import Bounds
 from cmenpy.hints import NDArrayType, ArrayIntegerType
 
 
-class MaxNumberOfCalls(Exception): ...
+class MaxNumberOfCalls(Exception):
+    """Raised when a target's evaluation budget (``max_nfe``) is exceeded."""
 
 
 class Target(typing.Protocol):
+    """Protocol for an objective: a callable mapping a solution to a score."""
+
     def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any: ...
 
 
@@ -50,6 +53,36 @@ def vectorized_target(target: Target) -> VectorizedTarget:
 
 
 class TargetFunction:
+    """Wraps an objective, counting NFE and enforcing an optional budget.
+
+    The wrapper scores solutions row-by-row (or whole-block via
+    `evaluate_matrix` for vectorized targets), increments the
+    function-evaluation counter on every call, and raises
+    `MaxNumberOfCalls` once ``max_nfe`` is spent.
+
+    Parameters
+    ----------
+    target : Target
+        The raw objective callable.
+    bounds : Bounds
+        The search space.
+    max_nfe : int, optional
+        Evaluation budget; ``None`` means unlimited.
+
+    Attributes
+    ----------
+    nfe : int
+        Evaluations spent so far.
+    max : float or int
+        The budget (``inf`` when unlimited).
+    bounds : Bounds
+        The search space.
+    f : Target
+        Bound evaluator (``evaluate``).
+    vectorized : bool
+        Whether the target scores whole blocks.
+    """
+
     def __init__(
         self, target: Target, bounds: Bounds, max_nfe: typing.Optional[int] = None
     ) -> None:

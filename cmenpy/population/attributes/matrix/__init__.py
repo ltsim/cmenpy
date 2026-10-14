@@ -10,6 +10,12 @@ from cmenpy.population.attributes.matrix.mixin import (
 
 
 class BufferMatrixAbstract(abc.ABC):
+    """Abstract read interface shared by the ``F``/``X`` matrix views.
+
+    Subclasses must implement indexing, ``__array__`` coercion, and
+    ``__repr__``/``__str__`` display.
+    """
+
     @abc.abstractmethod
     def __getitem__(self, item: int) -> NDArrayType: ...
 

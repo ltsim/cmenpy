@@ -9,6 +9,8 @@ from cmenpy.target import Target
 
 
 class AlgorithmFunction(typing.Protocol):
+    """Signature of a ``@cm.declare`` function: ``(args, epoch, ctx) -> None``."""
+
     __name__: str
 
     def __call__(
@@ -20,6 +22,8 @@ class AlgorithmFunction(typing.Protocol):
 
 
 class CallableFunction(typing.Protocol):
+    """Signature of a bound ``solve``-style callable over a run."""
+
     def __call__(
         self,
         f: Target,

@@ -5,6 +5,19 @@ from cmenpy.tracker.epoch import EpochHistory
 
 
 class Tracker:
+    """Records per-epoch snapshots of the population buffer.
+
+    Parameters
+    ----------
+    buff : KernelBuffer
+        The buffer whose state is snapshotted on every `track`.
+
+    Attributes
+    ----------
+    history : list[EpochHistory]
+        Immutable copies of the tracked epochs, oldest first.
+    """
+
     def __init__(self, buff: KernelBuffer):
         self.___history: collections.deque[EpochHistory] = collections.deque()
         self.__k_buff = buff

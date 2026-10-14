@@ -12,6 +12,37 @@ from cmenpy.target import TargetFunction
 
 
 class KernelBuffer:
+    """Flat ``(pop_size, ndim + 1)`` store backing a population.
+
+    Column 0 holds fitness; columns ``1:`` hold the solution vector. New
+    solutions are written with `apply`, which scores them against the
+    objective (whole-block when the target is vectorized, row-by-row
+    otherwise).
+
+    Parameters
+    ----------
+    size : KernelSize
+        Population size bounds.
+    bounds : Bounds
+        Search space (defines ``ndim``).
+    target : TargetFunction
+        The wrapped objective used to score solutions.
+    sense : SenseType
+        ``"min"`` or ``"max"``.
+
+    Attributes
+    ----------
+    shape : tuple[int, ...]
+        Shape of the raw buffer.
+    mask : KernelMask
+        The active-row mask.
+    raw : NDArrayType
+        The underlying buffer array.
+    idx : BufferIndex
+        Best/worst/sort lookups over the fitness column.
+    size : KernelSize
+        The population size bounds.
+    """
     def __init__(
         self,
         size: KernelSize,

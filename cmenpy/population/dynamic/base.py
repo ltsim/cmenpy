@@ -5,6 +5,19 @@ from cmenpy.kernel import KernelBuffer
 
 
 class DynamicBase:
+    """Roster management over the buffer: insert, remove, free space.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The buffer whose active rows are managed.
+
+    Attributes
+    ----------
+    free_space : bool
+        ``True`` while at least one row is inactive (insertable).
+    """
+
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
