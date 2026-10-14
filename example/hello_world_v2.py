@@ -1,4 +1,5 @@
 import numpy as np
+
 import cmenpy as cm
 
 
@@ -15,6 +16,13 @@ class MyAlgorithm:
 
         pop.compute << rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
+        M = np.array([1, 2, 3])
+        r = self.test_vectorize(M, M)
+        print(r)
+
+        r = self.test_jit(M)
+        print(r)
+
     def evolve(self, e, ctx) -> None:
         buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 
@@ -30,12 +38,18 @@ class MyAlgorithm:
         )
 
         if pop.F[pop.best] < b_pop and pop.size > 1:
-            w_pop = pop.F[pop.worst]
-
             pop.remove(pop.worst)
         else:
             if pop.free_space:
-                n_pop = pop.insert(rng.uniform(-1, 1, bounds.ndim))
+                pop.insert(rng.uniform(-1, 1, bounds.ndim))
+
+    @cm.vectorize
+    def test_vectorize(x: "Scalar[float]", y: "Scalar[float]") -> "Scalar[float]":
+        return x * 2.0 + y**2.0
+
+    @cm.precompile
+    def test_jit(A: "Array[float, 1]"):
+        return A**2
 
 
 if __name__ == "__main__":

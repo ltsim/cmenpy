@@ -2,7 +2,23 @@ import typing
 
 
 class Argument:
-    def __class_getitem__(cls, params: typing.Any):
+    """Declare a tunable, range-checked model field.
+
+    ``Argument`` is a subscript-only marker that builds a
+    ``typing.Annotated`` type understood by ``@cm.declare`` /
+    ``@cm.template``. It is never instantiated — only subscripted on a class
+    annotation. Supported forms::
+
+        Argument[type]                  # required, no range/default
+        Argument[type, default]         # with a default value
+        Argument[type, (min, max)]      # range-checked, required
+        Argument[type, (min, max), default]
+
+    The subscript accepts ``target_type`` (the field's type), optionally a
+    ``(min_val, max_val)`` range, and optionally a ``default_val``. An
+    unsupported form raises ``TypeError``.
+    """
+    def __class_getitem__(cls, params: typing.Any) -> typing.Any:
         if not isinstance(params, tuple):
             params = (params,)
 
@@ -35,5 +51,15 @@ class Argument:
 
 
 class Variable:
-    def __class_getitem__(cls, target_type: typing.Any):
+    """Declare a free internal-state field (no range check, no default).
+
+    ``Variable`` is a subscript-only marker for model state that is not a
+    tunable parameter::
+
+        w: cm.Variable[np.ndarray]
+
+    It wraps ``target_type`` (the field's declared type) in
+    ``typing.Annotated`` metadata marking it as delayed-init state.
+    """
+    def __class_getitem__(cls, target_type: typing.Any) -> typing.Any:
         return typing.Annotated[target_type, {"delayed_init": True}]

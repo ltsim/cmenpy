@@ -1,9 +1,17 @@
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream import ReaderOperator
-from cmenpy.hints import NDArrayType
 
 
 class AccessOperator(ReaderOperator):
+    """Whole-row reader: ``pop.access[i]``, ``~pop.access``.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(
         self,
         buffer: KernelBuffer,

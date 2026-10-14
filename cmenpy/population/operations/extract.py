@@ -1,9 +1,17 @@
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream import ReaderOperator
-from cmenpy.hints import NDArrayType
 
 
 class ExtractOperation(ReaderOperator):
+    """Solution-column reader: ``pop.extract[i]``, ``~pop.extract``.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(self, buffer: KernelBuffer):
         super().__init__(buffer.shape)
         self.__buffer = buffer

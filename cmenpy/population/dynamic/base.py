@@ -1,15 +1,28 @@
 import numpy as np
 
-from cmenpy.kernel import KernelBuffer
 from cmenpy.hints import NDArrayType
+from cmenpy.kernel import KernelBuffer
 
 
 class DynamicBase:
+    """Roster management over the buffer: insert, remove, free space.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The buffer whose active rows are managed.
+
+    Attributes
+    ----------
+    free_space : bool
+        ``True`` while at least one row is inactive (insertable).
+    """
+
     def __init__(self, buffer: KernelBuffer):
         self.__buffer = buffer
 
     @property
-    def free_space(self):
+    def free_space(self) -> bool:
         return sum(self.__buffer.mask) < self.__buffer.size.max
 
     def remove(self, idx: int) -> None:

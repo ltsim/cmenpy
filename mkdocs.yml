@@ -1,0 +1,102 @@
+site_name: cmenpy
+site_description: Compute Metaheuristic Engine for Python — a NumPy/Numba framework for population-based metaheuristics
+site_author: LTSIM
+site_url: https://ltsim.github.io/cmenpy/
+repo_url: https://github.com/ltsim/cmenpy
+repo_name: ltsim/cmenpy
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 LTSIM
+
+# Rebuild when the package source changes (mkdocstrings reads it live).
+watch:
+  - cmenpy
+
+theme:
+  name: material
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.indexes
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.action.edit
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: numpy
+            show_source: false
+            members_order: source
+            separate_signature: true
+            show_signature_annotations: true
+            merge_init_into_class: true
+            show_root_heading: true
+            show_root_full_path: false
+            heading_level: 2
+            show_bases: true
+            filters: ["!^_"]
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quickstart: quickstart.md
+      - Examples: examples.md
+  - Guides:
+      - Models:
+          - Overview: models.md
+          - Build a custom model: tutorial-custom-model.md
+      - Numba kernels: compile.md
+      - Population: population.md
+      - Target functions: target.md
+  - API Reference:
+      - Overview: api/index.md
+      - Compile: api/compile.md
+      - Models: api/models.md
+      - Population: api/population.md
+      - Kernel: api/kernel.md
+      - Target: api/target.md
+      - Bounds: api/bounds.md
+      - Runtime: api/runtime.md
+      - Utilities: api/utilities.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details

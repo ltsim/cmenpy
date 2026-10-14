@@ -1,12 +1,21 @@
+from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream.vectorizable import (
-    VectorizableOperator,
     PipelineOperator,
+    VectorizableOperator,
 )
-from cmenpy.hints import NDArrayType
 
 
 class ComputePipeline(PipelineOperator):
+    """Per-row compute target: ``pop.compute[i] << row`` (writes and scores).
+
+    Parameters
+    ----------
+    idx : int
+        The row to write and evaluate.
+    buffer : KernelBuffer
+        The backing buffer.
+    """
     def __init__(self, idx: int, buffer: KernelBuffer) -> None:
         self.__idx = idx
         self.__buffer = buffer
@@ -16,6 +25,17 @@ class ComputePipeline(PipelineOperator):
 
 
 class ComputeOperator(VectorizableOperator):
+    """Write-and-score operator: ``pop.compute << rows`` / ``pop.compute[i] << row``.
+
+    Writing through ``compute`` inserts the solutions *and* evaluates them
+    against the objective.
+
+    Parameters
+    ----------
+    buffer : KernelBuffer
+        The backing buffer.
+    """
+
     def __init__(self, buffer: KernelBuffer) -> None:
         super().__init__(buffer.shape)
         self.__buffer = buffer

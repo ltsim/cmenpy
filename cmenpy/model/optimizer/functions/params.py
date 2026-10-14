@@ -1,17 +1,21 @@
 import typing
 
+import numpy as np
+
 ANNOTATED_KIND = typing.get_origin(typing.Annotated[int, int])
 
 
-class ExceptionValueParams(Exception): ...
+class ExceptionValueParams(Exception):
+    """Raised when an argument value falls outside its declared range."""
 
 
-class ExceptionTypeParams(Exception): ...
+class ExceptionTypeParams(Exception):
+    """Raised when an argument value does not match its declared type."""
 
 
 def _validate_range_and_type(
     value: typing.Any, field_type: typing.Any, field_name: str
-):
+) -> None:
     if typing.get_origin(field_type) is ANNOTATED_KIND:
         type_args = typing.get_args(field_type)
         base_type, metadata = type_args[0], type_args[1]
@@ -29,14 +33,7 @@ def _validate_range_and_type(
     max_val = metadata.get("max")
 
     if min_val is not None and max_val is not None:
-        try:
-            import numpy as np
-
-            has_numpy = True
-        except ImportError:
-            has_numpy = False
-
-        if has_numpy and isinstance(value, np.ndarray):
+        if isinstance(value, np.ndarray):
             if not np.all((value >= min_val) & (value <= max_val)):
                 raise ExceptionValueParams(
                     f"Array elements in '{field_name}' out of range [{min_val}, {max_val}]."
@@ -58,7 +55,26 @@ def _validate_range_and_type(
 
 
 class FunctionParamsArguments:
-    def __init__(self, type_dict: dict[str, typing.Type[typing.Any]]) -> None:
+    """Holds the declared ``cm.Argument`` fields and their bound values.
+
+    Parameters
+    ----------
+    type_dict : dict[str, type]
+        Mapping of field name to declared type (``Annotated`` metadata
+        carries the range/default).
+
+    Raises
+    ------
+    AttributeError
+        On loading a name that was never declared, or reading an
+        uninitialized declared field.
+    ExceptionValueParams
+        If a value falls outside its declared range.
+    ExceptionTypeParams
+        If a value does not match its declared type.
+    """
+
+    def __init__(self, type_dict: dict[str, type[typing.Any]]) -> None:
         self.__annotations__ = {
             attr_name: attr_type for attr_name, attr_type in type_dict.items()
         }
@@ -83,7 +99,7 @@ class FunctionParamsArguments:
         super().__setattr__(name, value)
 
     def __getattr__(self, name: str) -> typing.Any:
-        if name in self.__dict__.get("__annotations__", {}):
+        if name in vars(self).get("__annotations__", {}):
             raise AttributeError(
                 f"Attribute '{name}' has been declared but not initialized yet."
             )
