@@ -18,7 +18,7 @@ It provides the clean abstractions necessary to build custom evolutionary algori
 ## Installation
 
 ```bash
-pip install cmenpy          # runtime: NumPy + Numba only
+pip install cmenpy
 ```
 
 Requires Python `>=3.11`.

@@ -1,3 +1,9 @@
+# Version 2026b1
+
++ New changes to be announced
+
+---------------------------------------------------------------------
+
 # Version 2026b0
 
 + A decent and civilized version, compatible with GNU GPLv3
