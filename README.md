@@ -5,8 +5,6 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmenpy?style=flat-square)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/cmenpy?style=flat-square)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/cmenpy?style=flat-square)
-
-[![Docs](https://img.shields.io/badge/docs-mkdocs%20%2B%20Material-blue?style=flat-square&logo=materialformkdocs)](https://ltsim.github.io/cmenpy/)
 ![Publish](https://img.shields.io/github/actions/workflow/status/ltsim/cmenpy/publish.yml?style=flat-square&logo=pypi&label=Publish)
 ![Testing](https://img.shields.io/github/actions/workflow/status/ltsim/cmenpy/test.yml?style=flat-square&logo=pytest&label=Testing)
 ![Typed](https://img.shields.io/github/actions/workflow/status/ltsim/cmenpy/type.yml?style=flat-square&logo=python&label=Typed)
