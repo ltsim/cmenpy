@@ -1,6 +1,8 @@
+"""Agent protocol: identity, solution and fitness of an individual."""
+
 import typing
 
-from cmenpy.hints import NDArrayType
+from cmenpy.hints.array import NDArrayType
 
 
 class AgentTemplate(typing.Protocol):

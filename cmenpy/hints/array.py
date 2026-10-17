@@ -1,3 +1,5 @@
+"""Aliases for the NumPy array types used across cmenpy."""
+
 import typing
 
 import numpy as np

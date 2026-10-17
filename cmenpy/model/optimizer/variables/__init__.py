@@ -1,3 +1,5 @@
+"""Field declaration markers: `Argument` (tunable, range-checked) and `Variable`."""
+
 import typing
 
 
@@ -18,7 +20,13 @@ class Argument:
     ``(min_val, max_val)`` range, and optionally a ``default_val``. An
     unsupported form raises ``TypeError``.
     """
+
     def __class_getitem__(cls, params: typing.Any) -> typing.Any:
+        """Build the ``Annotated`` field type from the subscript ``params``.
+
+        Raises:
+            TypeError: If the subscript form is not supported.
+        """
         if not isinstance(params, tuple):
             params = (params,)
 
@@ -61,5 +69,7 @@ class Variable:
     It wraps ``target_type`` (the field's declared type) in
     ``typing.Annotated`` metadata marking it as delayed-init state.
     """
+
     def __class_getitem__(cls, target_type: typing.Any) -> typing.Any:
+        """Build the ``Annotated`` field type wrapping ``target_type``."""
         return typing.Annotated[target_type, {"delayed_init": True}]

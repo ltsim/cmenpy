@@ -63,4 +63,4 @@ operators, matrix views, roster/iteration bases and the agent classes.
 
 ::: cmenpy.population.agent.MutableAgent
 
-::: cmenpy.population.agent.base.template.AgentTemplate
+::: cmenpy.hints.protocol.agent.AgentTemplate

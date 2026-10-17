@@ -51,7 +51,7 @@ plugins:
         python:
           paths: [.]
           options:
-            docstring_style: numpy
+            docstring_style: google
             show_source: false
             members_order: source
             separate_signature: true

@@ -1,3 +1,5 @@
+"""The class-style model (`TemplateOptimizerModel`) built by ``@cm.template``."""
+
 import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
@@ -19,24 +21,18 @@ class TemplateOptimizerModel(BaseOptimizer):
     (``parallel``/``fastmath``/``cache``) are set at instantiation and
     propagate to the class's numba kernels.
 
-    Parameters
-    ----------
-    cls_model : type
-        The wrapped class implementing ``initialize``/``evolve``.
+    Args:
+        cls_model: The wrapped class implementing ``initialize``/``evolve``.
 
-    Attributes
-    ----------
-    alias : str
-        The wrapped class name.
-    model_class : type
-        The wrapped class.
-    compile_options : dict[str, bool]
-        Resolved compile options of the model.
-    tracker : list[EpochHistory]
-        Per-epoch history (empty before the first ``solve``).
+    Attributes:
+        alias: The wrapped class name.
+        model_class: The wrapped class.
+        compile_options: Resolved compile options of the model.
+        tracker: Per-epoch history (empty before the first ``solve``).
     """
 
     def __init__(self, cls_model: type[ModelProtocol]) -> None:
+        """Initialize the model state around the wrapped class."""
         self.__alias = str(cls_model.__name__)
         self.__cls_model: type[ModelProtocol] = cls_model
         self.__inner: CallableFunction | None = None
@@ -48,6 +44,7 @@ class TemplateOptimizerModel(BaseOptimizer):
 
     @property
     def alias(self) -> str:
+        """The wrapped class name."""
         return self.__alias
 
     @property
@@ -57,6 +54,7 @@ class TemplateOptimizerModel(BaseOptimizer):
 
     @property
     def tracker(self) -> list[EpochHistory]:
+        """Per-epoch history (empty before the first ``solve``)."""
         if self.__resource is None:
             return []
 
@@ -86,6 +84,26 @@ class TemplateOptimizerModel(BaseOptimizer):
         sense: SenseType = "min",
         prepare: bool = False,
     ) -> tuple[float, NDArrayType]:
+        """Run the optimization and return the best ``(fitness, solution)``.
+
+        Calls ``initialize`` once, then ``evolve`` per epoch.
+
+        Args:
+            f: The objective callable.
+            bounds: The search space (or bounds sequence).
+            epochs: Total number of epochs.
+            pop_size: Population size.
+            pop_range: ``(min, max)`` allowed population sizes.
+            debug: Record per-epoch history.
+            sense: ``"min"`` (default) or ``"max"``.
+            prepare: Force compilation of the class's kernels before running.
+
+        Returns:
+            The best fitness and the best solution vector found.
+
+        Raises:
+            NotImplementedError: If the model was not instantiated first.
+        """
         if self.__model is None:
             raise NotImplementedError()
 
@@ -132,6 +150,14 @@ class TemplateOptimizerModel(BaseOptimizer):
     def __call__(
         self, seed: int | None = None, *args: typing.Any, **kwargs: typing.Any
     ) -> "BaseOptimizer":
+        """Instantiate the wrapped class (binding parameters and seed).
+
+        Args:
+            seed: Random seed forwarded to the run.
+            *args: Positional field values for the wrapped class.
+            **kwargs: Named field values (plus compile options) for the
+                wrapped class.
+        """
         self.__seed = seed
         self.__model = self.__cls_model(*args, **kwargs)
 

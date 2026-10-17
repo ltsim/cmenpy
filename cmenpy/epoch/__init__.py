@@ -1,3 +1,5 @@
+"""The epoch iterator (`EpochIteration`) driving a run."""
+
 import time
 import typing
 
@@ -14,25 +16,17 @@ class EpochIteration:
     ``debug`` is enabled, records a `EpochHistory`
     snapshot after each epoch.
 
-    Parameters
-    ----------
-    epochs : int
-        Total number of epochs; must be positive.
-    tracker : cmenpy.tracker.Tracker
-        Recorder populated each epoch when ``debug`` is true.
-    target : cmenpy.target.TargetFunction
-        Objective wrapper used to read the function-evaluation count (NFE).
-    debug : bool, optional
-        Record a history snapshot per epoch. Default ``False``.
+    Args:
+        epochs: Total number of epochs; must be positive.
+        tracker: Recorder populated each epoch when ``debug`` is true.
+        target: Objective wrapper used to read the function-evaluation
+            count (NFE).
+        debug: Record a history snapshot per epoch. Default ``False``.
 
-    Attributes
-    ----------
-    current : int
-        Index of the epoch most recently yielded.
-    max : int
-        Total number of epochs.
-    cpu_time : float
-        Wall CPU time spent in the most recent epoch body.
+    Attributes:
+        current: Index of the epoch most recently yielded.
+        max: Total number of epochs.
+        cpu_time: Wall CPU time spent in the most recent epoch body.
     """
 
     def __init__(
@@ -42,6 +36,7 @@ class EpochIteration:
         target: TargetFunction,
         debug: bool = False,
     ):
+        """Validate and store the epoch count and recording resources."""
         if epochs <= 0:
             raise ValueError("Epochs must be a positive integer.")
 
@@ -53,6 +48,7 @@ class EpochIteration:
         self.__debug: bool = debug
 
     def __iter__(self) -> typing.Iterator[int]:
+        """Yield each epoch index, tracking CPU time and history."""
         for e in range(self.__epochs):
             self.__current_epoch = e
 
@@ -65,12 +61,15 @@ class EpochIteration:
 
     @property
     def current(self) -> int:
+        """Index of the epoch most recently yielded."""
         return self.__current_epoch
 
     @property
     def max(self) -> int:
+        """Total number of epochs."""
         return self.__epochs
 
     @property
     def cpu_time(self) -> float:
+        """Wall CPU time spent in the most recent epoch body."""
         return self.__cpu_time

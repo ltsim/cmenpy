@@ -1,3 +1,5 @@
+"""Function-model protocols (`AlgorithmFunction`, `CallableFunction`)."""
+
 import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
@@ -18,7 +20,8 @@ class AlgorithmFunction(typing.Protocol):
         args: FunctionParamsArguments,
         epoch: EpochIteration,
         ctx: Context,
-    ) -> None: ...
+    ) -> None:
+        """Run the algorithm body for the bound arguments and context."""
 
 
 class CallableFunction(typing.Protocol):
@@ -31,4 +34,5 @@ class CallableFunction(typing.Protocol):
         epochs: int,
         pop_size: int,
         pop_range: tuple[int, int] | None = None,
-    ) -> tuple[float, NDArrayType]: ...
+    ) -> tuple[float, NDArrayType]:
+        """Run the optimization and return the best ``(fitness, solution)``."""

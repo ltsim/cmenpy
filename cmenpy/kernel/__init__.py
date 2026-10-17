@@ -1,3 +1,5 @@
+"""Population buffer types (`KernelBuffer`, `KernelMask`, `KernelSize`)."""
+
 from cmenpy.kernel.buffer import KernelBuffer
 from cmenpy.kernel.mask import KernelMask
 from cmenpy.kernel.size import KernelSize
