@@ -9,6 +9,10 @@ from cmenpy.model.optimizer import (
     TemplateOptimizerModel,
 )
 from cmenpy.model.optimizer.functions import AlgorithmFunction
+from cmenpy.model.optimizer.variables import (
+    install_constants,
+    is_constant,
+)
 
 #: Compile options a model can set at instantiation; forwarded to its kernels.
 _COMPILE_OPTION_KEYS = ("parallel", "fastmath", "cache")
@@ -25,7 +29,21 @@ def declare_from_func(
 
     Returns:
         The model wrapping ``func``.
+
+    Raises:
+        TypeError: If any field is a ``cm.Constant``. Constants are a
+            class-style feature (``@cm.template`` / ``@cm.module``) and are
+            never constructor-bound, so they have no meaning in the function
+            style.
     """
+    for field_name, field_type in kwargs.items():
+        if is_constant(field_type):
+            raise TypeError(
+                f"Constant field '{field_name}' is not supported by "
+                "cm.declare; use a cm.Argument or move the algorithm to a "
+                "cm.template class."
+            )
+
     model = FunctionOptimizerModel(**kwargs)
     model.define(func)
 
@@ -41,14 +59,23 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
     arguments and stores them as instance attributes before delegating to
     the original ``__init__``.
 
+    ``cm.Constant`` fields are materialized as read-only class descriptors by
+    ``install_constants`` and skipped by the generated ``__init__``: they are
+    never constructor-bound, so passing one raises ``TypeError``.
+
     Args:
         cls: The class to wrap; must define ``initialize`` and ``evolve``.
 
     Returns:
         The model wrapping ``cls``.
+
+    Raises:
+        TypeError: If a ``cm.Constant`` field is passed to the constructor.
     """
     methods_to_check = ["initialize", "evolve"]
     original_init = cls.__init__
+
+    install_constants(cls)
 
     def dynamic_init(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> None:
         compile_options = {
@@ -57,13 +84,26 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
         self._compile_options = compile_options
 
         hints = typing.get_type_hints(cls, include_extras=True)
-        field_names = [k for k in hints if k not in methods_to_check]
+        field_names = [
+            name
+            for name, field_type in hints.items()
+            if name not in methods_to_check and not is_constant(field_type)
+        ]
 
         pos_arguments = dict(zip(field_names, args))
         all_arguments = {**pos_arguments, **kwargs}
 
         for field_name, field_type in hints.items():
             if field_name in methods_to_check:
+                continue
+
+            if is_constant(field_type):
+                if field_name in all_arguments:
+                    raise TypeError(
+                        f"Constant field '{field_name}' cannot be passed to the "
+                        "constructor; it is fixed at declaration."
+                    )
+
                 continue
 
             value = all_arguments.get(field_name)
@@ -147,8 +187,9 @@ def template(model: type[ModelProtocol]) -> TemplateOptimizerModel:
 
     The class must define ``initialize(self, ctx)`` and
     ``evolve(self, e, ctx)``; fields are declared with ``cm.Argument`` /
-    ``cm.Variable``. Kernels declared on the class receive the model's
-    compile options at instantiation.
+    ``cm.Variable`` / ``cm.Constant``. ``cm.Constant`` fields are read-only and
+    never bound by the constructor. Kernels declared on the class receive the
+    model's compile options at instantiation.
 
     Args:
         model: The class to wrap.

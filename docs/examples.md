@@ -14,6 +14,7 @@ uv pip install opfunu
 | ---- | ----- |
 | `hello_world_v1.py` | `@cm.declare` function style |
 | `hello_world_v2.py` | `@cm.template` class style + `@cm.vectorize` / `@cm.precompile` kernels |
+| `operator_module.py` | `@cm.module` Operator Modules + `cm.Constant`, reused across two models |
 | `reduce_demo.py` | `@cm.reduce` with annotation-inferred layout |
 
 ## Optimizers

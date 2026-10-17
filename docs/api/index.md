@@ -19,7 +19,8 @@ symbol links to the page that documents it.
 | `jit` | decorator (deprecated) | [Compile](compile.md) |
 | `kernels`, `prepare` | introspection | [Compile](compile.md) |
 | `declare`, `template` | model decorators | [Models](models.md) |
-| `Argument`, `Variable` | field markers | [Models](models.md) |
+| `module` | Operator Module decorator | [Models](models.md) |
+| `Argument`, `Constant`, `Variable` | field markers | [Models](models.md) |
 | `BaseOptimizer` | abstract base | [Models](models.md) |
 | `FunctionOptimizerModel`, `TemplateOptimizerModel` | models | [Models](models.md) |
 | `ModelProtocol`, `AlgorithmFunction`, `CallableFunction` | protocols | [Models](models.md) |
