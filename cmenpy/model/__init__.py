@@ -1,3 +1,5 @@
+"""Model declaration API: the function-style `declare` and class-style `template`."""
+
 import inspect
 import typing
 
@@ -15,6 +17,15 @@ _COMPILE_OPTION_KEYS = ("parallel", "fastmath", "cache")
 def declare_from_func(
     func: AlgorithmFunction, **kwargs: typing.Any
 ) -> FunctionOptimizerModel:
+    """Bind ``func`` to a fresh `FunctionOptimizerModel` built from ``kwargs``.
+
+    Args:
+        func: The ``(args, epoch, ctx) -> None`` algorithm function.
+        kwargs: ``name=cm.Argument[...]`` field declarations.
+
+    Returns:
+        The model wrapping ``func``.
+    """
     model = FunctionOptimizerModel(**kwargs)
     model.define(func)
 
@@ -22,6 +33,20 @@ def declare_from_func(
 
 
 def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
+    """Wrap ``cls`` in a `TemplateOptimizerModel` with a dynamic ``__init__``.
+
+    The generated ``__init__`` extracts the compile options
+    (``parallel``/``fastmath``/``cache``), reads the class type hints
+    (``Annotated`` metadata carries ranges and defaults), validates the
+    arguments and stores them as instance attributes before delegating to
+    the original ``__init__``.
+
+    Args:
+        cls: The class to wrap; must define ``initialize`` and ``evolve``.
+
+    Returns:
+        The model wrapping ``cls``.
+    """
     methods_to_check = ["initialize", "evolve"]
     original_init = cls.__init__
 
@@ -86,6 +111,28 @@ def declare(
     *args: typing.Any,
     **kwargs: typing.Any,
 ) -> typing.Callable[[AlgorithmFunction], FunctionOptimizerModel]:
+    """Turn a function into a model (the function-style API).
+
+    The decorated function receives ``(args, epoch, ctx)`` and runs the
+    whole optimization inside its body. Parameters are declared with
+    ``cm.Argument`` and bound by calling the returned model.
+
+    Args:
+        *args: Positional field values (bound like ``**kwargs``).
+        **kwargs: ``name=cm.Argument[...]`` field declarations.
+
+    Returns:
+        A decorator wrapping the function in a `FunctionOptimizerModel`.
+
+    Examples:
+        ::
+
+            @cm.declare(x=cm.Argument[int, (0, 3), 2])
+            def my_algorithm(args, epoch, ctx): ...
+
+            model = my_algorithm(x=1)
+    """
+
     def wrapper(target: AlgorithmFunction) -> FunctionOptimizerModel:
         if not inspect.isfunction(target):
             raise TypeError(f"Model '{target}' is not a function.")
@@ -96,6 +143,32 @@ def declare(
 
 
 def template(model: type[ModelProtocol]) -> TemplateOptimizerModel:
+    """Turn a class into a model (the class-style API).
+
+    The class must define ``initialize(self, ctx)`` and
+    ``evolve(self, e, ctx)``; fields are declared with ``cm.Argument`` /
+    ``cm.Variable``. Kernels declared on the class receive the model's
+    compile options at instantiation.
+
+    Args:
+        model: The class to wrap.
+
+    Returns:
+        A model wrapping the class.
+
+    Raises:
+        TypeError: If ``model`` is not a class.
+
+    Examples:
+        ::
+
+            @cm.template
+            class MyAlgorithm:
+                a: cm.Argument[int, (1, 100)]
+
+                def initialize(self, ctx) -> None: ...
+                def evolve(self, e, ctx) -> None: ...
+    """
     if not isinstance(model, type):
         raise TypeError(f"Model '{model}' is not a class.")
 

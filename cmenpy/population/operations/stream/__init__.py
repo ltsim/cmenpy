@@ -1,3 +1,5 @@
+"""Abstract stream operator types (reader, writer, vectorizable, pipeline)."""
+
 from cmenpy.population.operations.stream.reader import ReaderOperator
 from cmenpy.population.operations.stream.vectorizable import VectorizableOperator
 from cmenpy.population.operations.stream.writer import WriterOperator

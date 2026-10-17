@@ -1,4 +1,6 @@
-__version__ = "2026a0"
+"""Compute Metaheuristic Engine for Python (cmenpy)."""
+
+__version__ = "2026b1"
 
 from cmenpy.bounds import Bounds
 from cmenpy.compile import (

@@ -1,3 +1,5 @@
+"""The function-style model (`FunctionOptimizerModel`) built by ``@cm.declare``."""
+
 import functools
 import typing
 
@@ -20,12 +22,28 @@ from cmenpy.tracker import EpochHistory
 
 
 class FunctionOptimizerModel(BaseOptimizer):
+    """Model built by ``@cm.declare`` from a function.
+
+    The wrapped function receives ``(args, epoch, ctx)`` and drives the
+    whole run. Bind parameters by calling the model, then `solve`.
+
+    Args:
+        alias: Display name; overwritten by the function name on ``define``.
+        seed: Random seed forwarded to the run.
+        **kwargs: ``name=cm.Argument[...]`` field declarations.
+
+    Attributes:
+        alias: The model name.
+        tracker: Per-epoch history (empty before the first ``solve``).
+    """
+
     def __init__(
         self,
         alias: str = "Optimizer",
         seed: int | None = None,
         **kwargs: typing.Any,
     ):
+        """Initialize the model state (alias, arguments, seed, debug, sense)."""
         self.__alias = alias
         self.__inner: CallableFunction | None = None
         self.__resource: MainContextManager | None = None
@@ -36,16 +54,27 @@ class FunctionOptimizerModel(BaseOptimizer):
 
     @property
     def alias(self) -> str:
+        """The model name."""
         return self.__alias
 
     @property
     def tracker(self) -> list[EpochHistory]:
+        """Per-epoch history (empty before the first ``solve``)."""
         if self.__resource is None:
             return []
 
         return self.__resource.tracker.history
 
     def define(self, func: AlgorithmFunction) -> "FunctionOptimizerModel":
+        """Bind ``func`` as the run driver, building the solve closure.
+
+        Args:
+            func: The ``(args, epoch, ctx) -> None`` algorithm function.
+
+        Returns:
+            The model itself, for chaining.
+        """
+
         @functools.wraps(func)
         def wrapper(
             f: Target,
@@ -93,6 +122,23 @@ class FunctionOptimizerModel(BaseOptimizer):
         debug: bool = False,
         sense: SenseType = "min",
     ) -> tuple[float, NDArrayType]:
+        """Run the optimization and return the best ``(fitness, solution)``.
+
+        Args:
+            f: The objective callable.
+            bounds: The search space (or bounds sequence).
+            epochs: Total number of epochs.
+            pop_size: Population size.
+            pop_range: ``(min, max)`` allowed population sizes.
+            debug: Record per-epoch history.
+            sense: ``"min"`` (default) or ``"max"``.
+
+        Returns:
+            The best fitness and the best solution vector found.
+
+        Raises:
+            NotImplementedError: If no function was bound via ``define``.
+        """
         self.__debug = debug
 
         if self.__inner is not None:
@@ -109,6 +155,13 @@ class FunctionOptimizerModel(BaseOptimizer):
     def __call__(
         self, seed: int | None = None, *args: typing.Any, **kwargs: typing.Any
     ) -> BaseOptimizer:
+        """Bind the model parameters (and optionally the random ``seed``).
+
+        Raises:
+            ValueError: If an argument value is invalid.
+            TypeError: If an argument type is invalid.
+            NotImplementedError: If no function was bound via ``define``.
+        """
         self.__seed = seed
 
         try:

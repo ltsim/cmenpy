@@ -1,3 +1,5 @@
+"""Abstract matrix-view interface shared by the ``F``/``X`` buffer views."""
+
 import abc
 
 import numpy.typing as npt
@@ -10,19 +12,29 @@ from cmenpy.population.attributes.matrix.mixin import (
 
 
 class BufferMatrixAbstract(abc.ABC):
+    """Abstract read interface shared by the ``F``/``X`` matrix views.
+
+    Subclasses must implement indexing, ``__array__`` coercion, and
+    ``__repr__``/``__str__`` display.
+    """
+
     @abc.abstractmethod
-    def __getitem__(self, item: int) -> NDArrayType: ...
+    def __getitem__(self, item: int) -> NDArrayType:
+        """Return the value(s) at ``item``."""
 
     @abc.abstractmethod
     def __array__(
         self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
-    ) -> NDArrayType: ...
+    ) -> NDArrayType:
+        """Return the view as an ndarray."""
 
     @abc.abstractmethod
-    def __repr__(self) -> str: ...
+    def __repr__(self) -> str:
+        """Return a debug representation of the view."""
 
     @abc.abstractmethod
-    def __str__(self) -> str: ...
+    def __str__(self) -> str:
+        """Return a human-readable rendering of the view."""
 
 
 __all__ = ["BufferMatrixAbstract", "BufferMatrixAccess", "BufferMatrixCompute"]

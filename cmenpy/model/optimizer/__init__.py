@@ -1,3 +1,5 @@
+"""Optimizer models (`FunctionOptimizerModel`, `TemplateOptimizerModel`, `ModelProtocol`)."""
+
 from cmenpy.model.optimizer.functions import FunctionOptimizerModel
 from cmenpy.model.optimizer.template import TemplateOptimizerModel
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
