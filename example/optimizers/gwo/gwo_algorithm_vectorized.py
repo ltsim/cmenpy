@@ -1,6 +1,7 @@
 """Grey Wolf Optimizer (GWO) built with the ``cm.template`` class API.
 
-This is a class-based copy of ``example/gwo_algorithm.py`` that delegates the
+This is a class-based copy of ``example/optimizers/gwo/gwo_algorithm.py`` that
+delegates the
 heavy matrix math to numba through the compile decorators:
 
 * ``@cm.vectorize``  -> elementwise ufunc with automatic casting.

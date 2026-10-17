@@ -98,7 +98,7 @@ methods with `@cm.precompile` / `@cm.vectorize` / `@cm.reduce`, and they
 receive the model's compile options at instantiation —
 `MyAlgorithm(seed=1, parallel=True, fastmath=True, cache=True)` (see
 [Numba kernels](compile.md#model-compile-options)). See
-`example/hello_world_v2.py` and the optimizers in `example/`.
+`example/hello_world_v2.py` and the optimizers in `example/optimizers/`.
 
 !!! tip "Choosing a style"
     Reach for `@cm.declare` for quick, script-like experiments and
