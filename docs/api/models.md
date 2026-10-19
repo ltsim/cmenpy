@@ -7,7 +7,11 @@ support types that make up the model layer.
 
 ::: cmenpy.template
 
+::: cmenpy.module
+
 ::: cmenpy.Argument
+
+::: cmenpy.Constant
 
 ::: cmenpy.Variable
 

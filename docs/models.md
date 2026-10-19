@@ -81,6 +81,10 @@ Fields are declared as class annotations:
 | `cm.Argument[type, (min, max)]` | Range-checked, required |
 | `cm.Argument[type, (min, max), default]` | Range-checked, with default |
 | `cm.Variable[type]` | Free internal state (no range, no default) |
+| `cm.Constant[type, value]` | Fixed, read-only — never constructor-bound |
+
+`cm.Constant` is checked at declaration and exposed through the class, so
+`self.name` works but `MyAlgorithm(name=...)` raises `TypeError`.
 
 Bind fields (and the seed) via the constructor call, then `solve`:
 
@@ -94,7 +98,7 @@ methods with `@cm.precompile` / `@cm.vectorize` / `@cm.reduce`, and they
 receive the model's compile options at instantiation —
 `MyAlgorithm(seed=1, parallel=True, fastmath=True, cache=True)` (see
 [Numba kernels](compile.md#model-compile-options)). See
-`example/hello_world_v2.py` and the optimizers in `example/`.
+`example/hello_world_v2.py` and the optimizers in `example/optimizers/`.
 
 !!! tip "Choosing a style"
     Reach for `@cm.declare` for quick, script-like experiments and
@@ -128,6 +132,41 @@ A template model exposes a few useful hooks:
 - `model.compile_options` — the resolved `parallel`/`fastmath`/`cache` flags.
 - `model.prepare()` — force-compile all kernels and return their signatures.
 - `model.tracker` — the per-epoch history (populated when `solve(..., debug=True)`).
+
+## Operator modules (`@cm.module`)
+
+`@cm.template` models can share behavior through **Operator Modules**. A class
+decorated with `@cm.module` is a reusable bundle — compiled kernels, plain helper
+methods and `cm.Argument` / `cm.Variable` / `cm.Constant` fields — that any
+number of models inherit (the Ruby-`module` analogue in this framework; note it
+returns a class, not a Python module):
+
+```python
+@cm.module
+class MutationOps:
+    scale: cm.Constant[float, 0.3]
+
+    @cm.vectorize
+    def clip(x: cm.Array, lo: cm.Scalar, hi: cm.Scalar):
+        return min(max(x, lo), hi)
+
+@cm.template
+class MyOptimizer(MutationOps):
+    def initialize(self, ctx) -> None: ...
+    def evolve(self, e, ctx) -> None:
+        pop = cm.PopulationSwarm(ctx.buff)
+        pop.compute << self.clip(~pop.extract * self.scale, -1, 1)
+```
+
+- Mixin application is ordinary inheritance; collisions follow the MRO and the
+  leftmost base wins.
+- Kernels declared on an Operator Module receive the model's compile options at
+  instantiation, exactly like kernels declared on the model itself, and
+  `model.prepare()` reports them (it resolves through the MRO).
+- `cm.Constant` fields declared on the Operator Module are inherited unchanged
+  and stay read-only.
+
+See `example/operator_module.py` for two models sharing one Operator Module.
 
 ## API
 

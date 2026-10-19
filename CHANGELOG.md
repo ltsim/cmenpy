@@ -1,6 +1,19 @@
 # Version 2026b1
 
-+ New changes to be announced
++ `@cm.module` turns a class into a reusable **Operator Module** (a Ruby-style
+  mixin). It marks the class, materializes its `cm.Constant` annotations and
+  keeps it usable as a plain base: `@cm.template class GA(Selection)` inherits
+  kernels, helper methods and fields from `Selection`. Name collisions resolve
+  through the MRO, and `cm.prepare(model)` now reports kernels inherited from
+  an Operator Module (compilation walks `cls.__mro__` instead of `vars(cls)`).
+
++ `cm.Constant[type, value]` declares a **fixed, read-only** field for
+  `@cm.template` models and `@cm.module` Operator Modules. The value is checked
+  at declaration, exposed through the class as a read-only descriptor
+  (`self.name` / `Cls.name`), and is *never* constructor-bound — passing it to
+  the model call raises `TypeError`. Constants flow into every implementing
+  model via normal inheritance, so they work identically on a template and on
+  an Operator Module.
 
 ---------------------------------------------------------------------
 

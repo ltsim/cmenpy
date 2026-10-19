@@ -274,7 +274,7 @@ if __name__ == "__main__":
   [Models → `@cm.declare`](models.md#cmdeclare-over-a-function) and
   `example/hello_world_v1.py`.
 - **More operators** — tournament selection, crossover and archives appear in
-  the algorithms under `example/` (see [Examples](examples.md)).
+  the algorithms under `example/optimizers/` (see [Examples](examples.md)).
 - **Vectorized targets** — score a whole population in one call with
   [Target functions](target.md).
 - **Kernel recipes** — `@cm.vectorize` for elementwise ufuncs and `@cm.reduce`
