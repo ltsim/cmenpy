@@ -2,49 +2,90 @@
 
 import typing
 
+from cmenpy.compile import backend
+
+#: Signature reported by `kernels`/`prepare` for a kernel running uncompiled.
+PYTHON_SIGNATURE = "<python>"
+
 
 class _Kernel:
     """Descriptor for a numba kernel whose options are resolved on first use.
 
     Compilation is deferred so a model can inject its compile options
-    (``parallel``, ``fastmath``, ``cache``) at instantiation time. When the
-    kernel is used standalone (module level, or accessed on the class) it
-    compiles with the options given to the decorator.
+    (``numba``, ``parallel``, ``fastmath``, ``cache``) at instantiation time.
+    When the kernel is used standalone (module level, or accessed on the class)
+    it compiles with the options given to the decorator.
+
+    The ``numba`` option controls *whether compilation takes place at all*:
+    ``numba=False`` runs the pure-Python flavor (auto-casting still applies),
+    ``numba=True`` demands compilation and raises ``ImportError`` when numba
+    is not installed. When nobody expresses an opinion, compilation happens
+    if and only if numba is available.
     """
 
     __slots__ = (
         "_cache",
         "_func",
         "_make",
+        "_make_python",
         "_options",
         "_parallel",
         "_parallel_mode",
+        "_python",
     )
 
     def __init__(
         self,
         func: typing.Callable[..., typing.Any],
         make: typing.Callable[[dict[str, typing.Any]], typing.Any],
+        make_python: typing.Callable[[], typing.Any],
         options: dict[str, typing.Any],
         parallel: bool,
         parallel_mode: str | None,
     ) -> None:
         self._func = func
         self._make = make
+        self._make_python = make_python
         self._options = dict(options)
         self._parallel = parallel
         self._parallel_mode = parallel_mode
         self._cache: dict[tuple[typing.Any, ...], typing.Any] = {}
+        self._python: typing.Any = None
 
     @property
     def name(self) -> str:
         return getattr(self._func, "__name__", "kernel")
 
+    def _wants_python(self, config: dict[str, typing.Any] | None) -> bool:
+        """Decide whether the kernel runs uncompiled for ``config``.
+
+        A model's explicit ``numba`` option wins over the decorator's; if
+        neither expresses an opinion, the kernel compiles when numba is
+        available and runs as plain Python when it is not.
+        """
+        if config is not None and "numba" in config:
+            return not bool(config["numba"])
+
+        if "numba" in self._options:
+            return not bool(self._options["numba"])
+
+        return not backend.HAS_NUMBA
+
+    def _require_numba(self, config: dict[str, typing.Any] | None) -> None:
+        """Raise when compilation was explicitly requested but is impossible."""
+        explicit = config is not None and config.get("numba")
+
+        if explicit is None:
+            explicit = self._options.get("numba")
+
+        if explicit and not backend.HAS_NUMBA:
+            raise ImportError(backend._INSTALL_HINT)
+
     def _resolved_options(
         self, config: dict[str, typing.Any] | None
     ) -> dict[str, typing.Any]:
         """Merge the decorator options with a model's compile config."""
-        options = dict(self._options)
+        options = {key: value for key, value in self._options.items() if key != "numba"}
         config = config or {}
 
         if config.get("fastmath"):
@@ -76,8 +117,23 @@ class _Kernel:
 
         return options
 
+    def python(self) -> typing.Any:
+        """Return the cached pure-Python flavor of the kernel."""
+        if self._python is None:
+            self._python = self._make_python()
+
+        return self._python
+
     def compile(self, config: dict[str, typing.Any] | None = None) -> typing.Any:
-        """Compile (or return the cached) kernel for ``config``."""
+        """Compile (or return the cached) kernel for ``config``.
+
+        With the ``numba`` option off, return the pure-Python flavor instead
+        of compiling.
+        """
+        if self._wants_python(config):
+            return self.python()
+
+        self._require_numba(config)
         options = self._resolved_options(config)
         key = tuple(sorted(options.items()))
         compiled = self._cache.get(key)
@@ -97,7 +153,13 @@ class _Kernel:
         return compiled if isinstance(numba_obj, str) else numba_obj
 
     def signatures(self, config: dict[str, typing.Any] | None = None) -> list[str]:
-        """Return the compiled signatures (or types) for ``config``."""
+        """Return the compiled signatures (or types) for ``config``.
+
+        An uncompiled kernel reports the ``"<python>"`` marker.
+        """
+        if self._wants_python(config):
+            return [PYTHON_SIGNATURE]
+
         numba_obj = self.numba_object(config)
         signatures = getattr(numba_obj, "signatures", None)
 
