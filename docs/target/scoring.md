@@ -42,17 +42,25 @@ on [Vectorized targets](vectorized.md).
 
 ## How dispatch works
 
-`KernelBuffer.apply(x, idx)` picks the path from the index and the marker:
+`KernelBuffer.apply(x, idx)` first normalizes `idx` into a row selection, then
+picks the path from that selection and the marker:
 
 | Call | Path | NFE |
 | ---- | ---- | --- |
-| `apply(x, idx=int)` | `target.evaluate(x)` — one call | 1 |
-| `apply(x, idx=block)` with `target.vectorized` | `target.evaluate_matrix(block)` | `len(block)` |
-| `apply(x, idx=block or None)`, plain target | `np.apply_along_axis(...)` over the rows | 1 per row |
+| `apply(x, idx=one row)` — `int`, `np.intp` (what `pop.best` returns), or a 0-d integer array | `target.evaluate(x)`; a vectorized target gets it as a `(1, ndim)` block and the single score is unwrapped | 1 |
+| `apply(x, idx=block)` with `target.vectorized` — slice, index array, boolean mask | `target.evaluate_matrix(block)` | `len(block)` |
+| `apply(x, idx=block)`, plain target | `np.apply_along_axis(...)` over the rows | 1 per row |
+| `apply(x, idx)` selecting no rows (empty mask, all rows removed) | nothing is evaluated | 0 |
 
 With no index, `apply` writes and scores the **active** rows only
 (`mask.founds`), so removed individuals are never re-scored and never spend
 budget.
+
+The counter charges one evaluation per **individual scored**, never per call
+and never per dimension: a NumPy row index is one individual (not `ndim` of
+them), a mask costs the rows it selects, and the whole-block form costs the
+active rows. The same selection therefore costs the same in both scoring
+modes.
 
 ## Equivalence
 
@@ -72,7 +80,22 @@ np.testing.assert_allclose(rowwise, block.evaluate_matrix(x))
 `TargetFunction.apply_axis(x, mask)` scores the rows selected by an integer
 `mask`, using `apply_along_axis` internally. Note that it expects the full
 raw rows (fitness in column 0) and drops column 0 before calling the
-objective — it is the low-level helper behind row-wise evaluation.
+objective — it is the low-level helper behind row-wise evaluation. Each
+selected row spends one evaluation, and a mask that selects no rows spends
+none.
+
+## Evaluating a single solution
+
+`tf.evaluate(x)` is the one-individual path: it spends a single evaluation and
+works with both scoring modes — a vectorized target is handed a `(1, ndim)`
+block and its single score is returned as a scalar. `tf.evaluate_matrix(x)` is
+the block path and rejects a bare solution vector, so an individual can never
+be mis-counted as `ndim` evaluations:
+
+```python
+tf.evaluate(x_row)                # 1 NFE, plain or vectorized target
+tf.evaluate_matrix(x_block)       # len(x_block) NFE
+```
 
 ## Correctness checklist for a block objective
 

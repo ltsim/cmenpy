@@ -29,26 +29,26 @@ Targeted at **2026b2** (tracked in the
 - Composable termination criteria in `cmenpy.terminator`: `MaxEvaluation`
   (with `cm.Terminator(nfe=...)` as an alias), `MaxEpoch`, `MaxPatience`,
   `MaxTime`, `EpochStagnation`, `TargetFitness`, `SpreadFitness` and
-  `UserInterrupt`, combined with `&` (AND) and `|` (OR) — issue #33.
+  `UserInterrupt`, combined with `&` (AND) and `|` (OR) — issue [#33](https://github.com/ltsim/cmenpy/issues/33).
 - Opt-in run history in `cmenpy.history`: in-memory, JSONL, CSV and NPZ sinks
   with summary and full-snapshot levels, retention options, and a
-  schema-versioned reader — issue #35.
+  schema-versioned reader — issue [#35](https://github.com/ltsim/cmenpy/issues/35).
 - Domain decoders and heterogeneous search spaces in `cmenpy.decoder` and
   `cmenpy.space` (floats, integers, strings, categories, sequences, binaries,
   booleans) with both the `cm.Space[...]` standard form and the
-  `cm.Space(float=..., string=...)` sugar form — issue #34.
+  `cm.Space(float=..., string=...)` sugar form — issue [#34](https://github.com/ltsim/cmenpy/issues/34).
 - Multiobjective optimization: vector fitness columns, per-objective `sense`,
   Pareto dominance utilities, fronts and crowding distance, and an NSGA-II
-  example — issue #36.
+  example — issue [#36](https://github.com/ltsim/cmenpy/issues/36).
 - Per-dimension search-space helpers: `Bounds.lows`, `Bounds.ups`,
-  `Bounds.sample()` and `Bounds.clip()` — issue #37.
+  `Bounds.sample()` and `Bounds.clip()` — issue [#37](https://github.com/ltsim/cmenpy/issues/37).
 - Benchmark companions: reference test functions from
   [`opfunu-core`](https://github.com/ltsim/opfunu-core) (500+ numerical
   functions) and engineering problems from
   [`enoppy-core`](https://github.com/ltsim/enoppy-core) are now used across
   the examples, the test suite and the new
   [Test functions](https://ltsim.github.io/cmenpy/benchmarks/) guide page;
-  install them with the new `benchmarks` extra — issue #39.
+  install them with the new `benchmarks` extra — issue [#39](https://github.com/ltsim/cmenpy/issues/39).
 - `example/engineering_demo.py`: a constrained engineering problem solved
   with `enoppy-core`.
 - Roadmap documentation page.
@@ -59,6 +59,25 @@ Targeted at **2026b2** (tracked in the
   includes it via a snippet instead of keeping a second copy that can drift.
 - Every optimizer example solves an `opfunu-core` benchmark function instead
   of an inline hand-rolled objective.
+
+### Fixed
+
+- The NFE counter now charges **one evaluation per individual scored** for
+  every way `pop.compute` selects rows. A NumPy row index — what `pop.best`,
+  `pop.worst` and `pop.sort` return — used to be treated as a block: it spent
+  `ndim` evaluations and then called the objective with a single solution,
+  which raised for vectorized targets. `pop.insert`, `MutableAgent.solution`
+  writes and the documented `pop.compute[pop.best] << solution` recipe are
+  affected by the same dispatch and are fixed by it.
+- Row-wise scoring no longer raises when a mask selects nothing (an emptied
+  roster, or no row passing `cm.is_best`); such a selection now spends zero
+  evaluations instead of failing inside `np.apply_along_axis`.
+- `pop.compute` also accepts index iterators (`pop.compute[~pop]`) and the
+  buffer's `KernelMask` (`pop.compute[ctx.buff.mask]`) as selectors.
+- `TargetFunction.evaluate_matrix` rejects a bare solution vector with a clear
+  message instead of spending `ndim` evaluations on it; a single solution is
+  scored with `TargetFunction.evaluate`, which now dispatches a vectorized
+  target as a one-row block.
 
 ## [2026b1] - unreleased
 

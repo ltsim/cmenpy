@@ -5,6 +5,7 @@ import typing
 import numpy as np
 
 from cmenpy.bounds import Bounds
+from cmenpy.casting import unwrap_array
 from cmenpy.hints import ArrayIntegerType, NDArrayType
 from cmenpy.hints.protocol import Target as Target
 
@@ -53,10 +54,12 @@ def vectorized_target(target: Target) -> VectorizedTarget:
 class TargetFunction:
     """Wraps an objective, counting NFE and enforcing an optional budget.
 
-    The wrapper scores solutions row-by-row (or whole-block via
-    `evaluate_matrix` for vectorized targets), increments the
-    function-evaluation counter on every call, and raises
-    `MaxNumberOfCalls` once ``max_nfe`` is spent.
+    The wrapper scores solutions one individual at a time (``evaluate``) or a
+    whole block at once (`evaluate_matrix`), increments the function-evaluation
+    counter on every individual scored, and raises `MaxNumberOfCalls` once
+    ``max_nfe`` is spent. A single individual always costs exactly one
+    evaluation, whatever the shape of the objective underneath: a row written
+    to a vectorized target is dispatched as a one-row block.
 
     Args:
         target: The raw objective callable.
@@ -75,13 +78,6 @@ class TargetFunction:
         self, target: Target, bounds: Bounds, max_nfe: int | None = None
     ) -> None:
         """Wrap ``target``, counting evaluations against the ``max_nfe`` budget."""
-
-        def wrapper(x: NDArrayType) -> NDArrayType | typing.Any:
-            self.__spend(1)
-
-            return target(x)
-
-        self.__target = wrapper
         self.__raw = target
         self.__vectorized = getattr(target, "vectorized", False) is True
         self.__bounds = bounds
@@ -95,27 +91,71 @@ class TargetFunction:
         self.__nfe += calls
 
     def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any:
-        """Score ``x`` row-by-row, spending evaluations from the budget."""
-        return self.__target(x)
+        """Score one individual, spending a single evaluation."""
+        return self.evaluate(x)
 
     def evaluate(self, x: NDArrayType) -> NDArrayType | typing.Any:
-        """Score ``x`` row-by-row, spending evaluations from the budget."""
-        return self.__target(x)
+        """Score a single individual, spending exactly one evaluation.
+
+        A plain target receives the solution vector as it is; a vectorized
+        target receives it as a ``(1, ndim)`` block and the single score is
+        unwrapped again, so one individual never costs ``ndim``.
+
+        Args:
+            x: The solution vector, or a one-row ``(1, ndim)`` block.
+
+        Returns:
+            The fitness of that individual.
+        """
+        solution = unwrap_array(x)
+
+        if self.__vectorized:
+            rows = np.atleast_2d(solution)
+
+            self.__spend(len(rows))
+
+            scores = typing.cast(NDArrayType, self.__raw(rows))
+
+            return scores[0] if len(rows) == 1 else scores
+
+        self.__spend(1)
+
+        return self.__raw(solution)
 
     def evaluate_matrix(self, x: NDArrayType) -> NDArrayType:
-        """Score a whole ``(pop, ndim)`` block and return a ``(pop,)`` vector."""
+        """Score a whole ``(pop, ndim)`` block and return a ``(pop,)`` vector.
+
+        Spending is one evaluation per row of the block, so masked and
+        index-selected blocks cost only what they actually score.
+        """
         if not self.__vectorized:
             raise TypeError(
                 "Target is not vectorized; wrap it with `vectorized_target`."
             )
 
-        self.__spend(len(x))
+        block = unwrap_array(x)
 
-        return self.__raw(x)
+        if np.ndim(block) != 2:
+            raise TypeError(
+                "`evaluate_matrix` expects a (pop, ndim) block; score a single "
+                "solution with `evaluate`."
+            )
+
+        self.__spend(len(block))
+
+        return typing.cast(NDArrayType, self.__raw(block))
 
     def apply_axis(self, x: NDArrayType, mask: ArrayIntegerType) -> NDArrayType:
-        """Score the rows selected by ``mask`` with ``np.apply_along_axis``."""
-        return np.apply_along_axis(self.__target, 1, x[mask, 1:])
+        """Score the rows selected by ``mask`` with ``np.apply_along_axis``.
+
+        Args:
+            x: The raw rows (fitness in column 0, solution in ``1:``).
+            mask: Row indices or boolean mask of the rows to score.
+
+        Returns:
+            One fitness value per selected row.
+        """
+        return np.apply_along_axis(self.evaluate, 1, unwrap_array(x)[mask, 1:])
 
     @property
     def nfe(self) -> int:

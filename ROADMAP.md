@@ -28,20 +28,23 @@ Status legend:
 
 ## 2026b2 — the next release
 
-One active milestone that bundles the work of feature request #23 (split into
-#33 and #34) with the run-control and analysis features requested alongside it.
+One active milestone that bundles the work of feature request
+[#23](https://github.com/ltsim/cmenpy/issues/23) (split into
+[#33](https://github.com/ltsim/cmenpy/issues/33) and
+[#34](https://github.com/ltsim/cmenpy/issues/34)) with the run-control and
+analysis features requested alongside it.
 
 | Issue | Deliverable | Status |
 | ----- | ----------- | ------ |
-| #33 | Composable terminators (`cmenpy.terminator`) | planned |
-| #34 | Decoders and `Space` (`cmenpy.decoder`, `cmenpy.space`) | planned |
-| #35 | Run history, RAM + disk (`cmenpy.history`) | planned |
-| #36 | Multiobjective Pareto core | planned |
-| #37 | Per-dimension bounds (`Bounds.lows/ups/sample/clip`) | planned |
-| #38 | Changelog restructure + this roadmap | in progress |
-| #39 | Test functions: examples, docs and tests use `opfunu-core` / `enoppy-core` | in progress |
+| [#33](https://github.com/ltsim/cmenpy/issues/33) | Composable terminators (`cmenpy.terminator`) | planned |
+| [#34](https://github.com/ltsim/cmenpy/issues/34) | Decoders and `Space` (`cmenpy.decoder`, `cmenpy.space`) | planned |
+| [#35](https://github.com/ltsim/cmenpy/issues/35) | Run history, RAM + disk (`cmenpy.history`) | planned |
+| [#36](https://github.com/ltsim/cmenpy/issues/36) | Multiobjective Pareto core | planned |
+| [#37](https://github.com/ltsim/cmenpy/issues/37) | Per-dimension bounds (`Bounds.lows/ups/sample/clip`) | planned |
+| [#38](https://github.com/ltsim/cmenpy/issues/38) | Changelog restructure + this roadmap | in progress |
+| [#39](https://github.com/ltsim/cmenpy/issues/39) | Test functions: examples, docs and tests use `opfunu-core` / `enoppy-core` | in progress |
 
-### Terminators (#33)
+### Terminators ([#33](https://github.com/ltsim/cmenpy/issues/33))
 
 Stopping criteria become composable objects instead of hardcoded loop exits:
 
@@ -59,7 +62,7 @@ Python cannot overload `&&` / `||`, so `&` and `|` are the supported spelling.
 kept as an alias of `MaxEvaluation`. Termination reasons surface in
 `model.report`.
 
-### Decoders and `Space` (#34)
+### Decoders and `Space` ([#34](https://github.com/ltsim/cmenpy/issues/34))
 
 The decision space stays a flat continuous vector, but each slice of it can
 now be interpreted as a different domain type — integers, strings,
@@ -79,7 +82,7 @@ space = cm.Space(float=(0.0, 1.0), string=("a", "b", "c"))
 `solve(space=...)` is additive; `bounds=` keeps working, and `ctx.space`
 exposes the decoder pipeline that runs immediately before fitness evaluation.
 
-### Run history (#35)
+### Run history ([#35](https://github.com/ltsim/cmenpy/issues/35))
 
 Per-epoch records become storable in RAM or on disk, opt-in per run:
 
@@ -92,7 +95,7 @@ model.solve(..., history=cm.history.NPZ("run.npz", snapshots=True))
 `debug=True` keeps its current full in-RAM behavior. A versioned reader
 (`cm.history.load`) returns the records without imposing pandas.
 
-### Multiobjective core (#36)
+### Multiobjective core ([#36](https://github.com/ltsim/cmenpy/issues/36))
 
 Vector-valued objectives end-to-end: per-objective `sense`, fitness stored as
 `(pop, m)` in the buffer, dominance/non-dominated sort/crowding in
@@ -100,7 +103,7 @@ Vector-valued objectives end-to-end: per-objective `sense`, fitness stored as
 (`pop.front`, `pop.crowding`) and an NSGA-II reference example. Scalar runs
 keep their exact shapes and performance.
 
-### Per-dimension bounds (#37)
+### Per-dimension bounds ([#37](https://github.com/ltsim/cmenpy/issues/37))
 
 `Bounds.low` / `Bounds.up` expose only the first dimension, so the common
 `rng.uniform(bounds.low, bounds.up, ...)` idiom silently ignores unequal
@@ -108,7 +111,7 @@ intervals. `Bounds.lows`, `Bounds.ups`, `Bounds.sample()` and `Bounds.clip()`
 fix this without breaking the existing accessors; examples and docs migrate to
 the new helpers.
 
-### Test functions (#39)
+### Test functions ([#39](https://github.com/ltsim/cmenpy/issues/39))
 
 The engine ships without a benchmark suite — reference test functions come
 from the LTSIM companions [`opfunu-core`](https://github.com/ltsim/opfunu-core)

@@ -54,6 +54,7 @@ The `Target` protocol itself is structural: anything callable with
 | a quick prototype, a cheap objective | plain callable, row-by-row | [Scoring modes](scoring.md) |
 | a NumPy-level `(pop, ndim) -> (pop,)` objective | vectorized | [Vectorized targets](vectorized.md) |
 | a Numba-compiled block kernel | vectorized + `@cm.precompile` | [Vectorized targets](vectorized.md) |
+| several objectives at once | multiobjective | planned for 2026b2 ([#36](https://github.com/ltsim/cmenpy/issues/36)) |
 | a hard cap on evaluations | budget | [NFE budget](budget.md) |
 
 ## Where to go next

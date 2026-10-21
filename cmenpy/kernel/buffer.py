@@ -1,5 +1,7 @@
 """Flat ``(pop_size, ndim + 1)`` store backing a population."""
 
+import typing
+
 import numpy as np
 
 from cmenpy.bounds import Bounds
@@ -11,6 +13,20 @@ from cmenpy.kernel.low import init_buffer
 from cmenpy.kernel.mask import KernelMask
 from cmenpy.kernel.size import KernelSize
 from cmenpy.target import TargetFunction
+
+#: Everything `KernelBuffer.apply` accepts as a row selector: one row
+#: (`int`/`np.intp`, as returned by ``pop.best``), several rows (slice, index
+#: array, boolean mask), the roster itself (`KernelMask`, ``~pop``), or
+#: ``None`` for the active rows.
+RowSelection: typing.TypeAlias = (
+    int
+    | np.integer[typing.Any]
+    | slice
+    | list[int]
+    | NDArrayType
+    | KernelMask
+    | typing.Iterator[int]
+)
 
 
 class KernelBuffer:
@@ -52,20 +68,56 @@ class KernelBuffer:
         self.__buffer: NDArrayType = init_buffer(self.__size.max, bounds.ndim)
         self.__mask = KernelMask(self.__size)
 
+    def __selection(self, idx: RowSelection | None) -> tuple[typing.Any, bool]:
+        """Normalize a row selector into ``(numpy index, is_single_row)``.
+
+        ``None`` selects the active rows through the mask; a ``KernelMask``
+        and any index iterator (``~pop``) are read as their row selection; a
+        Python or NumPy integer — ``pop.best`` and friends are ``np.intp`` —
+        selects one row, which is what keeps a single individual from being
+        treated as a ``ndim``-long block.
+        """
+        if idx is None:
+            return self.__mask.founds, False
+
+        if isinstance(idx, KernelMask):
+            return idx.founds, False
+
+        if isinstance(idx, slice):
+            return idx, False
+
+        if isinstance(idx, (int, np.integer)):
+            return int(idx), True
+
+        if isinstance(idx, np.ndarray):
+            if idx.ndim == 0 and np.issubdtype(idx.dtype, np.integer):
+                return int(idx), True
+
+            return idx, False
+
+        if hasattr(idx, "__next__"):
+            return [*idx], False
+
+        return idx, False
+
     def apply(
         self,
         x: NDArrayType,
-        idx: int | slice | list[int] | None = None,
+        idx: RowSelection | None = None,
     ) -> None:
         """Vectorizes the target function to evaluate and update the solutions matrix.
 
         The internal buffer stores "fitness" in column 0 and "solutions" or "x"
         from column 1 onwards. Supports updating a single row, a slice, a
-        list/array of indices, or the entire active matrix if `idx` is None.
+        list/array of indices, a boolean mask, or the entire active matrix if
+        `idx` is None.
 
         Targets wrapped with `cmenpy.target.vectorized_target` score the whole
         block with a single call; the others fall back to a row-by-row
-        evaluation.
+        evaluation. Either way the objective is charged exactly one evaluation
+        per row scored: an individually selected row is dispatched as a
+        one-row block, never as ``ndim`` separate entries, and a selection
+        that picks no rows scores nothing at all.
 
         Args:
             x: An array containing the new solution data to be inserted into
@@ -73,19 +125,25 @@ class KernelBuffer:
             idx: The row index, slice, or index mask to update. If None,
                 defaults to the internal mask.
         """
-        rows = self.__mask.founds if idx is None else idx
+        rows, single = self.__selection(idx)
         x = unwrap_array(x)
         self.__buffer[rows, 1:] = x
 
-        if isinstance(idx, int):
+        if single:
             self.__buffer[rows, 0] = self.__target.evaluate(x)
-        elif self.__target.vectorized:
-            self.__buffer[rows, 0] = self.__target.evaluate_matrix(
-                self.__buffer[rows, 1:]
-            )
+
+            return
+
+        selected = self.__buffer[rows, 1:]
+
+        if not len(selected):
+            return
+
+        if self.__target.vectorized:
+            self.__buffer[rows, 0] = self.__target.evaluate_matrix(selected)
         else:
             self.__buffer[rows, 0] = np.apply_along_axis(
-                self.__target, 1, self.__buffer[rows, 1:]
+                self.__target.evaluate, 1, selected
             )
 
     @property

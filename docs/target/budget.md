@@ -8,11 +8,20 @@ function evaluations* (NFE) — and a `TargetFunction` can be given a hard cap
 
 - **Check first, spend after:** `__spend` raises `MaxNumberOfCalls` when
   `nfe + calls > max`, so the counter never exceeds the budget.
-- **A single call** (`tf(x)`, `tf.evaluate(x)`) spends `1`.
+- **One individual** (`tf(x)`, `tf.evaluate(x)`) spends `1`. A vectorized
+  target gets that solution as a `(1, ndim)` block and the single score is
+  unwrapped again, so one row never costs `ndim`.
 - **A block** (`tf.evaluate_matrix(x)`) spends `len(x)` — one per row scored.
-- **Row-wise fallback** spends `1` per row through the same wrapper.
+- **Row-wise fallback** spends `1` per row through the same evaluator.
+- **A selection that scores nothing** (an empty mask, every row removed)
+  spends `0`: the rows are written, the objective is not called.
 - The counter lives on the wrapper, not on your callable, and starts at `0`
   for every wrapper — a fresh `solve` gets a fresh counter.
+
+Spelling the same selection with `pop.compute` costs the same in either
+scoring mode — the active rows for `pop.compute << block`, the rows a mask or
+index array selects, one row for `pop.compute[i]` (a Python `int` or the
+`np.intp` that `pop.best`, `pop.worst` and `pop.sort` hand out).
 
 ## Setting a budget
 
@@ -37,6 +46,13 @@ try:
 except MaxNumberOfCalls:
     ...   # budget exhausted mid-run
 ```
+
+!!! info "Planned for 2026b2"
+    Composable terminators — issue
+    [#33](https://github.com/ltsim/cmenpy/issues/33) — will add a first-class
+    `solve(..., terminator=cm.MaxEvaluation(nfe=...))` alongside time-,
+    patience- and target-based criteria. The pre-wrapped `TargetFunction`
+    stays the low-level equivalent.
 
 ## When the exception fires
 

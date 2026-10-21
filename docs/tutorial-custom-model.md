@@ -277,5 +277,8 @@ if __name__ == "__main__":
   the algorithms under `example/optimizers/` (see [Examples](examples.md)).
 - **Vectorized targets** — score a whole population in one call with
   [Vectorized targets](target/vectorized.md).
+- **Test functions** — benchmark the finished optimizer against published
+  numerical and engineering problems in
+  [Test functions](benchmarks.md).
 - **Kernel recipes** — `@cm.vectorize` for elementwise ufuncs and `@cm.reduce`
   for generalized ufuncs in [Numba kernels](compile/index.md).

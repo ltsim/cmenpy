@@ -58,7 +58,8 @@ found and its fitness.
 Start with the [Quickstart](quickstart.md), benchmark with
 [Test functions](benchmarks.md), build your own optimizer with
 [Build a custom model](tutorial-custom-model.md), or look things up in the
-[API reference](api/index.md).
+[API reference](api/index.md). See the [Roadmap](roadmap.md) for what is
+coming in 2026b2.
 
 *Licensed under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0). Developed by
 [LTSIM](mailto:tsim@cucei.udg.mx).*

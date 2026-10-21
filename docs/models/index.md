@@ -113,6 +113,14 @@ counter, not `ctx.epoch`, inside `@cm.declare`.
 Returns `(best_fitness, best_x)` — the best row of the buffer, respecting
 `sense`.
 
+!!! info "Planned for 2026b2"
+    `solve` will accept two opt-in run-control arguments alongside these:
+    `terminator=` for composable stopping criteria
+    ([#33](https://github.com/ltsim/cmenpy/issues/33)) and `history=` for
+    in-memory / on-disk run records
+    ([#35](https://github.com/ltsim/cmenpy/issues/35)). Today the equivalents
+    are the fixed `epochs` cap and `debug=True` with `model.tracker`.
+
 ## The `ctx` object
 
 Every hook receives a read-only `Context`:
@@ -125,6 +133,14 @@ Every hook receives a read-only `Context`:
 | `ctx.sense` | `"min"` or `"max"` |
 | `ctx.epoch` / `ctx.epochs` | current epoch / total (template style) |
 | `ctx.target` | the wrapped objective ([budget](../target/budget.md) accounting lives on the run's own wrapper) |
+
+!!! note "Per-dimension bounds"
+    `bounds.low` / `bounds.up` are the **first dimension's** scalars. For
+    unequal per-dimension intervals pass the arrays straight to the sampler
+    (e.g. an opfunu objective's `f.lb` / `f.ub` — see
+    [Test functions](../benchmarks.md)). `Bounds.lows`, `ups`, `sample()` and
+    `clip()` helpers land in 2026b2
+    ([#37](https://github.com/ltsim/cmenpy/issues/37)).
 
 ## Where to go next
 

@@ -16,6 +16,8 @@ the buffer, and each is used with `<<` (write), `[]` (row select), `~`
 ```python
 pop.compute << values            # score a whole (k, ndim) block, active rows
 pop.compute[i] << row            # score one row into row i
+pop.compute[mask] << rows        # score the rows a mask or index array selects
+pop.compute[~pop] << rows        # score the rows that hold a fitness
 ```
 
 `compute` delegates to `KernelBuffer.apply`, which writes the solutions and
@@ -23,10 +25,16 @@ fills column 0 with their fitness:
 
 - **no index** → the block is written into the **active** rows
   (`mask.founds`), so inactive (removed) rows are untouched;
-- **int index** → one row is written and scored with a single objective call;
+- **one row** (`pop.compute[3]`, `pop.compute[pop.best]`) → a single row is
+  written and scored with one objective call; `pop.best`, `pop.worst` and
+  `pop.sort` hand out `np.intp` indices, which count as one row too;
 - **block + vectorized target** → one `evaluate_matrix` call scores the whole
   block ([vectorized targets](../target/vectorized.md));
-- **block + plain target** → row-by-row fallback via `apply_along_axis`.
+- **block + plain target** → row-by-row fallback via `apply_along_axis`;
+- **an empty selection** (a mask with nothing set) → nothing is evaluated.
+
+Either way the NFE counter is charged **one evaluation per row scored** — the
+same selection costs the same with a plain and with a vectorized objective.
 
 The block you write must broadcast into the selected rows' `(k, ndim)` shape.
 
@@ -37,6 +45,10 @@ pop.compute << ctx.rng.uniform(ctx.bounds.low, ctx.bounds.up,
 
 # Per-row: re-score row i after an in-place tweak.
 pop.compute[pop.best] << new_solution
+
+# Only the improved rows: pay for what you actually re-score.
+improved = cm.is_best((offspring.F, pop.F), ctx.sense)
+pop.compute[improved] << offspring.X[improved]
 ```
 
 ## `pop.assign` — raw write, no scoring
