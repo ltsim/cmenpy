@@ -1,0 +1,139 @@
+/* cmenpy design tokens — palette, typefaces, scale, Material bridge.
+ *
+ * Everything Material consumes is derived from the --cp-* palette below, so a
+ * color change is one line. Alpha variants use color-mix() instead of
+ * hand-picked rgba() literals. This file loads before theme.css and brand.css.
+ */
+
+/* ---------------------------------- Fonts ----------------------------------- */
+
+/* "Journal" type system — all SIL OFL 1.1, self-hosted as subset WOFF2
+ * (Latin + Greek + math + general punctuation); license texts sit beside the
+ * fonts in assets/fonts/. Weight and optical-size axes resolve from
+ * font-weight / font-size:
+ *   Source Serif 4 (Adobe)   — titles and body text, roman + italic
+ *   Inter (Rasmus Andersson) — UI chrome
+ *   JetBrains Mono           — code */
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("../fonts/source-serif-4.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("../fonts/source-serif-4-italic.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------- Palette --------------------------------- */
+
+/* Paper + ink. The accent is drawn straight from the wordmark's navy so the
+ * interactive color is the brand's own ink, not a generic warm clay. */
+:root {
+  --cp-bg: #faf6ef;
+  --cp-surface: #fffdf8;
+  --cp-ink: #2a251e;
+  --cp-muted: #6f675b;
+  --cp-accent: #1c2a63;
+  --cp-line: #e7ddcb;
+  --cp-code: #f2ebdd;
+  --cp-mark: #f5e7c6;
+}
+
+[data-md-color-scheme="slate"] {
+  --cp-bg: #1e1b17;
+  --cp-surface: #26221d;
+  --cp-ink: #ede6da;
+  --cp-muted: #b3a896;
+  --cp-accent: #9db3e6;
+  --cp-line: #39332b;
+  --cp-code: #2a251f;
+  --cp-mark: #5a4a2a;
+}
+
+/* ----------------------------------- Scale ---------------------------------- */
+
+:root {
+  --cp-header-height: 3.2rem;
+  --cp-measure: 34rem;
+  --cp-rule: 1px solid var(--cp-line);
+  --cp-radius: 7px;
+  --cp-font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  --cp-font-text: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --cp-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+    Consolas, "Liberation Mono", monospace;
+}
+
+/* ------------------------------ Material bridge ----------------------------- */
+
+/* Declared once for both schemes: every value resolves against the --cp-*
+ * palette on the <body> that carries the scheme attribute. */
+[data-md-color-scheme] {
+  --md-hue: 30;
+
+  --md-default-fg-color: var(--cp-ink);
+  --md-default-fg-color--light: var(--cp-muted);
+  --md-default-fg-color--lighter: color-mix(in srgb, var(--cp-ink) 32%, transparent);
+  --md-default-fg-color--lightest: color-mix(in srgb, var(--cp-ink) 12%, transparent);
+  --md-default-fg-color--access: var(--cp-accent);
+  --md-default-bg-color: var(--cp-bg);
+  --md-default-bg-color--light: color-mix(in srgb, var(--cp-bg) 72%, transparent);
+  --md-default-bg-color--lighter: color-mix(in srgb, var(--cp-bg) 42%, transparent);
+  --md-default-bg-color--lightest: color-mix(in srgb, var(--cp-bg) 8%, transparent);
+  --md-default-bg-color--access: var(--cp-surface);
+
+  --md-primary-fg-color: var(--cp-bg);
+  --md-primary-fg-color--light: var(--cp-surface);
+  --md-primary-fg-color--dark: var(--cp-line);
+  --md-primary-bg-color: var(--cp-ink);
+  --md-primary-bg-color--light: var(--cp-muted);
+  --md-primary-bg-color--access: var(--cp-ink);
+
+  --md-accent-fg-color: var(--cp-accent);
+  --md-accent-fg-color--transparent: color-mix(in srgb, var(--cp-accent) 14%, transparent);
+  --md-accent-bg-color--light: color-mix(in srgb, var(--cp-bg) 70%, transparent);
+
+  --md-code-bg-color: var(--cp-code);
+  --md-code-fg-color: var(--cp-ink);
+
+  --md-typeset-a-color: var(--cp-accent);
+  --md-typeset-mark-color: var(--cp-mark);
+  --md-typeset-table-color: var(--cp-line);
+  --md-footer-fg-color: var(--cp-ink);
+  --md-footer-fg-color--light: var(--cp-muted);
+  --md-footer-fg-color--lighter: color-mix(in srgb, var(--cp-muted) 50%, transparent);
+  --md-footer-bg-color: var(--cp-bg);
+  --md-footer-bg-color--dark: var(--cp-bg);
+}
+
+/* Only these two differ between schemes. */
+[data-md-color-scheme="default"] {
+  --md-accent-bg-color: var(--cp-bg);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-accent-bg-color: var(--cp-ink);
+  --md-accent-bg-color--light: color-mix(in srgb, var(--cp-ink) 70%, transparent);
+}
