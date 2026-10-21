@@ -2,9 +2,13 @@
 
 import typing
 
-import numba as nb
-
+from cmenpy.compile.backend import numba_module
 from cmenpy.compile.low.decorate import _template
+
+
+def _njit(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    """Resolve ``numba.njit`` on use, so declaring needs no numba import."""
+    return numba_module().njit(*args, **kwargs)
 
 
 def precompile(
@@ -25,10 +29,11 @@ def precompile(
     same name (``parallel`` also needs `numba.prange` in the body). A model
     can also enable them for every kernel at instantiation. Any other numba
     option (``cache=True``, ``boundscheck=False``, ...) is forwarded through
-    keyword arguments.
+    keyword arguments. Pass ``numba=False`` to force this kernel to run as
+    plain Python even when numba is available.
     """
     return _template(
-        nb.njit,
+        _njit,
         parallel_mode="njit",
         parallel=parallel,
         fastmath=fastmath,

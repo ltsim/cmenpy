@@ -1,11 +1,14 @@
 # Numba kernels
 
 `cmenpy.compile` exposes three decorators. Each returns a `_Kernel` descriptor that
-**compiles lazily on first use** (or eagerly via `cm.prepare(model)` /
-`solve(..., prepare=True)`) and auto-casts its arguments. Population views
-(`pop.X` / `pop.F`) can be passed straight to a kernel — they are unwrapped
-internally, so no implicit `np.asarray` cast happens. `nopython=True` is always
-enabled.
+**compiles lazily on first use** (or eagerly via `MyModel(prepare=True)` at
+construction, `cm.prepare(model)` / `solve(..., prepare=True)`) and auto-casts its
+arguments. `nopython=True` is always enabled.
+
+Numba is an **optional backend**: kernels compile when numba is installed
+(`pip install "cmenpy[numba]"`) and automatically run as pure NumPy/Python when
+it is not. You can also control compilation per model or per kernel with the
+`numba` option — see [Running without Numba](#running-without-numba).
 
 ## Declaring specs
 
@@ -82,6 +85,31 @@ scalar, `Array[dtype]` is a whole-array argument with a private dimension, and
 is still accepted. Accepts `fastmath=True` and `parallel=True`
 (`target="parallel"`).
 
+## Argument casting
+
+Arguments are cast automatically before reaching a kernel. A declared spec
+(`cm.Array[...]` / `cm.Scalar[...]`) takes precedence and forces dtype/layout, but
+specs are *optional*: even a completely bare kernel converts its arguments into
+plain ndarrays. Buffer views such as `pop.X` and `pop.F` are unwrapped through
+their explicit `to_numpy()` method, so no implicit `__array__` cast fires; other
+array-protocol objects still convert through `np.asarray`. The call returns a
+NumPy array ready for the `<<` write-back:
+
+```python
+@cm.precompile
+def double(X):                      # no specs needed
+    return X * 2.0
+
+pop.X << self.double(pop.X)         # view in, ndarray out
+```
+
+Plain ndarrays, NumPy scalars, lists and tuples pass through untouched, so
+scalar/tuple results and numba's list handling are unaffected.
+
+To convert a view outside a kernel, use `cm.cast(pop.X, dtype)` (optionally with
+`layout="C"` for a typed kernel signature) or `pop.X.to_numpy()`. Implicit
+`np.asarray(pop.X)` / `np.array(pop.F)` casting of the views is deprecated.
+
 ## Model compile options
 
 A `@cm.template` model sets options at instantiation and they propagate to every
@@ -90,9 +118,52 @@ kernel — `fastmath`/`cache` apply when the model *or* the kernel asks, while
 in with `parallel=True` (it needs `nb.prange`):
 
 ```python
-model = GreyWolfOptimizer(seed=1, parallel=True, fastmath=True, cache=True)
+model = GreyWolfOptimizer(
+    seed=1, numba=True, parallel=True, fastmath=True, cache=True
+)
 model.prepare()              # force compilation, report signatures
 cm.prepare(SomeClass)        # same for a standalone kernel holder
+```
+
+`prepare=True` compiles at construction time, so you never have to call
+`prepare()` yourself:
+
+```python
+model = MyOptimizer(seed=1, numba=True, prepare=True)  # kernels compiled now
+model = MyOptimizer(seed=1, numba=True)                # lazy; model.prepare()
+```
+
+`prepare=False` (the default) keeps lazy compilation; `model.prepare()` remains
+available either way. With `numba=False` (or no numba installed) there is nothing
+to compile, and the kernels simply report the `["<python>"]` marker.
+
+## Running without Numba
+
+The `numba` option controls **whether compilation takes place at all**. It can be
+set on the model — `MyOptimizer(numba=False)` — or on a single kernel —
+`@cm.precompile(numba=False)` — and applies to all three decorators. Leaving it
+out resolves automatically: kernels compile if numba is installed, and run
+uncompiled if it is not. Asking for compilation explicitly (`numba=True`) when
+numba is missing raises an `ImportError` with an install hint.
+
+Uncompiled kernels keep their specs (so arguments are still auto-cast) and run
+through pure-Python equivalents:
+
+| Decorator | Uncompiled flavor |
+| --------- | ----------------- |
+| `@cm.precompile` | the plain function |
+| `@cm.vectorize` | `numpy.vectorize` (elementwise) |
+| `@cm.reduce` | a layout-driven NumPy loop over the core signature |
+
+`prepare()` / `cm.prepare(model)` report uncompiled kernels as `["<python>"]`.
+Kernels written with `from cmenpy import prange` work in both modes: the name
+binds numba's `prange` when the backend is installed and the builtin `range`
+otherwise.
+
+```python
+model = MyOptimizer(seed=1, numba=False)   # never compiles, numba or not
+model.prepare()                             # {"hunt": ["<python>"], ...}
+fitness, best = model.solve(f, bounds, 150, 15)  # same results, no JIT
 ```
 
 ## API

@@ -2,7 +2,6 @@
 
 import typing
 
-import numba as nb
 import numpy as np
 
 from cmenpy.hints.primitives import CasterType
@@ -58,7 +57,11 @@ class _ArraySpec:
         return self.dtype is not None and self.rank is not None
 
     def numba_type(self) -> typing.Any:
-        return nb.types.Array(  # type: ignore[no-untyped-call]
+        from cmenpy.compile.backend import numba_module
+
+        nb = numba_module()
+
+        return nb.types.Array(
             nb.from_dtype(np.dtype(self.dtype)), self.rank, self.layout
         )
 

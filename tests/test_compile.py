@@ -1,12 +1,16 @@
 import typing
 
-import numba as nb
 import numpy as np
 import numpy.typing as npt
 import pytest
 
 import cmenpy as cm
 from cmenpy.compile import _Kernel
+
+# This module exercises numba internals (dispatchers, prange kernels,
+# targetoptions); without the optional backend it is skipped. See
+# tests/test_optional_numba.py for the pure-Python fallback behavior.
+nb = pytest.importorskip("numba")
 
 
 def _dispatcher(kernel: typing.Any) -> typing.Any:
@@ -233,6 +237,35 @@ def test_prepare_reports_kernels() -> None:
 
     assert "scale" in reported
     assert reported["scale"]
+
+
+def test_bare_kernels_round_trip_buffer_views() -> None:
+    """Spec-less kernels accept ``pop.X`` directly and return plain ndarrays."""
+    seen: list[typing.Any] = []
+
+    @cm.template
+    class Model:
+        def initialize(self, ctx) -> None:
+            pop = cm.PopulationSwarm(ctx.buff)
+            pop.compute << np.ones((pop.size, ctx.bounds.ndim))
+
+        def evolve(self, e, ctx) -> None:
+            pop = cm.PopulationSwarm(ctx.buff)
+            result = self.double(pop.X)
+            seen.append(result)
+            pop.X << result
+
+        @cm.precompile
+        def double(X):
+            return X * 2.0
+
+    Model(seed=1).solve(
+        lambda x: float(np.sum(x**2)), cm.Bounds[(-1, 1), (-1, 1)], 1, 2
+    )
+
+    assert seen
+    assert all(isinstance(result, np.ndarray) for result in seen)
+    np.testing.assert_allclose(seen[-1], 2.0)
 
 
 def test_reduce_compiles_at_definition() -> None:

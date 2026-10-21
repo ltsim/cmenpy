@@ -1,3 +1,35 @@
+# Version 2026b2
+
++ Numba is now an **optional backend**. The core install only requires NumPy;
+  `pip install "cmenpy[numba]"` restores compilation. Declaring kernels no
+  longer imports numba: the package is probed lazily and nothing is compiled
+  unless a kernel actually asks for it.
++ The `numba` compile option controls **whether compilation takes place**:
+  `MyOptimizer(numba=True)` demands compilation (`ImportError` with an install
+  hint when numba is missing), `numba=False` runs the kernels uncompiled even
+  when numba is installed, and omitting it compiles if and only if numba is
+  available. It works on the model constructor and on each decorator
+  (`@cm.precompile(numba=False)`), with the model option winning.
++ Uncompiled kernels keep their specs (arguments are still auto-cast) and run
+  as pure NumPy/Python: `@cm.precompile` calls the plain function,
+  `@cm.vectorize` uses `numpy.vectorize`, and `@cm.reduce` uses a
+  layout-driven NumPy loop over the core signature.
++ `cm.prepare(model)` reports uncompiled kernels as `["<python>"]`.
++ Models accept a `prepare` constructor option: `MyOptimizer(numba=True,
+  prepare=True)` compiles every class kernel during instantiation — the
+  equivalent of calling `model.prepare()` right away — while `prepare=False`
+  (the default) keeps lazy compilation and `model.prepare()` still available.
++ Kernels cast array-protocol arguments **automatically, even when declared
+  without specs**: a buffer view such as `pop.X` reaches the kernel as the
+  ndarray it wraps, and a call returns a NumPy array ready for the
+  `pop.X << result` write-back. Plain arrays, NumPy scalars, lists and tuples
+  pass through untouched; declared specs still control dtype and layout.
++ `from cmenpy import prange` binds numba's `prange` when the backend is
+  installed and the builtin `range` otherwise, so `parallel` kernels stay
+  importable in both modes.
+
+---------------------------------------------------------------------
+
 # Version 2026b1
 
 + `@cm.module` turns a class into a reusable **Operator Module** (a Ruby-style
