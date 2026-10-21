@@ -1,5 +1,6 @@
 """Row swap writer operator (``pop.swap``)."""
 
+from cmenpy.casting import unwrap_array
 from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream import WriterOperator
@@ -20,7 +21,7 @@ class SwapOperation(WriterOperator):
     def __setitem__(self, key: int | slice, value: NDArrayType) -> None:
         """Write ``value`` at ``key`` and move the displaced row to the end."""
         cp_mem_buff = self.__buffer.raw[key].copy()
-        self.__buffer.raw[key] = value
+        self.__buffer.raw[key] = unwrap_array(value)
         self.__buffer.raw[:] = cp_mem_buff
 
     def __repr__(self) -> str:

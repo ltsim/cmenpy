@@ -3,6 +3,7 @@
 __version__ = "2026b1"
 
 from cmenpy.bounds import Bounds
+from cmenpy.casting import cast
 from cmenpy.compile import (
     Array,
     Contract,
@@ -39,6 +40,7 @@ __all__ = [
     "Variable",
     "VectorizedTarget",
     "best_index",
+    "cast",
     "declare",
     "is_best",
     "is_worst",

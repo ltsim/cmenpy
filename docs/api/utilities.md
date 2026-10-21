@@ -1,6 +1,11 @@
 # Utilities
 
-Comparators used by selection operators, and the shared type aliases.
+Comparators used by selection operators, the explicit-casting helper, and the
+shared type aliases.
+
+## Casting
+
+::: cmenpy.casting.cast
 
 ## Comparators
 

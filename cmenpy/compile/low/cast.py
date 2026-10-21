@@ -6,6 +6,7 @@ import typing
 
 import numpy as np
 
+from cmenpy.casting import unwrap_array
 from cmenpy.hints.primitives import CasterType
 
 
@@ -41,17 +42,20 @@ def _autocast(
 
     @functools.wraps(func)
     def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        unwrapped = tuple(unwrap_array(value) for value in args)
         casted = tuple(
             (
                 mapping[names[i]](value)
                 if i < len(names) and names[i] in mapping
                 else value
             )
-            for i, value in enumerate(args)
+            for i, value in enumerate(unwrapped)
         )
         casted_kwargs = {
             name: mapping[name](value) if name in mapping else value
-            for name, value in kwargs.items()
+            for name, value in (
+                (name, unwrap_array(value)) for name, value in kwargs.items()
+            )
         }
 
         return compiled(*casted, **casted_kwargs)

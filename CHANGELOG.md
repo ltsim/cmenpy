@@ -15,6 +15,13 @@
   model via normal inheritance, so they work identically on a template and on
   an Operator Module.
 
++ `cm.cast(value, dtype=None, layout="A")` is the explicit way to turn a
+  population view (`pop.X` / `pop.F`) or any array-like into a NumPy array. The
+  views expose a `to_numpy()` conversion, and kernels, comparators and buffer
+  writes unwrap them internally. Implicit casting via `np.asarray` is now
+  **deprecated** (it still works, emitting a `DeprecationWarning`) and will be
+  removed in a later release.
+
 ---------------------------------------------------------------------
 
 # Version 2026b0

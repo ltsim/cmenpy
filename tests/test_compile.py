@@ -101,8 +101,18 @@ def test_list_is_cast_to_array() -> None:
     assert total([1.0, 2.0, 3.0]) == 6.0
 
 
-def test_template_autocasts_proxy() -> None:
+def test_template_casts_proxy_internally(monkeypatch: "pytest.MonkeyPatch") -> None:
+    from cmenpy.population.attributes.base import BufferMatrixSolutions
+
     seen: dict[str, type] = {}
+    triggered: list[int] = []
+
+    def _spy(self, dtype=None, copy=None):
+        triggered.append(1)
+        return self.to_numpy()
+
+    # A spec'd kernel must unwrap the view itself, not via ``np.asarray``.
+    monkeypatch.setattr(BufferMatrixSolutions, "__array__", _spy, raising=False)
 
     @cm.template
     class Model:
@@ -112,7 +122,7 @@ def test_template_autocasts_proxy() -> None:
 
             pop.compute << rng.uniform(-1, 1, (pop.size, bounds.ndim))
 
-            out = self.halve(pop.X, 0.5)  # BufferMatrixSolutions proxy -> ndarray
+            out = self.halve(pop.X, 0.5)  # view -> unwrapped by the kernel
             seen["type"] = type(out)
 
         def evolve(self, e, ctx) -> None:
@@ -134,6 +144,7 @@ def test_template_autocasts_proxy() -> None:
     model.solve(sphere, cm.Bounds[(-1, 1), (-1, 1)], 1, 3, (1, 4))
 
     assert seen["type"] is np.ndarray
+    assert triggered == []
 
 
 def test_eager_precompile_compiles_at_definition() -> None:

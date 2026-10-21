@@ -55,7 +55,7 @@ See the [Quickstart](https://ltsim.github.io/cmenpy/quickstart/) for both the fu
 
 ## Core pillars
 
-- **Vectorized data structures.** Population arrays, agent states, and search spaces use a flattened, vectorized layout with no per-individual objects, interfacing natively with NumPy and Numba.
+- **Vectorized data structures.** Population arrays, agent states, and search spaces use a flattened, vectorized layout with no per-individual objects. Buffer views (`pop.X`, `pop.F`) interoperate with NumPy through the explicit `cm.cast(...)` helper and can be passed directly to `cmenpy` kernels, which unwrap them internally.
 - **Extensible architecture.** Custom operators, mutation rules, or entirely new paradigms require overriding only a few decoupled, well-defined methods.
 - **Non-monolithic flexibility.** No visualization tools, file exporters, or rigid loggers — just the mathematical engine and its structural flow.
 - **Research ready.** Licensed under the **GNU GPLv3**. Design, modify, and distribute your algorithms freely; derivative works stay open, keeping the software a public good for research and commercial development.

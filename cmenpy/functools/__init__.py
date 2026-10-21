@@ -5,6 +5,7 @@ import typing
 import numpy as np
 import numpy.typing as npt
 
+from cmenpy.casting import unwrap_array
 from cmenpy.hints.option import SenseType
 from cmenpy.hints.primitives import AB
 
@@ -12,7 +13,7 @@ from cmenpy.hints.primitives import AB
 def _compare(
     ab: AB[typing.Any, typing.Any], sense: SenseType, better: bool
 ) -> npt.NDArray[np.intp]:
-    a, b = np.array(ab[0]), np.array(ab[1])
+    a, b = np.asarray(unwrap_array(ab[0])), np.asarray(unwrap_array(ab[1]))
 
     if (sense == "min") == better:
         mask = a < b
@@ -64,7 +65,7 @@ def best_index(values: npt.ArrayLike, sense: SenseType = "min") -> int:
     Returns:
         Index of the minimum (``"min"``) or maximum (``"max"``) value.
     """
-    _values = np.asarray(values)
+    _values = np.asarray(unwrap_array(values))
 
     return int(np.argmin(_values)) if sense == "min" else int(np.argmax(_values))
 
@@ -79,7 +80,7 @@ def worst_index(values: npt.ArrayLike, sense: SenseType = "min") -> int:
     Returns:
         Index of the maximum (``"min"``) or minimum (``"max"``) value.
     """
-    _values = np.asarray(values)
+    _values = np.asarray(unwrap_array(values))
 
     return int(np.argmax(_values)) if sense == "min" else int(np.argmin(_values))
 

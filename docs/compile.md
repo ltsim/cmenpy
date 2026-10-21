@@ -2,7 +2,9 @@
 
 `cmenpy.compile` exposes three decorators. Each returns a `_Kernel` descriptor that
 **compiles lazily on first use** (or eagerly via `cm.prepare(model)` /
-`solve(..., prepare=True)`) and auto-casts its arguments. `nopython=True` is always
+`solve(..., prepare=True)`) and auto-casts its arguments. Population views
+(`pop.X` / `pop.F`) can be passed straight to a kernel — they are unwrapped
+internally, so no implicit `np.asarray` cast happens. `nopython=True` is always
 enabled.
 
 ## Declaring specs
