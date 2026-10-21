@@ -99,6 +99,14 @@ factories for bounds and buffers.
     options:
       heading_level: 3
 
+## Casting
+
+Explicit casting helper for population views and array-like values.
+
+::: cmenpy.cast
+    options:
+      heading_level: 3
+
 ## Comparators
 
 Sense-aware fitness comparators used by selection operators.

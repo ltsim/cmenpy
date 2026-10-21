@@ -39,7 +39,7 @@ class ParticleSwarmOptimization:
         self.pbest = X.copy()
 
         pop.compute << X
-        self.pbest_f = np.array(pop.F)[: pop.size].copy()
+        self.pbest_f = cm.cast(pop.F)[: pop.size].copy()
         self.gbest = self.pbest[cm.best_index(self.pbest_f, ctx.sense)].copy()
 
     def evolve(self, e, ctx) -> None:
@@ -61,7 +61,7 @@ class ParticleSwarmOptimization:
         X = self.position(X, self.v, bounds.low, bounds.up)
 
         pop.compute << X
-        F = np.array(pop.F)[: pop.size]
+        F = cm.cast(pop.F)[: pop.size].copy()
 
         improved = cm.is_best((F, self.pbest_f), ctx.sense)
 

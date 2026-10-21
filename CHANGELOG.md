@@ -16,6 +16,15 @@ Targeted at **2026b2** (tracked in the
 [roadmap](https://github.com/ltsim/cmenpy/blob/main/ROADMAP.md)).
 
 ### Added
+### Added
+- Numba is now an **optional backend**. The core install only requires NumPy;
+- The `numba` compile option controls **whether compilation takes place**:
+- Uncompiled kernels keep their specs (arguments are still auto-cast) and run
+- `cm.prepare(model)` reports uncompiled kernels as `["<python>"]`.
+- Models accept a `prepare` constructor option: `MyOptimizer(numba=True,
+- Kernels cast array-protocol arguments **automatically, even when declared
+- `from cmenpy import prange` binds numba's `prange` when the backend is
+
 
 - Composable termination criteria in `cmenpy.terminator`: `MaxEvaluation`
   (with `cm.Terminator(nfe=...)` as an alias), `MaxEpoch`, `MaxPatience`,
@@ -54,6 +63,8 @@ Targeted at **2026b2** (tracked in the
 ## [2026b1] - unreleased
 
 ### Added
+- `cm.cast(value, dtype=None, layout="A")` is the explicit way to turn a
+
 
 - `@cm.module` turns a class into a reusable **Operator Module** (a Ruby-style
   mixin). It marks the class, materializes its `cm.Constant` annotations and

@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 import cmenpy as cm
+from cmenpy.compile import backend
 from cmenpy.compile.kernel import _Kernel
 
 
@@ -158,6 +159,7 @@ def test_inherited_kernel_reported_by_prepare() -> None:
     assert reported["kernel"]
 
 
+@pytest.mark.skipif(not backend.HAS_NUMBA, reason="needs the numba backend")
 def test_module_kernel_uses_model_compile_options() -> None:
     @cm.module
     class Ops:

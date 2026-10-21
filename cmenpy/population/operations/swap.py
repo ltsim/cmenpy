@@ -1,5 +1,6 @@
 """Row swap writer operator (``pop.swap``)."""
 
+from cmenpy.casting import unwrap_array
 from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream import WriterOperator
@@ -25,7 +26,7 @@ class SwapOperation(WriterOperator):
         # behavior. Suspected bug; the operator is unused by the test suite
         # and the examples, so it is left as-is pending a decision.
         cp_mem_buff = self.__buffer.raw[key].copy()
-        self.__buffer.raw[key] = value
+        self.__buffer.raw[key] = unwrap_array(value)
         self.__buffer.raw[:] = cp_mem_buff
 
     def __repr__(self) -> str:

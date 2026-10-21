@@ -35,6 +35,11 @@ np.asarray(pop.F) # the whole fitness column
 pop.X << values       # score `values` and insert it — same as pop.compute << values
 ```
 
+`pop.X` and `pop.F` are live views. Read the whole block with `pop.X.to_numpy()`
+(or `cm.cast(pop.X)`) — implicit `np.asarray(pop.X)` casting is deprecated.
+They can also be passed directly to `cm.precompile`/`cm.vectorize`/`cm.reduce`
+kernels (cmenpy unwraps them internally).
+
 `pop.F` has no write path: fitness is produced by scoring
 ([`compute`](operators.md)), never assigned directly. To write a raw row
 (fitness *and* solution) without scoring, use `pop.assign`.

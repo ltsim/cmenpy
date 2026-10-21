@@ -2,7 +2,6 @@
 
 import typing
 
-import numba as nb
 import numpy as np
 
 from cmenpy.hints.primitives import CasterType
@@ -33,7 +32,9 @@ class _ScalarSpec:
         return self.dtype is not None
 
     def numba_type(self) -> typing.Any:
-        return nb.from_dtype(np.dtype(self.dtype))
+        from cmenpy.compile.backend import numba_module
+
+        return numba_module().from_dtype(np.dtype(self.dtype))
 
     def caster(self) -> CasterType:
         if self.dtype is None:

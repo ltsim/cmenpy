@@ -63,8 +63,8 @@ class LSHADE:
         pos = np.full(buff.size.max, -1, dtype=int)
         pos[active] = np.arange(n)
 
-        X = np.asarray(pop.X)[active]
-        F_cur = np.asarray(pop.F)[active]
+        X = cm.cast(pop.X)[active]
+        F_cur = cm.cast(pop.F)[active]
 
         slot = rng.integers(0, self.H, n)
         F_new, CR_new = self.sample_params(self.M_F[slot], self.M_CR[slot], n, rng)
@@ -86,7 +86,7 @@ class LSHADE:
         n_pop = cm.PopulationSwarm(snap)
         n_pop.compute << self.clip(trials, bounds.low, bounds.up)
 
-        F_off = np.asarray(n_pop.F)[active]
+        F_off = cm.cast(n_pop.F)[active]
         better = F_off < F_cur if ctx.sense == "min" else F_off > F_cur
         rows = np.flatnonzero(better)
 

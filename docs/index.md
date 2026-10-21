@@ -5,7 +5,8 @@
 prototyping metaheuristic and population-based optimization algorithms.
 
 ```bash
-pip install cmenpy          # requires Python >=3.11
+pip install cmenpy          # runtime: numpy only (pure-Python kernels)
+pip install "cmenpy[numba]" # recommended: compiles kernels with Numba
 ```
 
 An optimizer is a function — or a class — that steps a population forward one

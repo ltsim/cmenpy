@@ -1,7 +1,5 @@
 """Matrix views over the buffer: fitness column, solution block, operations."""
 
-import numpy.typing as npt
-
 from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.kernel.index import BufferIndex
@@ -15,8 +13,8 @@ from cmenpy.population.attributes.matrix import (
 class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
     """Read view over the buffer's fitness column (column 0).
 
-    Supports ``pop.F[i]``, ``np.asarray(pop.F)`` for the full column and
-    ``~pop.F`` for the active rows only.
+    Supports ``pop.F[i]``, ``pop.F.to_numpy()`` (or ``cm.cast(pop.F)``) for the
+    full column and ``~pop.F`` for the active rows only.
 
     Args:
         buffer: The backing buffer.
@@ -30,9 +28,7 @@ class BufferMatrixFitness(BufferMatrixAbstract, BufferMatrixAccess):
         """Return the fitness value(s) at row ``item``."""
         return self.__buffer.raw[:, 0].reshape(-1)[item]
 
-    def __array__(
-        self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
-    ) -> NDArrayType:
+    def to_numpy(self) -> NDArrayType:
         """Return the full fitness column as an ndarray."""
         return self.__buffer.raw[:, 0].reshape(-1)
 
@@ -54,8 +50,9 @@ class BufferMatrixSolutions(
 ):
     """Read/write view over the solution columns (columns ``1:``).
 
-    Supports ``pop.X[i]``, ``np.asarray(pop.X)``, ``~pop.X`` for the active
-    rows, and the write-back ``pop.X << values`` (which scores the block).
+    Supports ``pop.X[i]``, ``pop.X.to_numpy()`` (or ``cm.cast(pop.X)``),
+    ``~pop.X`` for the active rows, and the write-back ``pop.X << values``
+    (which scores the block).
 
     Args:
         buffer: The backing buffer.
@@ -69,9 +66,7 @@ class BufferMatrixSolutions(
         """Return the solution row(s) at ``item``."""
         return self.__buffer.raw[:, 1:][item]
 
-    def __array__(
-        self, dtype: "npt.DTypeLike | None" = None, copy: bool | None = None
-    ) -> NDArrayType:
+    def to_numpy(self) -> NDArrayType:
         """Return the full solution block as an ndarray."""
         return self.__buffer.raw[:, 1:]
 

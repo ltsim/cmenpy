@@ -5,16 +5,17 @@ and, for a `@cm.template` model, the **instantiation** (`MyModel(seed=1, paralle
 This page documents how the two merge, when a kernel sees which, and how to
 force and inspect compilation.
 
-## The three model options
+## The model options
 
 | Option | Meaning |
 | ------ | ------- |
+| `numba` | whether compilation takes place. Omit to compile if numba is installed, else run uncompiled. `True` demands compilation (raises `ImportError` if missing). `False` runs uncompiled even if numba is installed. |
 | `parallel` | enable parallel compilation (see per-decorator semantics) |
 | `fastmath` | enable Numba's `fastmath` (faster, less precise floating point) |
 | `cache` | forward Numba's on-disk cache, skipping compilation in later processes |
 
 Any *other* option (`boundscheck`, `nogil`, `inline`, …) can only be passed to
-the decorator; the model channel accepts exactly these three keys.
+the decorator; the model channel accepts exactly these four keys.
 
 ```python
 @cm.template

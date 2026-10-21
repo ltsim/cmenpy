@@ -29,6 +29,7 @@ each symbol links to the page that documents it.
 | `vectorized_target` | decorator | [Functions](functions.md#declaration-decorators) |
 | `declare_from_func`, `declare_from_class`, `build_context_manager` | builders | [Functions](functions.md#builders-and-factories) |
 | `create_bounds`, `init_buffer` | factories | [Functions](functions.md#builders-and-factories) |
+| `cast` | explicit casting | [Functions](functions.md#casting) |
 | `is_best`, `is_worst` | comparators | [Functions](functions.md#comparators) |
 | `best_index`, `worst_index` | ranking helpers | [Functions](functions.md#comparators) |
 | `Argument`, `Constant`, `Variable` | field markers | [Classes](classes.md#field-markers) |

@@ -18,8 +18,9 @@ class TemplateOptimizerModel(BaseOptimizer):
     """Model built by ``@cm.template`` from a class.
 
     The class supplies ``initialize``/``evolve``; compile options
-    (``parallel``/``fastmath``/``cache``) are set at instantiation and
-    propagate to the class's numba kernels.
+    (``numba``/``parallel``/``fastmath``/``cache``) are set at instantiation
+    and propagate to the class's numba kernels. ``prepare=True`` compiles
+    them eagerly at construction instead of on first use.
 
     Args:
         cls_model: The wrapped class implementing ``initialize``/``evolve``.
@@ -62,14 +63,17 @@ class TemplateOptimizerModel(BaseOptimizer):
 
     @property
     def compile_options(self) -> dict[str, bool]:
-        """Compile options (``parallel``/``fastmath``/``cache``) of the model."""
+        """Compile options (``numba``/``parallel``/``fastmath``/``cache``)."""
         return dict(getattr(self.__model, "_compile_options", {}))
 
     def prepare(self) -> dict[str, list[str]]:
         """Return the numba kernels declared on the wrapped class.
 
         Kernels compile on first use; this hook forces compilation with the
-        model's compile options and reports their signatures.
+        model's compile options and reports their signatures. Kernels running
+        uncompiled (``numba=False`` or numba not installed) report the
+        ``"<python>"`` marker. Pass ``prepare=True`` at construction to run
+        this automatically during instantiation.
         """
         return kernels(self.__cls_model, self.compile_options)
 
@@ -155,8 +159,8 @@ class TemplateOptimizerModel(BaseOptimizer):
         Args:
             seed: Random seed forwarded to the run.
             *args: Positional field values for the wrapped class.
-            **kwargs: Named field values (plus compile options) for the
-                wrapped class.
+            **kwargs: Named field values (plus compile options and
+                ``prepare``) for the wrapped class.
         """
         self.__seed = seed
         self.__model = self.__cls_model(*args, **kwargs)

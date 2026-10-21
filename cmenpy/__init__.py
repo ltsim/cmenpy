@@ -2,7 +2,10 @@
 
 __version__ = "2026b1"
 
+import typing
+
 from cmenpy.bounds import Bounds
+from cmenpy.casting import cast
 from cmenpy.compile import (
     Array,
     Contract,
@@ -13,6 +16,7 @@ from cmenpy.compile import (
     reduce,
     vectorize,
 )
+from cmenpy.compile import backend as _backend
 from cmenpy.epoch import EpochIteration
 from cmenpy.functools import best_index, is_best, is_worst, worst_index
 from cmenpy.kernel import KernelBuffer, KernelSize
@@ -24,6 +28,7 @@ from cmenpy.population.swarm import PopulationSwarm
 from cmenpy.target import VectorizedTarget, vectorized_target
 
 __all__ = [
+    "HAS_NUMBA",
     "Argument",
     "Array",
     "Bounds",
@@ -39,11 +44,13 @@ __all__ = [
     "Variable",
     "VectorizedTarget",
     "best_index",
+    "cast",
     "declare",
     "is_best",
     "is_worst",
     "jit",
     "module",
+    "prange",
     "precompile",
     "prepare",
     "reduce",
@@ -52,3 +59,19 @@ __all__ = [
     "vectorized_target",
     "worst_index",
 ]
+
+
+def __getattr__(name: str) -> typing.Any:
+    """Expose ``prange``/``HAS_NUMBA`` lazily from the optional-numba backend.
+
+    ``from cmenpy import prange`` binds numba's ``prange`` when numba is
+    installed and the builtin ``range`` otherwise, so kernels written with it
+    work in both modes.
+    """
+    if name == "prange":
+        return _backend.prange()
+
+    if name == "HAS_NUMBA":
+        return _backend.HAS_NUMBA
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

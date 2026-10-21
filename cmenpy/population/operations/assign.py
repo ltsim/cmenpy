@@ -1,5 +1,6 @@
 """Raw row writer operator (``pop.assign``), without scoring."""
 
+from cmenpy.casting import unwrap_array
 from cmenpy.hints import NDArrayType
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.operations.stream.vectorizable import (
@@ -23,7 +24,7 @@ class AssignPipeline(PipelineOperator):
 
     def __lshift__(self, value: NDArrayType) -> None:
         """Write ``value`` (fitness + solution) into the bound row."""
-        self.__buffer.raw[self.__idx] = value
+        self.__buffer.raw[self.__idx] = unwrap_array(value)
 
 
 class AssignOperator(VectorizableOperator):
@@ -46,6 +47,7 @@ class AssignOperator(VectorizableOperator):
 
     def __lshift__(self, value: NDArrayType) -> "VectorizableOperator":
         """Overwrite the whole buffer with ``value`` (no scoring)."""
+        value = unwrap_array(value)
         if self.shape != value.shape:
             raise IndexError(
                 "The buffer cannot be assigned a value; the sizes do not match."
