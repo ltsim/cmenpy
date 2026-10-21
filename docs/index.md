@@ -1,53 +1,63 @@
-# cmenpy
+# ![cmenpy](assets/cmenpy.png){ .cmenpy-hero } { #cmenpy }
 
-**C**ompute **M**etaheuristic **En**gine for **P**ython (_cmenpy_ or _/siːmɛnpaɪ/_) is an
-extensible, flexible and vectorized Python framework for designing and prototyping
-metaheuristic and population-based optimization algorithms.
-
-## Core pillars
-
-- **Vectorized data structures:** population arrays, agent states and search spaces
-  use a flattened, vectorized layout with no heavy per-individual objects, and
-  interoperate natively with NumPy and Numba.
-- **Extensible architecture:** custom operators, mutation rules or whole new paradigms
-  only require overriding a few decoupled methods.
-- **Non-monolithic flexibility:** no visualization tools, file exporters or rigid
-  loggers — just the mathematical engine and its structural flow.
-- **Research ready:** licensed under **GNU GPLv3**.
-
-## Install
+**C**ompute **M**etaheuristic **En**gine for **P**ython (_cmenpy_, pronounced
+/siːmɛnpaɪ/) is an extensible, vectorized Python framework for designing and
+prototyping metaheuristic and population-based optimization algorithms.
 
 ```bash
-pip install cmenpy          # runtime: numpy + numba only
+pip install cmenpy          # requires Python >=3.11
 ```
 
-For development (tests, type checks, docs):
+An optimizer is a function — or a class — that steps a population forward one
+epoch at a time. This is a complete one:
 
-```bash
-uv sync --extra dev         # runtime + dev tools
-uv sync --extra docs        # ... plus the MkDocs toolchain
+```python
+import numpy as np
+import cmenpy as cm
+
+
+@cm.declare(x=cm.Argument[int, (0, 3), 2])
+def my_algorithm(args, epoch, ctx):
+    pop = cm.PopulationSwarm(ctx.buff)
+    pop.compute << ctx.rng.uniform(
+        ctx.bounds.low, ctx.bounds.up, (pop.size, ctx.bounds.ndim)
+    )
+    for _ in epoch:
+        pop.compute << np.clip(
+            ~pop.extract + ctx.rng.uniform(-1, 1, (pop.size, ctx.bounds.ndim)),
+            ctx.bounds.low,
+            ctx.bounds.up,
+        )
+
+
+best_fitness, best_x = my_algorithm(x=1).solve(
+    lambda x: np.sum(x**2), cm.Bounds([(-1, 1)] * 3), epochs=150, pop_size=15
+)
 ```
 
-Requires Python `>=3.11`.
+`solve` runs the model against any objective and returns the best solution
+found and its fitness.
 
-## Layout
+## What you get
 
-| Path       | Contents |
-| ---------- | -------- |
-| `cmenpy/`  | The package. Public subpackages: `compile` (numba kernels), `model` (declaration styles), `population` (population handling), `target` (objectives), `kernel` (buffers), `bounds` (search space), `context` (the `ctx` object), `functools` (comparators). Internal support: `epoch`, `generator`, `hints`, `tracker`. |
-| `tests/`   | Test suite mirroring the package (`pytest`) |
-| `example/` | Runnable algorithms and demos (not shipped in the wheel) |
-| `docs/`    | This site (MkDocs + Material) |
+- **Flat populations.** Solutions live in one NumPy array — the fitness column
+  and the vectors share a single buffer. No per-individual objects.
+- **Two declaration styles.** `@cm.declare` wraps a function that drives the run;
+  `@cm.template` wraps a class with `initialize`/`evolve`. Both produce the same
+  `solve` contract.
+- **Reusable operator modules.** `@cm.module` bundles kernels, helpers and
+  `cm.Constant` fields that any number of models inherit.
+- **Compiled kernels.** `@cm.precompile`, `@cm.vectorize` and `@cm.reduce` defer
+  Numba compilation to first use and cast by annotation.
+- **Benchmark ready.** Reference test functions plug in directly from the
+  LTSIM companions [`opfunu-core`](https://github.com/ltsim/opfunu-core) and
+  [`enoppy-core`](https://github.com/ltsim/enoppy-core) — see
+  [Test functions](benchmarks.md).
 
-## Next steps
+Start with the [Quickstart](quickstart.md), benchmark with
+[Test functions](benchmarks.md), build your own optimizer with
+[Build a custom model](tutorial-custom-model.md), or look things up in the
+[API reference](api/index.md).
 
-- [Quickstart](quickstart.md) — solve your first problem in minutes.
-- [Models](models.md) — `@cm.declare` vs `@cm.template`, and the `ctx` object.
-- [Build a custom model](tutorial-custom-model.md) — a step-by-step tutorial implementing your own optimizer.
-- [Numba kernels](compile.md) — `@cm.precompile`, `@cm.vectorize`, `@cm.reduce`.
-- [Population](population.md) — `PopulationSwarm`, buffers, selection and ranking.
-- [Target functions](target.md) — objectives, NFE budget, vectorized targets.
-- [Examples](examples.md) — runnable algorithms in `example/`.
-- [API reference](api/index.md) — full autodoc for every public symbol, grouped by category.
-
-Developed by [LTSIM](mailto:tsim@cucei.udg.mx) @ 2026.
+*Licensed under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0). Developed by
+[LTSIM](mailto:tsim@cucei.udg.mx).*

@@ -13,6 +13,7 @@ No ``@cm.precompile``. Self-learning: successful ``(F_i, CR_i)`` are kept for th
 next generation; unsuccessful ones are redrawn around the jDE range.
 """
 import numpy as np
+from opfunu.name_based import Ackley01
 
 import cmenpy as cm
 
@@ -125,22 +126,10 @@ class DifferentialEvolution:
             out[i] = v
 
 
-def ackley(x):
-    x = np.asarray(x)
-    n = x.shape[-1] if x.ndim > 0 else 1
-    if x.ndim == 2:
-        s1 = np.sum(x ** 2, axis=1)
-        s2 = np.sum(np.cos(2.0 * np.pi * x), axis=1)
-        return -20.0 * np.exp(-0.2 * np.sqrt(s1 / n)) - np.exp(s2 / n) + 20.0 + np.exp(1.0)
-    s1 = np.sum(x ** 2)
-    s2 = np.sum(np.cos(2.0 * np.pi * x))
-    return -20.0 * np.exp(-0.2 * np.sqrt(s1 / n)) - np.exp(s2 / n) + 20.0 + np.exp(1.0)
-
-
 if __name__ == "__main__":
     model = DifferentialEvolution(seed=5)
-    bounds = cm.Bounds[(-32.0, 32.0), (-32.0, 32.0), (-32.0, 32.0), (-32.0, 32.0), (-32.0, 32.0)]
-    best_f, best_x = model.solve(ackley, bounds, epochs=400, pop_size=40, pop_range=(40, 40))
+    f = Ackley01(ndim=5)
+    best_f, best_x = model.solve(f.evaluate, f.bounds, epochs=400, pop_size=40, pop_range=(40, 40))
     print("Best fitness:", best_f)
     print("Best solution:", best_x)
     print("Kernels:", cm.prepare(DifferentialEvolution))

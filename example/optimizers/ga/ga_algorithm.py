@@ -14,6 +14,7 @@ Survival is an elitist ``(mu + lambda)`` step: the next generation keeps the bes
 No ``@cm.precompile``.
 """
 import numpy as np
+from opfunu.name_based import Griewank
 
 import cmenpy as cm
 
@@ -179,17 +180,10 @@ class GeneticAlgorithm:
         return sigma_new
 
 
-def sphere(x):
-    x = np.asarray(x)
-    if x.ndim == 2:
-        return np.sum(x ** 2, axis=1)
-    return np.sum(x ** 2)
-
-
 if __name__ == "__main__":
     model = GeneticAlgorithm(seed=7)
-    bounds = cm.Bounds[(-5.0, 5.0), (-5.0, 5.0), (-5.0, 5.0), (-5.0, 5.0), (-5.0, 5.0)]
-    best_f, best_x = model.solve(sphere, bounds, epochs=400, pop_size=40, pop_range=(40, 40))
+    f = Griewank(ndim=5)
+    best_f, best_x = model.solve(f.evaluate, f.bounds, epochs=400, pop_size=40, pop_range=(40, 40))
     print("Best fitness:", best_f)
     print("Best solution:", best_x)
     print("Kernels:", cm.prepare(GeneticAlgorithm))

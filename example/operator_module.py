@@ -5,7 +5,7 @@ methods and fields (``cm.Constant`` / ``cm.Argument``) that any number of
 ``@cm.template`` models can mix in by inheriting from it.
 """
 
-import numpy as np
+from opfunu.name_based import Ackley01
 
 import cmenpy as cm
 
@@ -69,14 +69,10 @@ class Annealer(MutationOps):
 
 
 if __name__ == "__main__":
-
-    def sphere(x):
-        return float(np.sum(x**2))
-
-    bounds = cm.Bounds([(-5.0, 5.0)] * 3)
+    f = Ackley01(ndim=3)
 
     for optimizer in (HillClimber, Annealer):
         model = optimizer(seed=1)
-        best_fitness, best_x = model.solve(sphere, bounds, epochs=60, pop_size=20)
+        best_fitness, best_x = model.solve(f.evaluate, f.bounds, epochs=60, pop_size=20)
         print(f"{optimizer.alias}: f={best_fitness:.5f} x={best_x}")
         print(f"  constants={optimizer.model_class.scale}")

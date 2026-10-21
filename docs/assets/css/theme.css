@@ -1,0 +1,606 @@
+/* cmenpy "Paper" theme — typography, layout and components.
+ *
+ * Values live in tokens.css; brand marks (wordmark, hero, logo sizing) in
+ * brand.css. This file only consumes the --cp-* tokens.
+ */
+
+/* ------------------------------ Type and measure ---------------------------- */
+
+body {
+  font-family: var(--cp-font-ui);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--cp-font-mono);
+}
+
+/* Journal: one serif carries both titles and prose. Its full Greek and math
+ * coverage means μ, λ and arrows set natively instead of falling back. */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: var(--cp-font-text);
+  color: var(--cp-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+  font-size: 2em;
+  line-height: 1.25;
+}
+
+.md-typeset h2 {
+  font-size: 1.35em;
+  line-height: 1.35;
+}
+
+/* API symbol headings (mkdocstrings) are identifiers, not prose titles, so
+ * they keep the monospace face — matching the signature block right below. */
+.md-typeset h2.doc-heading {
+  font-family: var(--cp-font-mono);
+  font-weight: 600;
+  font-size: 1.3em;
+  letter-spacing: -0.01em;
+}
+
+/* Keep the prose measure short enough to read comfortably (~80ch). Material's
+ * root font-size is 125%, so rem values here run ~1.25x their nominal size. */
+.md-grid {
+  max-width: 66rem;
+}
+
+.md-content__inner {
+  position: relative;
+  max-width: var(--cp-measure);
+}
+
+/* The edit pencil floats right by default; as a float it shrinks the hero H1's
+ * formatting context and knocks the wordmark off-center. Pinning it to the
+ * inner content box keeps the same visual spot without a float. */
+.md-content__button {
+  position: absolute;
+  top: 1.6rem;
+  right: 0;
+  float: none;
+  margin: 0;
+}
+
+/* ------------------------------ Content path -------------------------------- */
+
+/* Breadcrumbs render above the article; align them with its text column. */
+.md-path {
+  max-width: var(--cp-measure);
+  margin: 1.1rem 1.2rem 0;
+  padding: 0;
+  font-family: var(--cp-font-ui);
+  font-size: 0.62rem;
+  line-height: 1.5;
+  color: var(--cp-muted);
+}
+
+.md-path__link {
+  color: inherit;
+  border-bottom: 0;
+}
+
+.md-path__link:hover {
+  color: var(--cp-ink);
+}
+
+@media screen and (max-width: 76.234375em) {
+  .md-path {
+    margin: 0.8rem 0.8rem 0;
+  }
+}
+
+/* ---------------------------------- Chrome ---------------------------------- */
+
+/* The header is the page: no colored band, no shadow, one warm rule. */
+.md-header,
+.md-hero,
+.md-footer,
+.md-footer-meta {
+  background: var(--cp-bg);
+  color: var(--cp-ink);
+}
+
+.md-header {
+  border-bottom: var(--cp-rule);
+  transition: transform 0.2s ease;
+}
+
+/* Auto-hide on scroll down (scripts.js toggles the class). */
+.md-header--hidden {
+  transform: translateY(-100%);
+}
+
+.md-header--shadow,
+.md-footer--shadow,
+.md-tabs {
+  box-shadow: none;
+}
+
+.md-hero {
+  border-bottom: var(--cp-rule);
+}
+
+/* The title slot is the flex spacer that keeps the right-hand controls
+ * aligned; it carries the section path on wide screens. */
+.md-header__title {
+  height: var(--cp-header-height);
+  line-height: var(--cp-header-height);
+}
+
+.md-header__path {
+  font-family: var(--cp-font-ui);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--cp-muted);
+  white-space: nowrap;
+}
+
+.md-header__sep {
+  margin: 0 0.45em;
+  color: color-mix(in srgb, var(--cp-muted) 55%, transparent);
+}
+
+@media screen and (max-width: 60em) {
+  .md-header__title {
+    visibility: hidden;
+  }
+}
+
+/* Search sits in the header as a quiet field, not an inverted block. */
+.md-search__form {
+  position: relative;
+  background: var(--cp-surface);
+  border: var(--cp-rule);
+  border-radius: 6px;
+}
+
+.md-search__input {
+  color: var(--cp-ink);
+  padding-right: 2.9rem;
+}
+
+/* Keyboard hint, injected by scripts.js as data-hint (⌘K / Ctrl K). */
+.md-search__form::after {
+  content: attr(data-hint);
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  padding: 0.12rem 0.28rem;
+  border: var(--cp-rule);
+  border-radius: 4px;
+  font-family: var(--cp-font-ui);
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--cp-muted);
+  pointer-events: none;
+}
+
+@media screen and (max-width: 76.234375em) {
+  .md-search__form::after {
+    display: none;
+  }
+}
+
+.md-search__input::placeholder,
+.md-search__input ~ .md-search__icon,
+.md-search__icon[for="__search"] {
+  color: var(--cp-muted);
+}
+
+.md-search__input:hover,
+.md-search__input:focus,
+.md-search__input:focus-within {
+  background: var(--cp-surface);
+}
+
+.md-search__scrollwrap {
+  background: var(--cp-surface);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--cp-ink) 8%, transparent);
+}
+
+/* The repository card is the noisiest thing in the bar (it also injects live
+ * GitHub stats at runtime). The repo stays reachable via the footer. */
+.md-header__source {
+  display: none;
+}
+
+/* Navigation: quiet links, one accent for the active page. */
+.md-nav {
+  background: transparent;
+}
+
+.md-nav__title {
+  background: var(--cp-bg);
+  color: var(--cp-ink);
+  box-shadow: none;
+}
+
+.md-nav__link,
+.md-nav__link--index a {
+  color: var(--cp-muted);
+  scroll-margin-top: 0;
+}
+
+.md-nav__link:focus,
+.md-nav__link:hover {
+  color: var(--cp-ink);
+}
+
+.md-nav__link--active,
+.md-nav__item .md-nav__link--active {
+  color: var(--cp-accent);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--cp-accent);
+}
+
+/* --------------------- Primary navigation: styled contents ------------------ */
+
+/* Top-level groups become a numbered table of contents. Material tags them
+ * .md-nav__item--section; the numbers are CSS counters, so reordering the nav
+ * renumbers itself. The rail, dots and sticky heads apply to the fixed
+ * desktop sidebar; the mobile drawer keeps numbering + clean drill-in. */
+.md-nav--primary > .md-nav__list {
+  counter-reset: cp-sec;
+}
+
+.md-nav--primary .md-nav__item--section {
+  counter-increment: cp-sec;
+}
+
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+  display: flex;
+  align-items: baseline;
+  margin-top: 1.2rem;
+  padding: 0.45rem 0.6rem 0.45rem 0;
+  border-top: var(--cp-rule);
+  color: var(--cp-ink);
+  font-family: var(--cp-font-text);
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.md-nav--primary .md-nav__item--section > .md-nav__link::before {
+  content: counter(cp-sec, decimal-leading-zero);
+  flex: none;
+  margin-right: 0.6rem;
+  color: var(--cp-muted);
+  font-family: var(--cp-font-ui);
+  font-size: 0.5rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.md-nav--primary .md-nav__item--section > .md-nav__link > .md-nav__icon {
+  margin-left: auto;
+}
+
+/* Home and Changelog sit outside the numbering as bookends; without a rail
+ * under them, the inset-bar marker would dangle, so they get the plain
+ * accent text. The last item closes the list with a hairline. */
+.md-nav--primary > .md-nav__list > .md-nav__item:not(.md-nav__item--section) > .md-nav__link {
+  box-shadow: none;
+}
+
+.md-nav--primary > .md-nav__list > .md-nav__item:last-child:not(.md-nav__item--section) {
+  margin-top: 1.2rem;
+  padding-top: 0.35rem;
+  border-top: var(--cp-rule);
+}
+
+@media screen and (min-width: 60em) {
+  /* The head pins while its own section scrolls past. */
+  .md-nav--primary .md-nav__item--section > :is(.md-nav__link, .md-nav__container) {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--cp-bg);
+  }
+
+  /* Hairline rails: one under each section, and one under each nested group,
+   * so an active page at any depth sits beside its own line. */
+  .md-nav--primary .md-nav__item--section > .md-nav,
+  .md-nav--primary .md-nav__item--section .md-nav__item--nested > .md-nav {
+    margin-left: 0.2rem;
+    padding-left: 0.9rem;
+    border-left: var(--cp-rule);
+  }
+
+  /* Material hides overflow on nav lists for its drawer collapse; the dot
+   * sits on the rail, outside each item's box, so the rail lists must let it
+   * through. */
+  .md-nav--primary .md-nav__item--section .md-nav__list {
+    overflow: visible;
+  }
+
+  .md-nav--primary .md-nav__item--section .md-nav__item {
+    position: relative;
+  }
+
+  /* The active page is punched onto the rail as a dot, not a bar. The marker
+   * rides on the <li> because .md-nav__link clips to its ellipsis box. */
+  .md-nav--primary .md-nav__item--section .md-nav__item > a.md-nav__link--active {
+    color: var(--cp-accent);
+    box-shadow: none;
+  }
+
+  .md-nav--primary .md-nav__item--section .md-nav__item:has(> a.md-nav__link--active)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -1.7rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+    background: var(--cp-accent);
+    transform: translateY(-50%);
+  }
+
+  /* A nested group whose index page is the current page (navigation.indexes):
+   * its <li> spans the whole expanded subtree, so 50% would land mid-list.
+   * The marker rides the head-row link (positioned here) — top: 0 aligns it
+   * with the group's name. Scoped to .md-nav__item--nested so top-level
+   * section heads never get a dot: they have no rail and are marked by the
+   * accent text instead. */
+  .md-nav--primary .md-nav__item--section .md-nav__item--nested > .md-nav__container {
+    position: relative;
+  }
+
+  .md-nav--primary .md-nav__item--section .md-nav__item--nested > .md-nav__container > a.md-nav__link--active::before {
+    content: "";
+    position: absolute;
+    top: 0.9rem; /* head-row height / 2 - dot / 2 (≈34px row, 6px dot) */
+    left: -1.65rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+    background: var(--cp-accent);
+  }
+
+  /* A section whose index page is the current page (navigation.indexes): the
+   * head renders as a link wrapped in .md-nav__container, so it matches
+   * neither the head rule nor the leaf rule above — and would keep Material's
+   * global inset bar. Drop the bar, keep the accent. */
+  .md-nav--primary .md-nav__item--section .md-nav__container .md-nav__link--active {
+    color: var(--cp-accent);
+    box-shadow: none;
+  }
+
+  /* Nested groups inside a section (Models under Guides): quiet ink, no box. */
+  .md-nav--primary .md-nav__item--section .md-nav__item--nested > .md-nav__link {
+    color: var(--cp-ink);
+    font-weight: 600;
+  }
+}
+
+/* Table of contents as margin notes: a hairline rail, an accent on the
+ * section in view, no boxes. */
+.md-nav--secondary .md-nav__title {
+  background: transparent;
+  color: var(--cp-muted);
+  font-family: var(--cp-font-ui);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding-left: 0.9rem;
+}
+
+.md-nav--secondary > .md-nav__list {
+  border-left: var(--cp-rule);
+}
+
+.md-nav--secondary .md-nav__link {
+  margin-left: -1px;
+  padding-left: 0.9rem;
+  border-left: 2px solid transparent;
+}
+
+.md-nav--secondary .md-nav__link--active {
+  color: var(--cp-accent);
+  border-left-color: var(--cp-accent);
+  box-shadow: none;
+}
+
+/* -------------------------------- Content ---------------------------------- */
+
+.md-typeset {
+  font-family: var(--cp-font-text);
+  font-size: 0.85rem; /* ~17px at Material's 125% root — roomy for the serif */
+  line-height: 1.75;
+}
+
+.md-typeset a {
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--cp-accent) 30%, transparent);
+}
+
+.md-typeset a:hover {
+  border-bottom-color: var(--cp-accent);
+}
+
+/* Inline code: a flat tint, no pill. */
+.md-typeset code {
+  background: var(--cp-code);
+  border-radius: 4px;
+  font-size: 0.82em;
+}
+
+.md-typeset pre {
+  background: var(--cp-code);
+  border: var(--cp-rule);
+  border-radius: var(--cp-radius);
+}
+
+.md-typeset pre > code {
+  background: none;
+  border-radius: 0;
+}
+
+.md-clipboard {
+  color: var(--cp-muted);
+}
+
+.md-clipboard:focus,
+.md-clipboard:hover {
+  color: var(--cp-accent);
+}
+
+/* Tables: hairline rules only. */
+.md-typeset table:not([class]) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.74em;
+}
+
+.md-typeset table:not([class]) th {
+  border-bottom: var(--cp-rule);
+  color: var(--cp-muted);
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) td {
+  border-bottom: var(--cp-rule);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0 6px 6px 0;
+  margin: 1.4em 0;
+}
+
+/* Admonitions: single-tone panel with an accent rule. Material hardcodes one
+ * color per type, so repeat the type list to match its specificity and win. */
+.md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question, .warning, .failure, .danger, .bug, .example, .quote) {
+  border: var(--cp-rule);
+  border-left: 2px solid var(--cp-accent);
+  background: var(--cp-surface);
+  box-shadow: none;
+  color: var(--cp-ink);
+}
+
+.md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question, .warning, .failure, .danger, .bug, .example, .quote):focus-within {
+  box-shadow: 0 0 0 0.2rem var(--md-accent-fg-color--transparent);
+}
+
+.md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question, .warning, .failure, .danger, .bug, .example, .quote) > :is(.admonition-title, summary) {
+  background-color: transparent;
+  border-bottom: 0;
+  color: var(--cp-accent);
+  font-weight: 700;
+}
+
+.md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question, .warning, .failure, .danger, .bug, .example, .quote) > :is(.admonition-title, summary) > .md-icon,
+.md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question, .warning, .failure, .danger, .bug, .example, .quote) > :is(.admonition-title, summary)::before {
+  background-color: var(--cp-accent);
+}
+
+/* Selection and the annotation/footnote highlights follow the accent. */
+::selection {
+  background: var(--md-accent-fg-color--transparent);
+}
+
+.md-typeset .footnote li:target,
+.md-typeset [id^="fn:"]:target {
+  background: var(--md-accent-fg-color--transparent);
+}
+
+/* ------------------------------ Craft and a11y ------------------------------ */
+
+/* One consistent focus ring on the accent. */
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--cp-accent);
+  outline-offset: 2px;
+}
+
+/* Honor the user's motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print: paper is what this theme is made of, but a plain page prints better. */
+@media print {
+  [data-md-color-scheme="default"],
+  [data-md-color-scheme="slate"] {
+    --cp-bg: #fff;
+    --cp-surface: #fff;
+    --cp-ink: #000;
+    --cp-muted: #333;
+    --cp-accent: #000;
+    --cp-line: #ccc;
+    --cp-code: #fff;
+  }
+
+  .md-header,
+  .md-hero,
+  .md-sidebar,
+  .md-tabs,
+  .md-search,
+  .md-path,
+  .md-footer__inner,
+  .md-footer-meta,
+  .md-footer-nav,
+  .md-clipboard,
+  .md-top,
+  .md-footer,
+  .md-header__source,
+  .md-banner,
+  .md-sidebar__scrollwrap,
+  a.headerlink {
+    display: none !important;
+  }
+
+  .md-content {
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .md-content__inner {
+    max-width: 100%;
+  }
+
+  .md-grid {
+    max-width: 100%;
+  }
+
+  .md-typeset {
+    font-size: 11pt;
+    color: #000;
+  }
+
+  .md-typeset a {
+    color: #000;
+    border-bottom: 0;
+  }
+
+  .md-typeset pre,
+  .md-typeset code {
+    white-space: pre-wrap;
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #000;
+  }
+}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{#
+  A real 404: say what happened, then offer the three ways onward. Material's
+  main.html only extends base.html, so extending base.html directly is enough
+  and keeps the override stack shallow.
+#}
+{% block content %}
+  <h1>Page not found</h1>
+  <p>
+    The address you followed doesn't match any page in these docs. If you
+    arrived from a saved link, the page may have moved between versions.
+  </p>
+  <p>
+    <a href="{{ base_url }}/">Go to the home page</a>, start with the
+    <a href="{{ base_url }}/quickstart/">Quickstart</a>, or browse the
+    <a href="{{ base_url }}/api/">API reference</a>. The search box at the top
+    of any page finds a symbol by name.
+  </p>
+{% endblock %}

@@ -39,3 +39,24 @@ Before making major changes, please open an **Issue** in the repository to discu
 Once your contribution (code, data, modeling, or documentation) is integrated, please add your name to the **`CONTRIBUTORS.md`** file in strict alphabetical order. We ensure that credit and visibility are distributed equitably across the entire global collective.
 
 * Thank you for joining us in dismantling elitism and advancing truly Open Science and Free Software across borders!
+
+---
+
+## Repository layout
+
+| Path         | Contents |
+| ------------ | -------- |
+| `cmenpy/`    | The package. Public subpackages: `compile` (numba kernels), `model` (declaration styles), `population` (population handling), `target` (objectives), `kernel` (buffers), `bounds` (search space), `context` (the `ctx` object), `functools` (comparators). Internal support: `epoch`, `generator`, `hints`, `tracker`. |
+| `tests/`     | Test suite mirroring the package (`pytest`) |
+| `example/`   | Runnable algorithms and demos (not shipped in the wheel) |
+| `docs/`      | The documentation site (MkDocs + Material) |
+| `overrides/` | Theme partials that adjust the docs chrome |
+| `resources/` | Brand assets (the `cmenpy` wordmark and the icon) |
+
+To build the docs locally:
+
+```bash
+uv sync --extra dev         # runtime + dev tools
+uv sync --extra docs        # ... plus the MkDocs toolchain
+.venv/bin/mkdocs serve
+```

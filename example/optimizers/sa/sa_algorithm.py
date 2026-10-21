@@ -12,6 +12,7 @@ No ``@cm.precompile``. Self-learning: each chain reshapes its own temperature an
 step size from its recent acceptance ratio instead of a fixed schedule.
 """
 import numpy as np
+from opfunu.name_based import Ackley01
 
 import cmenpy as cm
 
@@ -157,19 +158,10 @@ class SimulatedAnnealing:
         return step_new
 
 
-def rastrigin(x):
-    x = np.asarray(x)
-    n = x.shape[-1] if x.ndim > 0 else 1
-    terms = x ** 2 - 10.0 * np.cos(2.0 * np.pi * x)
-    if x.ndim == 2:
-        return 10.0 * n + np.sum(terms, axis=1)
-    return 10.0 * n + np.sum(terms)
-
-
 if __name__ == "__main__":
     model = SimulatedAnnealing(seed=123)
-    bounds = cm.Bounds[(-5.12, 5.12), (-5.12, 5.12), (-5.12, 5.12), (-5.12, 5.12), (-5.12, 5.12)]
-    best_f, best_x = model.solve(rastrigin, bounds, epochs=1500, pop_size=20, pop_range=(20, 20))
+    f = Ackley01(ndim=5)
+    best_f, best_x = model.solve(f.evaluate, f.bounds, epochs=1500, pop_size=20, pop_range=(20, 20))
     print("Best fitness:", best_f)
     print("Best solution:", best_x)
     print("Kernels:", cm.prepare(SimulatedAnnealing))

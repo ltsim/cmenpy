@@ -80,12 +80,18 @@ dev = [
     "flake8>=7.0",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.15.0",
-    "black>=21.9b0"
+    "black>=21.9b0",
+    "opfunu-core>=1.0.6",
+    "enoppy-core>=0.1.2.1"
 ]
 docs = [
     "mkdocs>=1.6",
-    "mkdocs-material>=9.0",
+    "mkdocs-material>=9.0,<10",
     "mkdocstrings[python]>=0.26"
+]
+benchmarks = [
+    "opfunu-core>=1.0.6",
+    "enoppy-core>=0.1.2.1"
 ]
 
 [project.urls]
@@ -155,3 +161,9 @@ exclude = '''
   | example
 )/
 '''
+
+[dependency-groups]
+dev = [
+    "enoppy-core>=0.1.2.1",
+    "opfunu-core>=1.0.6",
+]

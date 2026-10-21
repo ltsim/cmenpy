@@ -15,6 +15,7 @@ Success-history parameter adaptation plus Linear Population Size Reduction
 No ``@cm.precompile``.
 """
 import numpy as np
+from opfunu.name_based import Ackley01
 
 import cmenpy as cm
 
@@ -218,22 +219,10 @@ class LSHADE:
         return mean_f, mean_cr
 
 
-def ackley(x):
-    x = np.asarray(x)
-    n = x.shape[-1] if x.ndim > 0 else 1
-    if x.ndim == 2:
-        s1 = np.sum(x ** 2, axis=1)
-        s2 = np.sum(np.cos(2.0 * np.pi * x), axis=1)
-        return -20.0 * np.exp(-0.2 * np.sqrt(s1 / n)) - np.exp(s2 / n) + 20.0 + np.exp(1.0)
-    s1 = np.sum(x ** 2)
-    s2 = np.sum(np.cos(2.0 * np.pi * x))
-    return -20.0 * np.exp(-0.2 * np.sqrt(s1 / n)) - np.exp(s2 / n) + 20.0 + np.exp(1.0)
-
-
 if __name__ == "__main__":
     model = LSHADE(seed=13)
-    bounds = cm.Bounds[(-32.0, 32.0), (-32.0, 32.0), (-32.0, 32.0), (-32.0, 32.0), (-32.0, 32.0)]
-    best_f, best_x = model.solve(ackley, bounds, epochs=600, pop_size=50, pop_range=(10, 50))
+    f = Ackley01(ndim=10)
+    best_f, best_x = model.solve(f.evaluate, f.bounds, epochs=600, pop_size=50, pop_range=(10, 50))
     print("Best fitness:", best_f)
     print("Best solution:", best_x)
     print("Kernels:", cm.prepare(LSHADE))
