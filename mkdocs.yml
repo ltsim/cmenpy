@@ -97,7 +97,6 @@ nav:
           - Matrix views: population/views.md
           - Stream operators: population/operators.md
           - Iteration and ranking: population/ranking.md
-          - Agents: population/agents.md
       - Target functions:
           - Overview: target/index.md
           - Scoring modes: target/scoring.md

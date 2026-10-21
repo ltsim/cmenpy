@@ -70,15 +70,12 @@ for _ in epoch:
 | iterate individuals | `for i in pop` / `for i in ~pop` |
 | grow or shrink the roster | `insert` / `remove` / `free_space` |
 | score candidates in isolation | `ctx.buff.snapshot` + `assign` |
-| keep a Python object per individual | [Agents](agents.md) |
 
 ## Where to go next
 
 - [Matrix views](views.md) — `X`, `F`, `idx`, `size`, live views and copies.
 - [Stream operators](operators.md) — the `<<` / `[]` / `~` DSL and recipes.
 - [Iteration and ranking](ranking.md) — ordering, comparators, dynamic sizing.
-- [Agents](agents.md) — object-per-individual access (`ImmutableAgent`,
-  `MutableAgent`).
 
 Full class reference:
 [API Reference → Classes](../api/classes.md#population); buffer types under

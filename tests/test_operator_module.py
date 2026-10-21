@@ -27,12 +27,11 @@ def test_module_rejects_non_class() -> None:
         cm.module(sphere)  # type: ignore[arg-type]
 
 
-def test_module_marks_class_and_keeps_identity() -> None:
-    @cm.module
+def test_module_keeps_class_identity() -> None:
     class Ops:
         pass
 
-    assert Ops.__operator_module__ is True
+    assert cm.module(Ops) is Ops
 
 
 def test_module_standalone_constant_is_readonly() -> None:

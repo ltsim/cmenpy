@@ -37,11 +37,9 @@ is the single biggest performance lever in the library.
 | ------ | ------- |
 | `tf(x)` / `tf.evaluate(x)` | score row-by-row, spending the budget |
 | `tf.evaluate_matrix(x)` | score a whole `(pop, ndim)` block (vectorized only) |
-| `tf.apply_axis(x, mask)` | score the rows selected by `mask` |
 | `tf.nfe` | evaluations spent so far |
 | `tf.max` | the budget (`inf` when unlimited) |
 | `tf.bounds` | the search space |
-| `tf.f` | bound evaluator (same as `evaluate`) |
 | `tf.vectorized` | whether the target scores whole blocks |
 
 The `Target` protocol itself is structural: anything callable with

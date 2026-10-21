@@ -6,7 +6,7 @@ each symbol links to the page that documents it.
 
 | Browse | Contents |
 | ------ | -------- |
-| **[Classes](classes.md)** | Optimizers, field markers, population, agents, buffer, objectives, search space, runtime, protocols, aliases |
+| **[Classes](classes.md)** | Optimizers, field markers, population, buffer, objectives, search space, runtime, protocols, aliases |
 | **[Functions](functions.md)** | Declaration decorators, kernel decorators, signature markers, builders, introspection, comparators |
 | **[Modules](modules.md)** | One entry per subpackage, with its docstring and links to its symbols |
 
@@ -46,7 +46,6 @@ each symbol links to the page that documents it.
 | `BufferMatrixOperations`, `BufferMatrixFitness`, `BufferMatrixSolutions` | matrix views | [Classes](classes.md#population) |
 | `BufferMatrixAbstract`, `BufferMatrixAccess`, `BufferMatrixCompute` | matrix ABCs | [Classes](classes.md#population) |
 | `DynamicBase`, `BaseIterator` | population bases | [Classes](classes.md#population) |
-| `BaseAgent`, `ImmutableAgent`, `MutableAgent`, `AgentTemplate` | agents | [Classes](classes.md#agents) |
 | `KernelBuffer` | buffer | [Classes](classes.md#buffer) |
 | `KernelMask`, `KernelSize` | buffer support | [Classes](classes.md#buffer) |
 | `BufferIndex` | ranking | [Classes](classes.md#buffer) |

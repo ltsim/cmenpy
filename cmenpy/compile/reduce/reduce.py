@@ -7,7 +7,7 @@ from cmenpy.compile.kernel import _Kernel
 from cmenpy.compile.low.annotate import _annotation_specs, _uses_annotations
 from cmenpy.compile.low.cast import _autocast
 from cmenpy.compile.low.decorate import _SPECS
-from cmenpy.compile.low.fallback import gufunc
+from cmenpy.compile.low.fallback import gufunc, layout_atoms
 from cmenpy.compile.reduce.contract_spec import _ContractSpec
 from cmenpy.hints.primitives import CasterType
 
@@ -96,7 +96,7 @@ def _resolve_reduce(
                     "cm.Array[float, 1] or cm.Scalar[float]."
                 )
 
-    n_inputs = _count_inputs(layout)
+    n_inputs = len(layout_atoms(layout)) - 1
     first = parsed[0]
 
     if n_inputs > len(first):
@@ -111,26 +111,6 @@ def _resolve_reduce(
         return [tuple(spec.numba_type() for spec in sig) for sig in parsed]
 
     return numba_types, casters
-
-
-def _count_inputs(layout: str) -> int:
-    left = layout.split("->")[0].strip()
-
-    if not left:
-        return 0
-
-    depth = 0
-    count = 1
-
-    for ch in left:
-        if ch == "(":
-            depth += 1
-        elif ch == ")":
-            depth -= 1
-        elif ch == "," and depth == 0:
-            count += 1
-
-    return count
 
 
 def _from_contract(

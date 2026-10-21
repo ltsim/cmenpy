@@ -68,10 +68,7 @@ def __getattr__(name: str) -> typing.Any:
     installed and the builtin ``range`` otherwise, so kernels written with it
     work in both modes.
     """
-    if name == "prange":
-        return _backend.prange()
-
-    if name == "HAS_NUMBA":
-        return _backend.HAS_NUMBA
-
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    try:
+        return _backend.lazy(name)
+    except KeyError:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None

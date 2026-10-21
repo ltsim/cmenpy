@@ -2,7 +2,7 @@
 
 import typing
 
-from cmenpy.compile.kernel import _Kernel
+from cmenpy.compile.kernel import _Kernel, _signatures_of
 
 
 def kernels(
@@ -30,20 +30,8 @@ def kernels(
                 continue
 
             func = attr.__func__ if isinstance(attr, staticmethod) else attr
-            numba_obj = getattr(func, "__numba__", func)
 
-            # Numba marks plain Python functions with a ``"py_func"`` string.
-            if isinstance(numba_obj, str):
-                numba_obj = func
-
-            signatures = getattr(numba_obj, "signatures", None)
-
-            if signatures is None:
-                signatures = getattr(numba_obj, "types", None)
-
-            if signatures is None:
-                continue
-
-            found[name] = [str(signature) for signature in signatures]
+            if (signatures := _signatures_of(func)) is not None:
+                found[name] = signatures
 
     return found

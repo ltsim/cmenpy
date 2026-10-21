@@ -4,7 +4,7 @@ import functools
 import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
-from cmenpy.context import Context, MainContextManager
+from cmenpy.context import MainContextManager
 from cmenpy.hints import NDArrayType, ScalarType
 from cmenpy.hints.option import SenseType
 from cmenpy.model.optimizer.base import BaseOptimizer, build_context_manager
@@ -50,7 +50,6 @@ class FunctionOptimizerModel(BaseOptimizer):
         self.__arguments: FunctionParamsArguments = FunctionParamsArguments(kwargs)
         self.__seed: int | None = seed
         self.__debug = False
-        self.__sense: SenseType = "min"
 
     @property
     def alias(self) -> str:
@@ -84,7 +83,6 @@ class FunctionOptimizerModel(BaseOptimizer):
             pop_range: tuple[int, int] | None = None,
             sense: SenseType = "min",
         ) -> tuple[float, NDArrayType]:
-            self.__sense = sense
             self.__resource = build_context_manager(
                 f, bounds, epochs, pop_size, pop_range, self.__seed, self.__debug, sense
             )
@@ -92,15 +90,7 @@ class FunctionOptimizerModel(BaseOptimizer):
             func(
                 args=self.__arguments,
                 epoch=self.__resource.epoch_it,
-                ctx=Context(
-                    f=self.__resource.target,
-                    bounds=self.__resource.bounds,
-                    buffer=self.__resource.buffer,
-                    generator=self.__resource.default_generator,
-                    sense=self.__sense,
-                    epoch=self.__resource.epoch_it.current,
-                    epochs=self.__resource.epoch_it.max,
-                ),
+                ctx=self.__resource.context(),
             )
 
             X = self.__resource.buffer.raw[self.__resource.buffer.idx.best]

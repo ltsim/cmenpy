@@ -9,43 +9,15 @@ would allocate it.
 """
 
 import functools
+import re
 import typing
 
 import numpy as np
 
 
-def _split_atoms(text: str) -> list[str]:
-    """Return the contents of the depth-1 parenthesized groups of ``text``."""
-    groups: list[str] = []
-    depth = 0
-    buffer = ""
-
-    for char in text:
-        if char == "(":
-            depth += 1
-
-            if depth == 1:
-                buffer = ""
-            else:
-                buffer += char
-        elif char == ")":
-            depth -= 1
-
-            if depth == 0:
-                groups.append(buffer)
-            else:
-                buffer += char
-        elif depth >= 1:
-            buffer += char
-
-    return groups
-
-
 def _atom_dims(atom: str) -> tuple[str, ...]:
     """Return the dimension labels of one core signature atom."""
-    return tuple(
-        label for label in (part.strip("() ") for part in atom.split(",")) if label
-    )
+    return tuple(label for label in (part.strip() for part in atom.split(",")) if label)
 
 
 def layout_atoms(layout: str) -> list[tuple[str, ...]]:
@@ -53,12 +25,10 @@ def layout_atoms(layout: str) -> list[tuple[str, ...]]:
 
     The last atom is the output; scalars are empty tuples.
     """
-    left, separator, right = layout.partition("->")
-
-    if not separator:
+    if "->" not in layout:
         raise ValueError(f"Invalid core signature layout: {layout!r}.")
 
-    return [_atom_dims(atom) for atom in _split_atoms(left) + _split_atoms(right)]
+    return [_atom_dims(atom) for atom in re.findall(r"\(([^()]*)\)", layout)]
 
 
 def gufunc(

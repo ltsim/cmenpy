@@ -1,6 +1,5 @@
-"""Structural protocols for cmenpy callables and agents."""
+"""Structural protocols for cmenpy callables."""
 
-from cmenpy.hints.protocol.agent import AgentTemplate
 from cmenpy.hints.protocol.target import Target
 
-__all__ = ["AgentTemplate", "Target"]
+__all__ = ["Target"]

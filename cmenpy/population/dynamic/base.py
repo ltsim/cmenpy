@@ -42,14 +42,13 @@ class DynamicBase:
         Raises:
             ValueError: If the buffer has no free rows.
         """
-        founds = [i for i, x in enumerate(self.__buffer.mask.founds) if not x]
+        mask = self.__buffer.mask
+        idx = next((i for i, active in enumerate(mask) if not active), None)
 
-        if not len(founds) > 0:
+        if idx is None:
             raise ValueError("Max agents in memory.")
 
-        idx = founds[0]
-
-        self.__buffer.mask[idx] = True
+        mask[idx] = True
         self.__buffer.apply(x, idx)
 
         return idx

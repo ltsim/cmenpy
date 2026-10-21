@@ -1,4 +1,4 @@
-"""Population abstractions (`PopulationSwarm` and the agent types)."""
+"""Population abstractions (`PopulationSwarm`)."""
 
 from cmenpy.population.swarm import PopulationSwarm
 

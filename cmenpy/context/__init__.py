@@ -100,12 +100,8 @@ class MainContextManager:
         sense: ``"min"`` (default) or ``"max"``.
 
     Attributes:
-        sense: The optimization sense.
         epoch_it: The epoch iterator driving the run.
         buffer: The population buffer.
-        target: The wrapped objective.
-        bounds: The search space.
-        default_generator: The seeded random generator.
         tracker: The per-epoch history recorder.
     """
 
@@ -120,19 +116,25 @@ class MainContextManager:
         sense: SenseType = "min",
     ):
         """Wire the objective, buffer, generator, tracker and epoch iterator."""
-        self.__size = size
         self.__target = TargetFunction(f, bounds)
-        self.__bounds = bounds
-        self.__sense = sense
-        self.__k_buff = KernelBuffer(size, self.__bounds, self.__target, self.__sense)
+        self.__k_buff = KernelBuffer(size, bounds, self.__target, sense)
         self.__generator = DefaultGenerator(seed=seed)
         self.__tracker = Tracker(self.__k_buff)
         self.__epoch_it = EpochIteration(epochs, self.__tracker, self.__target, debug)
+        self.__bounds = bounds
+        self.__sense = sense
 
-    @property
-    def sense(self) -> SenseType:
-        """The optimization sense."""
-        return self.__sense
+    def context(self) -> Context:
+        """Build the per-epoch `Context` view over the run's resources."""
+        return Context(
+            f=self.__target,
+            bounds=self.__bounds,
+            buffer=self.__k_buff,
+            generator=self.__generator,
+            sense=self.__sense,
+            epoch=self.__epoch_it.current,
+            epochs=self.__epoch_it.max,
+        )
 
     @property
     def epoch_it(self) -> EpochIteration:
@@ -143,21 +145,6 @@ class MainContextManager:
     def buffer(self) -> KernelBuffer:
         """The population buffer."""
         return self.__k_buff
-
-    @property
-    def target(self) -> TargetFunction:
-        """The wrapped objective."""
-        return self.__target
-
-    @property
-    def bounds(self) -> Bounds:
-        """The search space."""
-        return self.__bounds
-
-    @property
-    def default_generator(self) -> DefaultGenerator:
-        """The seeded random generator."""
-        return self.__generator
 
     @property
     def tracker(self) -> Tracker:

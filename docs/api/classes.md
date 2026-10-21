@@ -125,20 +125,6 @@ operators, matrix views and the roster/iteration bases.
     options:
       heading_level: 3
 
-## Agents
-
-::: cmenpy.population.agent.BaseAgent
-    options:
-      heading_level: 3
-
-::: cmenpy.population.agent.ImmutableAgent
-    options:
-      heading_level: 3
-
-::: cmenpy.population.agent.MutableAgent
-    options:
-      heading_level: 3
-
 ## Buffer
 
 The flat buffer that backs every population, plus the mask, size and ranking
@@ -215,7 +201,7 @@ history tracker and the seeded generator.
 
 ## Protocols
 
-The structural types models, kernels and agents are checked against.
+The structural types models and kernels are checked against.
 
 ::: cmenpy.model.optimizer.ModelProtocol
     options:
@@ -226,10 +212,6 @@ The structural types models, kernels and agents are checked against.
       heading_level: 3
 
 ::: cmenpy.model.optimizer.functions.CallableFunction
-    options:
-      heading_level: 3
-
-::: cmenpy.hints.protocol.agent.AgentTemplate
     options:
       heading_level: 3
 

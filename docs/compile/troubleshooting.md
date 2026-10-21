@@ -75,8 +75,7 @@ atom after it is the output — the output is *also* one of the specs.
 
 | Message | Cause | Fix |
 | ------- | ----- | --- |
-| `Contract array specs need a dtype, e.g. Array[float].` | bare `Array` inside a Contract | `Array[float, "n"]` |
-| `Contract scalar specs need a dtype, e.g. Scalar[float].` | bare `Scalar` | `Scalar[float]` |
+| `Contract array and scalar specs need a dtype, e.g. Array[float].` | bare `Array` or `Scalar` inside a Contract | `Array[float, "n"]`, `Scalar[float]` |
 | `Unsupported Contract spec: <value>.` | entry that is not a dtype, `...`, `Array[...]` or `Scalar[...]` | use one of the shorthands ([specs](specs.md#contract-shorthand)) |
 | `cm.Contract does not support a scalar output; use an Array[...].` | output is a scalar | a gufunc always writes an array — `Array[...]` output |
 | `Contract output dimensions ['m'] do not appear in any input.` | an output dimension label is not in any input | output dims must be a subset of input dims; fix the labels |

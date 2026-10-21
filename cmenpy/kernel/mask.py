@@ -19,7 +19,6 @@ class KernelMask:
 
     Attributes:
         active: Number of active rows.
-        passive: Number of inactive (free) rows.
         founds: Copy of the mask as a plain list of booleans.
     """
 
@@ -28,9 +27,8 @@ class KernelMask:
         size: KernelSize,
     ):
         """Initialize the mask with the first ``size.size`` rows active."""
-        self.__size: KernelSize = size
-        self.__mask = np.fromiter((False for _ in range(size.max)), dtype=bool)
-        self.__mask[0 : self.__size.size] = True
+        self.__mask = np.zeros(size.max, dtype=bool)
+        self.__mask[0 : size.size] = True
 
     def __iter__(self) -> typing.Iterator[bool]:
         """Iterate over the mask as plain booleans."""
@@ -52,11 +50,6 @@ class KernelMask:
     def active(self) -> int:
         """Number of active rows."""
         return sum(self.__mask)
-
-    @property
-    def passive(self) -> int:
-        """Number of inactive (free) rows."""
-        return len(self.__mask) - sum(self.__mask)
 
     @property
     def founds(self) -> list[bool]:

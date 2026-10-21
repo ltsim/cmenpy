@@ -11,7 +11,6 @@ import numpy as np
 import pytest
 
 import cmenpy as cm
-from cmenpy.population.agent import MutableAgent
 from cmenpy.target import MaxNumberOfCalls, TargetFunction
 
 BOUNDS = cm.Bounds[(-1, 1), (-1, 1)]
@@ -185,33 +184,6 @@ def test_insert_scores_one_evaluation(block: bool) -> None:
     assert pop.F[idx] == pytest.approx(0.5)
 
 
-@pytest.mark.parametrize("block", [False, True])
-def test_agent_solution_write_scores_one_evaluation(block: bool) -> None:
-    """Re-writing an agent's solution costs a single evaluation."""
-    pop, buff, tf, counter = _swarm(block)
-    pop.compute << np.arange(8, dtype=float).reshape(4, 2)
-    agent = MutableAgent(pop.best, buff)
-
-    agent.solution = np.full(2, 0.5)
-
-    assert tf.nfe == 5 == counter.scored
-    assert pop.F[agent.i] == pytest.approx(0.5)
-
-
-@pytest.mark.parametrize("block", [False, True])
-def test_apply_axis_scores_one_evaluation_per_selected_row(block: bool) -> None:
-    """The masked row-wise helper spends one evaluation per selected row."""
-    counter = CountingTarget(block)
-    target = cm.vectorized_target(counter) if block else counter
-    tf = TargetFunction(target, BOUNDS)
-    raw = np.zeros((4, 3))
-
-    scores = tf.apply_axis(raw, np.array([0, 2]))
-
-    assert scores.shape == (2,)
-    assert tf.nfe == 2 == counter.scored
-
-
 def test_vectorized_row_and_block_agree_on_the_counter() -> None:
     """A single row and its one-row block both cost exactly one evaluation."""
     counter = CountingTarget(True)
@@ -261,7 +233,7 @@ def test_budget_charges_one_unit_per_individual_write() -> None:
         pop.compute[np.int64(0)] << np.full(2, 0.5)
 
 
-@cm.declare(...)
+@cm.declare()
 def nfe_counter(args, epoch, ctx):
     """Score the whole block per epoch plus one individually written row."""
     pop = cm.PopulationSwarm(ctx.buff)

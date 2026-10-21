@@ -10,7 +10,7 @@ import importlib
 import importlib.util
 import typing
 
-__all__ = ["HAS_NUMBA", "numba_module", "prange"]
+__all__ = ["HAS_NUMBA", "lazy", "numba_module", "prange"]
 
 try:  # pragma: no cover - trivial availability probe
     HAS_NUMBA = importlib.util.find_spec("numba") is not None
@@ -52,3 +52,21 @@ def prange() -> typing.Any:
         return numba_module().prange
     except ImportError:
         return range
+
+
+def lazy(name: str) -> typing.Any:
+    """Resolve a backend name exposed lazily by ``cmenpy`` and ``cmenpy.compile``.
+
+    ``prange`` needs a call (it imports numba when present) and ``HAS_NUMBA``
+    must stay live for tests that patch it, so both are resolved on access.
+
+    Raises:
+        KeyError: If ``name`` is not a lazily exposed backend name.
+    """
+    if name == "prange":
+        return prange()
+
+    if name == "HAS_NUMBA":
+        return HAS_NUMBA
+
+    raise KeyError(name)

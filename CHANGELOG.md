@@ -60,6 +60,25 @@ Targeted at **2026b2** (tracked in the
 - Every optimizer example solves an `opfunu-core` benchmark function instead
   of an inline hand-rolled objective.
 
+### Removed
+
+- The population agent types (`BaseAgent`, `ImmutableAgent`, `MutableAgent`)
+  and the `AgentTemplate` protocol. Read an individual through the array-first
+  surface — `pop.access[pop.best]` (or `pop.X` / `pop.F`) for the solution and
+  fitness — and re-score a row with `pop.compute[pop.best] << solution`, which
+  writes the row and charges one evaluation, the same path the old
+  `MutableAgent.solution` setter took.
+- Unused surface around that array-first path: `TargetFunction.apply_axis()`
+  (the buffer already does the same row-wise scoring inline) and
+  `TargetFunction.f` (an alias of `evaluate`); `KernelMask.passive`;
+  `StreamOperator.rows` and `StreamOperator.columns`; `DefaultGenerator.seed`;
+  the `SpecType` typing alias (it was just `typing.Any`); and the
+  `__operator_module__` marker attribute, which nothing read — `@cm.module`
+  still keeps the class identity and installs its constants.
+- Positional field values on `cm.declare`: it was accepted and ignored, so
+  `@cm.declare(...)` is now written `@cm.declare()`. Declare fields with
+  keyword arguments, as before.
+
 ### Fixed
 
 - The NFE counter now charges **one evaluation per individual scored** for

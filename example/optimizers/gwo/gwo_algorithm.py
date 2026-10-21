@@ -4,7 +4,7 @@ from opfunu.name_based import Ackley01
 import cmenpy as cm
 
 
-@cm.declare(...)
+@cm.declare()
 def gwo(args, epoch, ctx):
     buff, bounds, rng = ctx.buff, ctx.bounds, ctx.rng
 

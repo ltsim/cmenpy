@@ -84,9 +84,7 @@ class FunctionParamsArguments:
 
     def __init__(self, type_dict: dict[str, type[typing.Any]]) -> None:
         """Store the declared field names and types."""
-        self.__annotations__ = {
-            attr_name: attr_type for attr_name, attr_type in type_dict.items()
-        }
+        self._fields = dict(type_dict)
 
     def load(self, values_dict: dict[str, typing.Any]) -> None:
         """Bind ``values_dict`` into the declared fields.
@@ -98,7 +96,7 @@ class FunctionParamsArguments:
             AttributeError: If a name was never declared.
         """
         for name, value in values_dict.items():
-            if name not in self.__annotations__:
+            if name not in self._fields:
                 raise AttributeError(
                     f"Cannot initialize '{name}': It was not declared in MyArguments."
                 )
@@ -106,20 +104,19 @@ class FunctionParamsArguments:
 
     def __setattr__(self, name: str, value: typing.Any) -> None:
         """Validate and store ``value`` for the declared field ``name``."""
-        if (
-            name != "__annotations__"
-            and hasattr(self, "__annotations__")
-            and name in self.__annotations__
-        ):
-            field_type = self.__annotations__[name]
+        field_type = getattr(self, "_fields", {}).get(name)
+
+        if field_type is not None:
             _validate_range_and_type(value, field_type, name)
 
         super().__setattr__(name, value)
 
     def __getattr__(self, name: str) -> typing.Any:
         """Read a declared field, or raise for unknown/uninitialized names."""
-        if name in vars(self).get("__annotations__", {}):
+        if name in self.__dict__.get("_fields", {}):
             raise AttributeError(
                 f"Attribute '{name}' has been declared but not initialized yet."
             )
-        raise AttributeError(f"'FunctionParams' object has no attribute '{name}'")
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )

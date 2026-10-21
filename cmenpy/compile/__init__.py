@@ -27,10 +27,7 @@ __all__ = [
 
 def __getattr__(name: str) -> typing.Any:
     """Expose ``prange``/``HAS_NUMBA`` lazily from the optional-numba backend."""
-    if name == "prange":
-        return _backend.prange()
-
-    if name == "HAS_NUMBA":
-        return _backend.HAS_NUMBA
-
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    try:
+        return _backend.lazy(name)
+    except KeyError:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None

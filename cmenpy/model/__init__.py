@@ -176,7 +176,6 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
 
 
 def declare(
-    *args: typing.Any,
     **kwargs: typing.Any,
 ) -> typing.Callable[[AlgorithmFunction], FunctionOptimizerModel]:
     """Turn a function into a model (the function-style API).
@@ -186,7 +185,6 @@ def declare(
     ``cm.Argument`` and bound by calling the returned model.
 
     Args:
-        *args: Positional field values (bound like ``**kwargs``).
         **kwargs: ``name=cm.Argument[...]`` field declarations.
 
     Returns:

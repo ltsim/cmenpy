@@ -17,17 +17,17 @@ def module(cls: type[_ModuleT]) -> type[_ModuleT]:
     models can inherit the same behavior. Note that ``@cm.module`` returns a
     **class**, not a Python module.
 
-    The decorator keeps the class identity and only marks it as an Operator
-    Module and materializes its ``cm.Constant`` annotations, so a constant is
-    reachable (``MyOps.P``) even before any model includes the mixin. Mixin
-    application is ordinary inheritance; name collisions resolve through the
-    normal MRO, with the leftmost base winning.
+    The decorator keeps the class identity and materializes its
+    ``cm.Constant`` annotations, so a constant is reachable (``MyOps.P``) even
+    before any model includes the mixin. Mixin application is ordinary
+    inheritance; name collisions resolve through the normal MRO, with the
+    leftmost base winning.
 
     Args:
         cls: The Operator Module class to mark.
 
     Returns:
-        The same class, now marked with ``__operator_module__``.
+        The same class, with its ``cm.Constant`` fields materialized.
 
     Raises:
         TypeError: If ``cls`` is not a class (for example a ``@cm.template``
@@ -53,6 +53,5 @@ def module(cls: type[_ModuleT]) -> type[_ModuleT]:
         raise TypeError(f"Operator Module '{cls}' is not a class.")
 
     install_constants(cls)
-    cls.__operator_module__ = True  # type: ignore[attr-defined]
 
     return cls

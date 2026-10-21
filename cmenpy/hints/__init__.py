@@ -2,11 +2,10 @@
 
 from cmenpy.hints.array import ArrayFloatType, ArrayIntegerType, NDArrayType
 from cmenpy.hints.primitives import AB, A, B, CasterType, ScalarType
-from cmenpy.hints.protocol import AgentTemplate, Target
+from cmenpy.hints.protocol import Target
 from cmenpy.hints.spec import (
     Array,
     Scalar,
-    SpecType,
     _ArraySpec,
     _ScalarSpec,
     _Signature,
@@ -15,7 +14,6 @@ from cmenpy.hints.spec import (
 __all__ = [
     "AB",
     "A",
-    "AgentTemplate",
     "Array",
     "ArrayFloatType",
     "ArrayIntegerType",
@@ -24,7 +22,6 @@ __all__ = [
     "NDArrayType",
     "Scalar",
     "ScalarType",
-    "SpecType",
     "Target",
     "_ArraySpec",
     "_ScalarSpec",

@@ -14,15 +14,11 @@ def _contract_element(value: typing.Any) -> "_ArraySpec | _ScalarSpec":
     if value is Ellipsis:
         return _ScalarSpec(float)
 
-    if isinstance(value, _ArraySpec):
+    if isinstance(value, (_ArraySpec, _ScalarSpec)):
         if value.dtype is None:
-            raise TypeError("Contract array specs need a dtype, e.g. Array[float].")
-
-        return value
-
-    if isinstance(value, _ScalarSpec):
-        if value.dtype is None:
-            raise TypeError("Contract scalar specs need a dtype, e.g. Scalar[float].")
+            raise TypeError(
+                "Contract array and scalar specs need a dtype, e.g. Array[float]."
+            )
 
         return value
 

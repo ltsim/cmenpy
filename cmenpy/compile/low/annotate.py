@@ -20,7 +20,6 @@ def _annotation_namespace(
 def _to_spec(
     value: typing.Any,
     namespace: dict[str, typing.Any],
-    depth: int = 0,
 ) -> "_ArraySpec | _ScalarSpec | None":
     """Normalize a single annotation into a cast spec, or ``None`` if it is not one.
 
@@ -32,20 +31,17 @@ def _to_spec(
         return value
 
     if isinstance(value, str):
-        if depth >= 4:
-            return None
-
         try:
             resolved = eval(value, dict(namespace))
         # An arbitrary annotation expression may raise anything; ignore non-specs.
         except Exception:  # noqa: BLE001
             return None
 
-        return _to_spec(resolved, namespace, depth + 1)
+        return None if isinstance(resolved, str) else _to_spec(resolved, namespace)
 
     if typing.get_origin(value) is typing.Annotated:
         for metadata in typing.get_args(value)[1:]:
-            spec = _to_spec(metadata, namespace, depth + 1)
+            spec = _to_spec(metadata, namespace)
 
             if spec is not None:
                 return spec

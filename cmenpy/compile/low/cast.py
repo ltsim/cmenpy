@@ -10,22 +10,6 @@ from cmenpy.casting import unwrap_array
 from cmenpy.hints.primitives import CasterType
 
 
-def _elementwise_caster(dtype: typing.Any) -> CasterType:
-    """Cast arrays to ``dtype`` and scalars to a ``dtype`` scalar."""
-    if dtype is None:
-        return np.asarray
-
-    _dtype = np.dtype(dtype)
-
-    def cast(value: typing.Any) -> typing.Any:
-        if np.ndim(value) == 0:
-            return _dtype.type(value)
-
-        return np.asarray(value, dtype=_dtype)
-
-    return cast
-
-
 def _as_array(value: typing.Any) -> typing.Any:
     """Convert cmenpy views and array-protocol objects to plain ndarrays.
 

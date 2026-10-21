@@ -82,8 +82,7 @@ other >> pop.access     # pass `other` through (identity)
 ```
 
 Use `access` when a consumer wants the self-contained `(fitness, solution)`
-record — for example feeding rows into an [Agent](agents.md) or copying rows
-between buffers.
+record — for example archiving a row or copying rows between buffers.
 
 ## `pop.extract` — solution reader
 

@@ -4,11 +4,10 @@ import typing
 
 from cmenpy.bounds import Bounds, SequenceStructure
 from cmenpy.compile import kernels
-from cmenpy.context import Context, MainContextManager
+from cmenpy.context import MainContextManager
 from cmenpy.hints import NDArrayType, ScalarType
 from cmenpy.hints.option import SenseType
 from cmenpy.model.optimizer.base import BaseOptimizer, build_context_manager
-from cmenpy.model.optimizer.functions import CallableFunction
 from cmenpy.model.optimizer.template.protocols import ModelProtocol
 from cmenpy.target import Target
 from cmenpy.tracker import EpochHistory
@@ -36,12 +35,9 @@ class TemplateOptimizerModel(BaseOptimizer):
         """Initialize the model state around the wrapped class."""
         self.__alias = str(cls_model.__name__)
         self.__cls_model: type[ModelProtocol] = cls_model
-        self.__inner: CallableFunction | None = None
         self.__model: ModelProtocol | None = None
         self.__resource: MainContextManager | None = None
         self.__seed: int | None = None
-        self.__debug = False
-        self.__sense: SenseType = "min"
 
     @property
     def alias(self) -> str:
@@ -114,38 +110,15 @@ class TemplateOptimizerModel(BaseOptimizer):
         if prepare:
             self.prepare()
 
-        self.__debug = debug
-        self.__sense = sense
         self.__resource = build_context_manager(
             f, bounds, epochs, pop_size, pop_range, self.__seed, debug, sense
         )
 
         if hasattr(self.__model, "initialize"):
-            self.__model.initialize(
-                ctx=Context(
-                    f=self.__resource.target,
-                    bounds=self.__resource.bounds,
-                    buffer=self.__resource.buffer,
-                    generator=self.__resource.default_generator,
-                    sense=self.__sense,
-                    epoch=self.__resource.epoch_it.current,
-                    epochs=self.__resource.epoch_it.max,
-                ),
-            )
+            self.__model.initialize(ctx=self.__resource.context())
 
         for e in self.__resource.epoch_it:
-            self.__model.evolve(
-                e=e,
-                ctx=Context(
-                    f=self.__resource.target,
-                    bounds=self.__resource.bounds,
-                    buffer=self.__resource.buffer,
-                    generator=self.__resource.default_generator,
-                    sense=self.__sense,
-                    epoch=self.__resource.epoch_it.current,
-                    epochs=self.__resource.epoch_it.max,
-                ),
-            )
+            self.__model.evolve(e=e, ctx=self.__resource.context())
 
         X = self.__resource.buffer.raw[self.__resource.buffer.idx.best]
 

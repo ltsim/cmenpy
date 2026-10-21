@@ -1,12 +1,14 @@
 """Shared decorator factory machinery for the kernel decorators."""
 
+import functools
 import typing
 
 import numpy as np
 
+from cmenpy.casting import cast
 from cmenpy.compile.kernel import _Kernel
 from cmenpy.compile.low.annotate import _annotation_specs, _uses_annotations
-from cmenpy.compile.low.cast import _autocast, _elementwise_caster
+from cmenpy.compile.low.cast import _autocast
 from cmenpy.hints.primitives import CasterType
 from cmenpy.hints.spec import _ArraySpec, _ScalarSpec, _Signature
 
@@ -37,7 +39,7 @@ def _resolve(
     if len(specs) == 1 and isinstance(specs[0], _Signature):
         signature = specs[0]
         signature_casters: list[CasterType | None] = [
-            _elementwise_caster(arg.dtype) for arg in signature.args
+            functools.partial(cast, dtype=arg.dtype) for arg in signature.args
         ]
 
         return (lambda: (signature.numba_signature(),)), signature_casters

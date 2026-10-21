@@ -6,7 +6,7 @@ import numpy as np
 
 from cmenpy.bounds import Bounds
 from cmenpy.casting import unwrap_array
-from cmenpy.hints import ArrayIntegerType, NDArrayType
+from cmenpy.hints import NDArrayType
 from cmenpy.hints.protocol import Target as Target
 
 
@@ -70,7 +70,6 @@ class TargetFunction:
         nfe: Evaluations spent so far.
         max: The budget (``inf`` when unlimited).
         bounds: The search space.
-        f: Bound evaluator (``evaluate``).
         vectorized: Whether the target scores whole blocks.
     """
 
@@ -145,18 +144,6 @@ class TargetFunction:
 
         return typing.cast(NDArrayType, self.__raw(block))
 
-    def apply_axis(self, x: NDArrayType, mask: ArrayIntegerType) -> NDArrayType:
-        """Score the rows selected by ``mask`` with ``np.apply_along_axis``.
-
-        Args:
-            x: The raw rows (fitness in column 0, solution in ``1:``).
-            mask: Row indices or boolean mask of the rows to score.
-
-        Returns:
-            One fitness value per selected row.
-        """
-        return np.apply_along_axis(self.evaluate, 1, unwrap_array(x)[mask, 1:])
-
     @property
     def nfe(self) -> int:
         """Evaluations spent so far."""
@@ -171,11 +158,6 @@ class TargetFunction:
     def bounds(self) -> Bounds:
         """The search space."""
         return self.__bounds
-
-    @property
-    def f(self) -> Target:
-        """Bound evaluator (``evaluate``)."""
-        return self.evaluate
 
     @property
     def vectorized(self) -> bool:

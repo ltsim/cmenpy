@@ -75,15 +75,6 @@ block     = TargetFunction(cm.vectorized_target(sphere_block), BOUNDS)
 np.testing.assert_allclose(rowwise, block.evaluate_matrix(x))
 ```
 
-## `apply_axis`
-
-`TargetFunction.apply_axis(x, mask)` scores the rows selected by an integer
-`mask`, using `apply_along_axis` internally. Note that it expects the full
-raw rows (fitness in column 0) and drops column 0 before calling the
-objective — it is the low-level helper behind row-wise evaluation. Each
-selected row spends one evaluation, and a mask that selects no rows spends
-none.
-
 ## Evaluating a single solution
 
 `tf.evaluate(x)` is the one-individual path: it spends a single evaluation and

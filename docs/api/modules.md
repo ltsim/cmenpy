@@ -51,11 +51,9 @@ Documented in [Classes → Optimizers](classes.md#optimizers),
 ## cmenpy.population
 
 Population abstractions: the `PopulationSwarm` handle, the stream operators
-and pipelines, the matrix views, the roster/iteration bases and the agent
-types.
+and pipelines, the matrix views and the roster/iteration bases.
 
-Documented in [Classes → Population](classes.md#population) and
-[Classes → Agents](classes.md#agents).
+Documented in [Classes → Population](classes.md#population).
 
 ::: cmenpy.population
     options:

@@ -27,8 +27,7 @@ To iterate the data instead of the indices, use the views:
 for x in ~pop.extract:       # one solution vector at a time (copies)
     ...
 
-from cmenpy.population.agent import ImmutableAgent
-agent = ImmutableAgent(pop.best, ctx.buff)   # object view of one row
+pop.access[pop.best]         # the best row: [fitness, x0, x1, ...]
 ```
 
 ## `best`, `worst`, `sort`

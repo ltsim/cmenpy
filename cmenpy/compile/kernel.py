@@ -8,6 +8,32 @@ from cmenpy.compile import backend
 PYTHON_SIGNATURE = "<python>"
 
 
+def _numba_object(obj: typing.Any) -> typing.Any:
+    """Return the numba dispatcher/ufunc behind ``obj``, unwrapping autocast.
+
+    Numba marks plain Python functions with a ``"py_func"`` string, so the
+    original object is returned when there is nothing compiled underneath.
+    """
+    numba_obj = getattr(obj, "__numba__", obj)
+
+    return obj if isinstance(numba_obj, str) else numba_obj
+
+
+def _signatures_of(obj: typing.Any) -> list[str] | None:
+    """Return the signatures a compiled kernel reports, or ``None`` if not compiled.
+
+    Reads ``signatures`` (a dispatcher) or ``types`` (a ufunc) off the numba
+    object behind ``obj``; an empty list means "compiled, nothing yet".
+    """
+    numba_obj = _numba_object(obj)
+    signatures = getattr(numba_obj, "signatures", None)
+
+    if signatures is None:
+        signatures = getattr(numba_obj, "types", None)
+
+    return None if signatures is None else [str(signature) for signature in signatures]
+
+
 class _Kernel:
     """Descriptor for a numba kernel whose options are resolved on first use.
 
@@ -146,11 +172,7 @@ class _Kernel:
 
     def numba_object(self, config: dict[str, typing.Any] | None = None) -> typing.Any:
         """Return the underlying numba dispatcher/ufunc for ``config``."""
-        compiled = self.compile(config)
-        numba_obj = getattr(compiled, "__numba__", compiled)
-
-        # Numba marks plain Python functions with a ``"py_func"`` string.
-        return compiled if isinstance(numba_obj, str) else numba_obj
+        return _numba_object(self.compile(config))
 
     def signatures(self, config: dict[str, typing.Any] | None = None) -> list[str]:
         """Return the compiled signatures (or types) for ``config``.
@@ -160,13 +182,7 @@ class _Kernel:
         if self._wants_python(config):
             return [PYTHON_SIGNATURE]
 
-        numba_obj = self.numba_object(config)
-        signatures = getattr(numba_obj, "signatures", None)
-
-        if signatures is None:
-            signatures = getattr(numba_obj, "types", None)
-
-        return [str(signature) for signature in signatures] if signatures else []
+        return _signatures_of(self.compile(config)) or []
 
     def __get__(
         self, instance: typing.Any, owner: type[typing.Any] | None = None

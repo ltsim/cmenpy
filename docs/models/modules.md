@@ -42,8 +42,7 @@ duplicating a line.
 
 ## What `@cm.module` does
 
-- keeps the **class identity** — it returns the same class, marked with
-  `__operator_module__` (so it is introspectable);
+- keeps the **class identity** — it returns the same class;
 - **materializes `cm.Constant` annotations** as read-only descriptors
   immediately, so `MutationOps.scale` works even before any model includes
   the mixin;
@@ -98,10 +97,10 @@ See [Compilation options](../compile/options.md).
 ## When to use a module vs a plain base class
 
 `@cm.module` is not required for inheritance — a plain base class works
-almost the same. Use it when you want the two extras: constants installed
-(and validated) at decoration time, and the `__operator_module__` marker that
-distinguishes reusable operator bundles from ordinary base classes. Use a
-plain base class when the "mixin" is really a template itself.
+almost the same. Use it when you want constants installed (and validated) at
+decoration time, so `MutationOps.scale` is reachable on the mixin itself
+before any model includes it. Use a plain base class when the "mixin" is
+really a template itself.
 
 ## Full example
 
