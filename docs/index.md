@@ -18,7 +18,8 @@ metaheuristic and population-based optimization algorithms.
 ## Install
 
 ```bash
-pip install cmenpy          # runtime: numpy + numba only
+pip install cmenpy          # runtime: numpy only (pure-Python kernels)
+pip install "cmenpy[numba]" # recommended: compiles kernels with Numba
 ```
 
 For development (tests, type checks, docs):

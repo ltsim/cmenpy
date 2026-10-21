@@ -19,7 +19,9 @@ It provides the clean abstractions necessary to build custom evolutionary algori
 pip install cmenpy
 ```
 
-Requires Python `>=3.11`.
+Requires Python `>=3.11`. Numba is **optional**: kernels compile when it is
+installed (`pip install "cmenpy[numba]"`), and run as pure NumPy/Python when
+it is not — or whenever a model asks with `numba=False`.
 
 To develop or build the docs:
 

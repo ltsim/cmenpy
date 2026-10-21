@@ -2,10 +2,14 @@
 
 import typing
 
-import numba as nb
-
+from cmenpy.compile.backend import numba_module
 from cmenpy.compile.low.decorate import _SPECS, _template
 from cmenpy.compile.vectorize.signature import _check_vectorize_specs
+
+
+def _vectorize(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    """Resolve ``numba.vectorize`` on use, so declaring needs no numba import."""
+    return numba_module().vectorize(*args, **kwargs)
 
 
 def vectorize(
@@ -25,13 +29,14 @@ def vectorize(
     Precompilation needs a full signature because numba requires the return
     type. ``fastmath`` and ``parallel`` can be forced on the kernel, and a model
     can also provide them for every kernel at instantiation. Any other option is
-    forwarded as a keyword.
+    forwarded as a keyword. Pass ``numba=False`` to run the kernel elementwise
+    with `numpy.vectorize` instead of compiling it.
     """
     if args and all(isinstance(a, _SPECS) for a in args):
         _check_vectorize_specs(args)
 
     return _template(
-        nb.vectorize,
+        _vectorize,
         vectorize_mode=True,
         parallel_mode="target",
         parallel=parallel,

@@ -2,12 +2,12 @@
 
 import typing
 
-import numba as nb
-
+from cmenpy.compile.backend import numba_module
 from cmenpy.compile.kernel import _Kernel
 from cmenpy.compile.low.annotate import _annotation_specs, _uses_annotations
 from cmenpy.compile.low.cast import _autocast
 from cmenpy.compile.low.decorate import _SPECS
+from cmenpy.compile.low.fallback import gufunc
 from cmenpy.compile.reduce.contract_spec import _ContractSpec
 from cmenpy.hints.primitives import CasterType
 
@@ -82,8 +82,12 @@ def _contract_from_annotations(
 def _resolve_reduce(
     parsed: list[tuple[typing.Any, ...]],
     layout: str,
-) -> tuple[list[tuple[typing.Any, ...]], list[CasterType]]:
-    """Validate fully typed specs and build the numba types and casters."""
+) -> tuple[typing.Callable[[], list[tuple[typing.Any, ...]]], list[CasterType]]:
+    """Validate fully typed specs and build the numba-type factory and casters.
+
+    The numba types are produced by the returned factory (not eagerly), so
+    declaring the kernel works without numba installed.
+    """
     for signature in parsed:
         for spec in signature:
             if not getattr(spec, "typed", False):
@@ -92,7 +96,6 @@ def _resolve_reduce(
                     "cm.Array[float, 1] or cm.Scalar[float]."
                 )
 
-    ftylist = [tuple(spec.numba_type() for spec in sig) for sig in parsed]
     n_inputs = _count_inputs(layout)
     first = parsed[0]
 
@@ -104,7 +107,10 @@ def _resolve_reduce(
 
     casters = [first[index].caster() for index in range(n_inputs)]
 
-    return ftylist, casters
+    def numba_types() -> list[tuple[typing.Any, ...]]:
+        return [tuple(spec.numba_type() for spec in sig) for sig in parsed]
+
+    return numba_types, casters
 
 
 def _count_inputs(layout: str) -> int:
@@ -125,6 +131,17 @@ def _count_inputs(layout: str) -> int:
             count += 1
 
     return count
+
+
+def _from_contract(
+    contract: _ContractSpec,
+) -> "tuple[typing.Callable[[], list[tuple[typing.Any, ...]]], str, list[CasterType]]":
+    """Return the ``(numba-types factory, layout, casters)`` triple of a Contract."""
+
+    def numba_types() -> list[tuple[typing.Any, ...]]:
+        return [contract.numba_types]
+
+    return numba_types, contract.layout, contract.casters
 
 
 def reduce(
@@ -160,6 +177,8 @@ def reduce(
     ``fastmath`` maps to the numba option and ``parallel`` sets
     ``target="parallel"``; any other option is forwarded as a keyword. A model
     can also provide ``fastmath``/``parallel``/``cache`` at instantiation.
+    Pass ``numba=False`` (here or on the model) to run the kernel as a
+    pure-Python layout-driven loop instead of a compiled gufunc.
     """
     options = {**kwargs, "fastmath": fastmath}
 
@@ -177,34 +196,34 @@ def reduce(
         raise TypeError("cm.reduce requires a layout, e.g. '(n),()->(n)'.")
 
     def wrap(target: typing.Callable[..., typing.Any]) -> typing.Any:
-        casters: list[CasterType]
-
         if isinstance(signatures, _ContractSpec):
-            ftylist = [signatures.numba_types]
-            compiled_layout = signatures.layout
-            casters = signatures.casters
+            numba_types, compiled_layout, casters = _from_contract(signatures)
         elif inferred:
-            contract = _contract_from_annotations(target)
-            ftylist = [contract.numba_types]
-            compiled_layout = contract.layout
-            casters = contract.casters
+            numba_types, compiled_layout, casters = _from_contract(
+                _contract_from_annotations(target)
+            )
         elif signatures is None:
             assert layout is not None
-            ftylist, casters = _resolve_reduce(_annotated_signature(target), layout)
+            numba_types, casters = _resolve_reduce(_annotated_signature(target), layout)
             compiled_layout = layout
         else:
             assert layout is not None
-            ftylist, casters = _resolve_reduce(_parse_signatures(signatures), layout)
+            numba_types, casters = _resolve_reduce(
+                _parse_signatures(signatures), layout
+            )
             compiled_layout = layout
 
         def make(resolved_options: dict[str, typing.Any]) -> typing.Any:
-            compiled = nb.guvectorize(  # type: ignore[no-untyped-call]
-                ftylist, compiled_layout, **resolved_options
+            compiled = numba_module().guvectorize(
+                numba_types(), compiled_layout, **resolved_options
             )(target)
 
             return _autocast(compiled, casters, target)
 
-        return _Kernel(target, make, options, parallel, "target")
+        def make_python() -> typing.Any:
+            return _autocast(gufunc(target, compiled_layout), casters, target)
+
+        return _Kernel(target, make, make_python, options, parallel, "target")
 
     if func is not None:
         return wrap(func)

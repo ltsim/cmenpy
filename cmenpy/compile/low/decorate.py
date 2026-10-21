@@ -2,6 +2,8 @@
 
 import typing
 
+import numpy as np
+
 from cmenpy.compile.kernel import _Kernel
 from cmenpy.compile.low.annotate import _annotation_specs, _uses_annotations
 from cmenpy.compile.low.cast import _autocast, _elementwise_caster
@@ -23,10 +25,14 @@ def _split(
 
 def _resolve(
     specs: tuple[typing.Any, ...],
-) -> tuple[tuple[typing.Any, ...], list[CasterType | None]]:
-    """Turn cast markers into numba arguments and per-parameter casters."""
+) -> tuple[typing.Callable[[], tuple[typing.Any, ...]], list[CasterType | None]]:
+    """Turn cast markers into lazy numba arguments and per-parameter casters.
+
+    The numba types are built by the returned factory, *not* eagerly, so
+    declaring a kernel never requires numba to be installed.
+    """
     if not specs:
-        return (), []
+        return (lambda: ()), []
 
     if len(specs) == 1 and isinstance(specs[0], _Signature):
         signature = specs[0]
@@ -34,18 +40,33 @@ def _resolve(
             _elementwise_caster(arg.dtype) for arg in signature.args
         ]
 
-        return (signature.numba_signature(),), signature_casters
+        return (lambda: (signature.numba_signature(),)), signature_casters
 
     parameter_casters: list[CasterType | None] = [
         spec.caster() if spec is not None else None for spec in specs
     ]
 
     if all(spec is not None and spec.typed for spec in specs):
-        types = tuple(spec.numba_type() for spec in specs if spec is not None)
+        types = tuple(spec for spec in specs if spec is not None)
 
-        return (types,), parameter_casters
+        def make_types() -> tuple[typing.Any, ...]:
+            return (tuple(type_.numba_type() for type_ in types),)
 
-    return (), parameter_casters
+        return make_types, parameter_casters
+
+    return (lambda: ()), parameter_casters
+
+
+def _python_flavor(
+    func: typing.Callable[..., typing.Any],
+    casters: typing.Sequence[CasterType | None],
+    vectorize_mode: bool,
+) -> typing.Callable[[], typing.Any]:
+    """Build the factory of the uncompiled (pure-Python) kernel."""
+    if vectorize_mode:
+        return lambda: _autocast(np.vectorize(func), casters, func)
+
+    return lambda: _autocast(func, casters, func)
 
 
 def _apply(
@@ -75,11 +96,18 @@ def _apply(
     numba_args, casters = _resolve(resolved)
 
     def make(resolved_options: dict[str, typing.Any]) -> typing.Any:
-        compiled = compiler(*numba_args, *options, **resolved_options)(func)
+        compiled = compiler(*numba_args(), *options, **resolved_options)(func)
 
         return _autocast(compiled, casters, func)
 
-    return _Kernel(func, make, options_map, parallel, parallel_mode)
+    return _Kernel(
+        func,
+        make,
+        _python_flavor(func, casters, vectorize_mode),
+        options_map,
+        parallel,
+        parallel_mode,
+    )
 
 
 def _template(

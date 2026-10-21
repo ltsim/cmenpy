@@ -96,8 +96,11 @@ best  = model.solve(f, bounds, 150, 15)
 The template style is the natural home for numba kernels: declare them as
 methods with `@cm.precompile` / `@cm.vectorize` / `@cm.reduce`, and they
 receive the model's compile options at instantiation —
-`MyAlgorithm(seed=1, parallel=True, fastmath=True, cache=True)` (see
-[Numba kernels](compile.md#model-compile-options)). See
+`MyAlgorithm(seed=1, numba=True, parallel=True, fastmath=True, cache=True)`
+(see
+[Numba kernels](compile.md#model-compile-options); `numba=False` runs them
+uncompiled, and `prepare=True` compiles them right away so you never need
+`model.prepare()`). See
 `example/hello_world_v2.py` and the optimizers in `example/optimizers/`.
 
 !!! tip "Choosing a style"
