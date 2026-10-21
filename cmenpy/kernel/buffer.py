@@ -3,6 +3,7 @@
 import numpy as np
 
 from cmenpy.bounds import Bounds
+from cmenpy.casting import unwrap_array
 from cmenpy.hints import NDArrayType
 from cmenpy.hints.option import SenseType
 from cmenpy.kernel.index import BufferIndex
@@ -73,6 +74,7 @@ class KernelBuffer:
                 defaults to the internal mask.
         """
         rows = self.__mask.founds if idx is None else idx
+        x = unwrap_array(x)
         self.__buffer[rows, 1:] = x
 
         if isinstance(idx, int):

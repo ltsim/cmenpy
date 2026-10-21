@@ -49,6 +49,7 @@ symbol links to the page that documents it.
 | `EpochIteration` | epoch iterator | [Runtime](runtime.md) |
 | `Tracker`, `EpochHistory` | history | [Runtime](runtime.md) |
 | `DefaultGenerator` | RNG | [Runtime](runtime.md) |
+| `cast` | explicit casting | [Utilities](utilities.md) |
 | `is_best`, `is_worst` | comparators | [Utilities](utilities.md) |
 | `best_index`, `worst_index` | ranking helpers | [Utilities](utilities.md) |
 | `NDArrayType`, `ArrayFloatType`, `ArrayIntegerType` | array aliases | [Utilities](utilities.md) |

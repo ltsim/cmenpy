@@ -35,7 +35,7 @@ Requires Python `>=3.11`.
 
 | Path       | Contents |
 | ---------- | -------- |
-| `cmenpy/`  | The package. Public subpackages: `compile` (numba kernels), `model` (declaration styles), `population` (population handling), `target` (objectives), `kernel` (buffers), `bounds` (search space), `context` (the `ctx` object), `functools` (comparators). Internal support: `epoch`, `generator`, `hints`, `tracker`. |
+| `cmenpy/`  | The package. Public subpackages: `compile` (numba kernels), `casting` (explicit casting), `model` (declaration styles), `population` (population handling), `target` (objectives), `kernel` (buffers), `bounds` (search space), `context` (the `ctx` object), `functools` (comparators). Internal support: `epoch`, `generator`, `hints`, `tracker`. |
 | `tests/`   | Test suite mirroring the package (`pytest`) |
 | `example/` | Runnable algorithms and demos (not shipped in the wheel) |
 | `docs/`    | This site (MkDocs + Material) |

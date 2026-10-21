@@ -89,10 +89,11 @@ is still accepted. Accepts `fastmath=True` and `parallel=True`
 
 Arguments are cast automatically before reaching a kernel. A declared spec
 (`cm.Array[...]` / `cm.Scalar[...]`) takes precedence and forces dtype/layout, but
-specs are *optional*: even a completely bare kernel converts any argument that
-exposes the NumPy array protocol into a plain ndarray. Buffer views such as
-`pop.X`, `pop.F` or `~pop.X` can therefore be passed directly, and the result of
-the call is a NumPy array ready for the `<<` write-back:
+specs are *optional*: even a completely bare kernel converts its arguments into
+plain ndarrays. Buffer views such as `pop.X` and `pop.F` are unwrapped through
+their explicit `to_numpy()` method, so no implicit `__array__` cast fires; other
+array-protocol objects still convert through `np.asarray`. The call returns a
+NumPy array ready for the `<<` write-back:
 
 ```python
 @cm.precompile
@@ -104,6 +105,10 @@ pop.X << self.double(pop.X)         # view in, ndarray out
 
 Plain ndarrays, NumPy scalars, lists and tuples pass through untouched, so
 scalar/tuple results and numba's list handling are unaffected.
+
+To convert a view outside a kernel, use `cm.cast(pop.X, dtype)` (optionally with
+`layout="C"` for a typed kernel signature) or `pop.X.to_numpy()`. Implicit
+`np.asarray(pop.X)` / `np.array(pop.F)` casting of the views is deprecated.
 
 ## Model compile options
 
