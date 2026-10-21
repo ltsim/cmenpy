@@ -1,3 +1,5 @@
+"""The `PopulationSwarm` handle composing all population operations."""
+
 from cmenpy.kernel import KernelBuffer
 from cmenpy.population.attributes import BufferMatrixOperations
 from cmenpy.population.dynamic.base import DynamicBase
@@ -15,22 +17,20 @@ class PopulationSwarm(
     ranking (``best``/``worst``/``sort``) and roster management
     (``insert``/``remove``/``free_space``) on top of the flat buffer.
 
-    Parameters
-    ----------
-    buffer : KernelBuffer
-        The buffer backing this population.
+    Args:
+        buffer: The buffer backing this population.
 
-    Examples
-    --------
-    ::
+    Examples:
+        ::
 
-        pop = cm.PopulationSwarm(ctx.buff)
-        pop.compute << ctx.rng.uniform(bounds.low, bounds.up,
-                                       (pop.size, bounds.ndim))
-        best_rows = pop.X[pop.sort][:3]
+            pop = cm.PopulationSwarm(ctx.buff)
+            pop.compute << ctx.rng.uniform(bounds.low, bounds.up,
+                                           (pop.size, bounds.ndim))
+            best_rows = pop.X[pop.sort][:3]
     """
 
     def __init__(self, buffer: KernelBuffer) -> None:
+        """Compose the matrix views, operators, iterator and roster over ``buffer``."""
         StreamOperations.__init__(self, buffer)
         BufferMatrixOperations.__init__(self, buffer)
         BaseIterator.__init__(self, buffer)

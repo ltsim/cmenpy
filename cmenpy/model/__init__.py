@@ -1,12 +1,20 @@
+"""Model declaration API: the function-style `declare` and class-style `template`."""
+
 import inspect
 import typing
 
+from cmenpy.compile import backend
+from cmenpy.compile.prepare import kernels
 from cmenpy.model.optimizer import (
     FunctionOptimizerModel,
     ModelProtocol,
     TemplateOptimizerModel,
 )
 from cmenpy.model.optimizer.functions import AlgorithmFunction
+from cmenpy.model.optimizer.variables import (
+    install_constants,
+    is_constant,
+)
 
 #: Compile options a model can set at instantiation; forwarded to its kernels.
 _COMPILE_OPTION_KEYS = ("parallel", "fastmath", "cache")
@@ -15,6 +23,29 @@ _COMPILE_OPTION_KEYS = ("parallel", "fastmath", "cache")
 def declare_from_func(
     func: AlgorithmFunction, **kwargs: typing.Any
 ) -> FunctionOptimizerModel:
+    """Bind ``func`` to a fresh `FunctionOptimizerModel` built from ``kwargs``.
+
+    Args:
+        func: The ``(args, epoch, ctx) -> None`` algorithm function.
+        kwargs: ``name=cm.Argument[...]`` field declarations.
+
+    Returns:
+        The model wrapping ``func``.
+
+    Raises:
+        TypeError: If any field is a ``cm.Constant``. Constants are a
+            class-style feature (``@cm.template`` / ``@cm.module``) and are
+            never constructor-bound, so they have no meaning in the function
+            style.
+    """
+    for field_name, field_type in kwargs.items():
+        if is_constant(field_type):
+            raise TypeError(
+                f"Constant field '{field_name}' is not supported by "
+                "cm.declare; use a cm.Argument or move the algorithm to a "
+                "cm.template class."
+            )
+
     model = FunctionOptimizerModel(**kwargs)
     model.define(func)
 
@@ -22,23 +53,80 @@ def declare_from_func(
 
 
 def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
+    """Wrap ``cls`` in a `TemplateOptimizerModel` with a dynamic ``__init__``.
+
+    The generated ``__init__`` extracts the compile options (``numba``/
+    ``parallel``/``fastmath``/``cache``), reads the class type hints
+    (``Annotated`` metadata carries ranges and defaults), validates the
+    arguments and stores them as instance attributes before delegating to
+    the original ``__init__``.
+
+    ``numba`` controls whether the class kernels are compiled: ``False`` runs
+    them as pure Python/NumPy, ``True`` demands compilation (``ImportError``
+    without numba), and leaving it out compiles when numba is available.
+    ``prepare`` forces compilation at construction: ``prepare=True`` compiles
+    (or reports) every kernel during ``__init__`` — the equivalent of calling
+    ``model.prepare()`` immediately — while ``prepare=False`` (the default)
+    keeps compilation lazy.
+
+    ``cm.Constant`` fields are materialized as read-only class descriptors by
+    ``install_constants`` and skipped by the generated ``__init__``: they are
+    never constructor-bound, so passing one raises ``TypeError``.
+
+    Args:
+        cls: The class to wrap; must define ``initialize`` and ``evolve``.
+
+    Returns:
+        The model wrapping ``cls``.
+
+    Raises:
+        TypeError: If a ``cm.Constant`` field is passed to the constructor.
+    """
     methods_to_check = ["initialize", "evolve"]
     original_init = cls.__init__
 
+    install_constants(cls)
+
     def dynamic_init(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> None:
+        numba_option = kwargs.pop("numba", None)
+        prepare_option = bool(kwargs.pop("prepare", False))
+
+        if numba_option is not None:
+            numba_option = bool(numba_option)
+
+            if numba_option and not backend.HAS_NUMBA:
+                raise ImportError(backend._INSTALL_HINT)
+
         compile_options = {
             key: bool(kwargs.pop(key, False)) for key in _COMPILE_OPTION_KEYS
         }
+
+        if numba_option is not None:
+            compile_options["numba"] = numba_option
+
         self._compile_options = compile_options
 
         hints = typing.get_type_hints(cls, include_extras=True)
-        field_names = [k for k in hints if k not in methods_to_check]
+        field_names = [
+            name
+            for name, field_type in hints.items()
+            if name not in methods_to_check and not is_constant(field_type)
+        ]
 
         pos_arguments = dict(zip(field_names, args))
         all_arguments = {**pos_arguments, **kwargs}
 
         for field_name, field_type in hints.items():
             if field_name in methods_to_check:
+                continue
+
+            if is_constant(field_type):
+                if field_name in all_arguments:
+                    raise TypeError(
+                        f"Constant field '{field_name}' cannot be passed to the "
+                        "constructor; it is fixed at declaration."
+                    )
+
                 continue
 
             value = all_arguments.get(field_name)
@@ -75,6 +163,11 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
         if original_init is not object.__init__:
             original_init(self, *args, **kwargs)
 
+        if prepare_option:
+            # ``prepare=True`` is the constructor-side mirror of prepare():
+            # compile (or report) every kernel of the class right now.
+            kernels(cls, compile_options)
+
     cls.__init__ = dynamic_init  # type: ignore[method-assign]
 
     return TemplateOptimizerModel(
@@ -83,7 +176,6 @@ def declare_from_class(cls: type[ModelProtocol]) -> TemplateOptimizerModel:
 
 
 def declare(
-    *args: typing.Any,
     **kwargs: typing.Any,
 ) -> typing.Callable[[AlgorithmFunction], FunctionOptimizerModel]:
     """Turn a function into a model (the function-style API).
@@ -92,25 +184,21 @@ def declare(
     whole optimization inside its body. Parameters are declared with
     ``cm.Argument`` and bound by calling the returned model.
 
-    Parameters
-    ----------
-    **kwargs
-        ``name=cm.Argument[...]`` field declarations.
+    Args:
+        **kwargs: ``name=cm.Argument[...]`` field declarations.
 
-    Returns
-    -------
-    callable
+    Returns:
         A decorator wrapping the function in a `FunctionOptimizerModel`.
 
-    Examples
-    --------
-    ::
+    Examples:
+        ::
 
-        @cm.declare(x=cm.Argument[int, (0, 3), 2])
-        def my_algorithm(args, epoch, ctx): ...
+            @cm.declare(x=cm.Argument[int, (0, 3), 2])
+            def my_algorithm(args, epoch, ctx): ...
 
-        model = my_algorithm(x=1)
+            model = my_algorithm(x=1)
     """
+
     def wrapper(target: AlgorithmFunction) -> FunctionOptimizerModel:
         if not inspect.isfunction(target):
             raise TypeError(f"Model '{target}' is not a function.")
@@ -125,34 +213,29 @@ def template(model: type[ModelProtocol]) -> TemplateOptimizerModel:
 
     The class must define ``initialize(self, ctx)`` and
     ``evolve(self, e, ctx)``; fields are declared with ``cm.Argument`` /
-    ``cm.Variable``. Kernels declared on the class receive the model's
-    compile options at instantiation.
+    ``cm.Variable`` / ``cm.Constant``. ``cm.Constant`` fields are read-only and
+    never bound by the constructor. Kernels declared on the class receive the
+    model's compile options (``numba``/``parallel``/``fastmath``/``cache``) at
+    instantiation, and ``prepare=True`` compiles them right away.
 
-    Parameters
-    ----------
-    model : type
-        The class to wrap.
+    Args:
+        model: The class to wrap.
 
-    Returns
-    -------
-    TemplateOptimizerModel
+    Returns:
         A model wrapping the class.
 
-    Raises
-    ------
-    TypeError
-        If ``model`` is not a class.
+    Raises:
+        TypeError: If ``model`` is not a class.
 
-    Examples
-    --------
-    ::
+    Examples:
+        ::
 
-        @cm.template
-        class MyAlgorithm:
-            a: cm.Argument[int, (1, 100)]
+            @cm.template
+            class MyAlgorithm:
+                a: cm.Argument[int, (1, 100)]
 
-            def initialize(self, ctx) -> None: ...
-            def evolve(self, e, ctx) -> None: ...
+                def initialize(self, ctx) -> None: ...
+                def evolve(self, e, ctx) -> None: ...
     """
     if not isinstance(model, type):
         raise TypeError(f"Model '{model}' is not a class.")

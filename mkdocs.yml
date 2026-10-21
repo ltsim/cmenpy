@@ -13,21 +13,21 @@ watch:
 
 theme:
   name: material
+  custom_dir: overrides
   language: en
-  logo: assets/logo.svg
-  favicon: assets/favicon.svg
+  font: false
+  logo: assets/cmenpy.png
+  favicon: assets/icon.png
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
+    - scheme: default
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: indigo
-      accent: indigo
+    - scheme: slate
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -37,12 +37,27 @@ theme:
     - navigation.top
     - navigation.indexes
     - navigation.sections
-    - navigation.expand
+    - navigation.path
+    - navigation.footer
     - content.code.copy
     - content.action.edit
     - search.highlight
     - search.suggest
     - toc.follow
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ltsim/cmenpy
+      name: cmenpy on GitHub
+
+extra_css:
+  - assets/css/tokens.css
+  - assets/css/theme.css
+  - assets/css/brand.css
+
+extra_javascript:
+  - assets/scripts.js
 
 plugins:
   - search
@@ -51,7 +66,7 @@ plugins:
         python:
           paths: [.]
           options:
-            docstring_style: numpy
+            docstring_style: google
             show_source: false
             members_order: source
             separate_signature: true
@@ -68,23 +83,39 @@ nav:
   - Getting started:
       - Quickstart: quickstart.md
       - Examples: examples.md
+      - Test functions: benchmarks.md
   - Guides:
       - Models:
-          - Overview: models.md
+          - Overview: models/index.md
+          - Function style (declare): models/declare.md
+          - Class style (template): models/template.md
+          - Fields and markers: models/fields.md
+          - Operator modules: models/modules.md
           - Build a custom model: tutorial-custom-model.md
-      - Numba kernels: compile.md
-      - Population: population.md
-      - Target functions: target.md
+      - Population:
+          - Overview: population/index.md
+          - Matrix views: population/views.md
+          - Stream operators: population/operators.md
+          - Iteration and ranking: population/ranking.md
+      - Target functions:
+          - Overview: target/index.md
+          - Scoring modes: target/scoring.md
+          - Vectorized targets: target/vectorized.md
+          - NFE budget: target/budget.md
+      - Numba kernels:
+          - Overview: compile/index.md
+          - Typing and specs: compile/specs.md
+          - precompile (njit): compile/precompile.md
+          - vectorize (ufunc): compile/vectorize.md
+          - reduce (guvectorize): compile/reduce.md
+          - Compilation options: compile/options.md
+          - Troubleshooting: compile/troubleshooting.md
   - API Reference:
       - Overview: api/index.md
-      - Compile: api/compile.md
-      - Models: api/models.md
-      - Population: api/population.md
-      - Kernel: api/kernel.md
-      - Target: api/target.md
-      - Bounds: api/bounds.md
-      - Runtime: api/runtime.md
-      - Utilities: api/utilities.md
+      - Classes: api/classes.md
+      - Functions: api/functions.md
+      - Modules: api/modules.md
+  - Roadmap: roadmap.md
   - Changelog: changelog.md
 
 markdown_extensions:
@@ -94,6 +125,10 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      title: On this page
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
   - pymdownx.superfences
   - pymdownx.highlight:
       anchor_linenums: true

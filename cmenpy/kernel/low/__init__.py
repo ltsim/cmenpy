@@ -1,3 +1,5 @@
+"""Low-level allocation helpers for the kernel buffer."""
+
 import numpy as np
 
 from cmenpy.hints import NDArrayType
@@ -9,16 +11,11 @@ def init_buffer(
 ) -> NDArrayType:
     """Allocate a ``(n_pop, ndim + 1)`` buffer filled with ``NaN``.
 
-    Parameters
-    ----------
-    n_pop : int
-        Number of rows (population capacity).
-    ndim : int
-        Number of solution dimensions (the +1 column holds fitness).
+    Args:
+        n_pop: Number of rows (population capacity).
+        ndim: Number of solution dimensions (the +1 column holds fitness).
 
-    Returns
-    -------
-    NDArrayType
+    Returns:
         The freshly allocated ``NaN`` buffer.
     """
     return np.full((n_pop, ndim + 1), np.nan)

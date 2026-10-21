@@ -1,12 +1,12 @@
 # cmenpy
 
+![cmenpy](https://raw.githubusercontent.com/ltsim/cmenpy/main/resources/cmenpy.png)
+
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
 ![PyPI - Version](https://img.shields.io/pypi/v/cmenpy?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cmenpy?style=flat-square)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/cmenpy?style=flat-square)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/cmenpy?style=flat-square)
-
-[![Docs](https://img.shields.io/badge/docs-mkdocs%20%2B%20Material-blue?style=flat-square&logo=materialformkdocs)](https://ltsim.github.io/cmenpy/)
 ![Publish](https://img.shields.io/github/actions/workflow/status/ltsim/cmenpy/publish.yml?style=flat-square&logo=pypi&label=Publish)
 ![Testing](https://img.shields.io/github/actions/workflow/status/ltsim/cmenpy/test.yml?style=flat-square&logo=pytest&label=Testing)
 ![Typed](https://img.shields.io/github/actions/workflow/status/ltsim/cmenpy/type.yml?style=flat-square&logo=python&label=Typed)
@@ -18,10 +18,12 @@ It provides the clean abstractions necessary to build custom evolutionary algori
 ## Installation
 
 ```bash
-pip install cmenpy          # runtime: NumPy + Numba only
+pip install cmenpy
 ```
 
-Requires Python `>=3.11`.
+Requires Python `>=3.11`. Numba is **optional**: kernels compile when it is
+installed (`pip install "cmenpy[numba]"`), and run as pure NumPy/Python when
+it is not — or whenever a model asks with `numba=False`.
 
 To develop or build the docs:
 
@@ -30,6 +32,7 @@ git clone https://github.com/ltsim/cmenpy.git
 cd cmenpy
 uv sync --extra dev        # tests, type checks, linters
 uv sync --extra docs       # ... plus the MkDocs toolchain
+uv sync --extra benchmarks # ... plus opfunu-core / enoppy-core test functions
 ```
 
 ## Quick example
@@ -45,7 +48,8 @@ def my_algorithm(args, epoch, ctx):
     pop.compute << ctx.rng.uniform(
         ctx.bounds.low, ctx.bounds.up, (pop.size, ctx.bounds.ndim)
     )
-    # ... one epoch of your operator ...
+    for _ in epoch:  # one epoch of your operator, per iteration
+        ...
 
 
 best_fitness, best_x = my_algorithm(x=1).solve(
@@ -57,8 +61,8 @@ See the [Quickstart](https://ltsim.github.io/cmenpy/quickstart/) for both the fu
 
 ## Core pillars
 
-- **Vectorized data structures.** Population arrays, agent states, and search spaces use a flattened, vectorized layout with no per-individual objects, interfacing natively with NumPy and Numba.
-- **Extensible architecture.** Custom operators, mutation rules, or entirely new paradigms require overriding only a few decoupled, well-defined methods.
+- **Vectorized data structures.** Population arrays, agent states, and search spaces use a flattened, vectorized layout with no per-individual objects. Buffer views (`pop.X`, `pop.F`) interoperate with NumPy through the explicit `cm.cast(...)` helper and can be passed directly to `cmenpy` kernels, which unwrap them internally.
+- **Extensible architecture.** Custom operators, mutation rules, or entirely new paradigms require overriding only a few decoupled, well-defined methods. Reusable **Operator Modules** (`@cm.module`) share kernels, helpers, and `cm.Constant` fields across models.
 - **Non-monolithic flexibility.** No visualization tools, file exporters, or rigid loggers — just the mathematical engine and its structural flow.
 - **Research ready.** Licensed under the **GNU GPLv3**. Design, modify, and distribute your algorithms freely; derivative works stay open, keeping the software a public good for research and commercial development.
 
@@ -75,7 +79,9 @@ Full guides and the API reference are published at **[ltsim.github.io/cmenpy](ht
 | [Population](https://ltsim.github.io/cmenpy/population/) | `PopulationSwarm`, buffers, selection, ranking |
 | [Target functions](https://ltsim.github.io/cmenpy/target/) | Objectives, NFE budget, vectorized targets |
 | [Examples](https://ltsim.github.io/cmenpy/examples/) | Runnable algorithms in `example/` |
+| [Test functions](https://ltsim.github.io/cmenpy/benchmarks/) | Benchmarks with `opfunu-core` and `enoppy-core` |
 | [API reference](https://ltsim.github.io/cmenpy/api/) | Full reference for every public symbol, by category |
+| [Roadmap](https://ltsim.github.io/cmenpy/roadmap/) | Planned and scheduled work |
 | [Changelog](https://ltsim.github.io/cmenpy/changelog/) | Release notes |
 
 To preview locally: `uv sync --extra docs && .venv/bin/mkdocs serve`.

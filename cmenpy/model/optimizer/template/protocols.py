@@ -1,3 +1,5 @@
+"""The `ModelProtocol` a ``@cm.template`` class must satisfy."""
+
 import typing
 
 from cmenpy.context import Context
@@ -11,6 +13,8 @@ class ModelProtocol(typing.Protocol):
     and `evolve` (advance one epoch).
     """
 
-    def initialize(self, ctx: Context) -> None: ...
+    def initialize(self, ctx: Context) -> None:
+        """Seed the population once before the first epoch."""
 
-    def evolve(self, e: int, ctx: Context) -> None: ...
+    def evolve(self, e: int, ctx: Context) -> None:
+        """Advance the population one epoch (``e`` is the epoch index)."""

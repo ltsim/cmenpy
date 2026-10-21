@@ -7,12 +7,12 @@ mutation each epoch, and select the best μ from the union of parents and
 offspring (elitist selection).
 
 Along the way you will use every core piece of `cmenpy`: fields, the `ctx`
-object, the [Population](population.md) DSL, the [comparators](api/utilities.md),
-and a compiled [numba kernel](compile.md).
+object, the [Population](population/index.md) DSL, the [comparators](api/functions.md#comparators),
+and a compiled [numba kernel](compile/index.md).
 
 !!! info "Prerequisites"
     Comfortable with NumPy. You should have skimmed the
-    [Quickstart](quickstart.md) and [Models](models.md) overview.
+    [Quickstart](quickstart.md) and [Models](models/index.md) overview.
 
 ## What we are building
 
@@ -172,7 +172,7 @@ Then call it from `evolve` instead of the inline NumPy:
 
 Because `mutate` is a method on a `@cm.template` class, it participates in the
 model's compile options — you can force `parallel`, `fastmath` or `cache` at
-construction (see [Numba kernels](compile.md#model-compile-options)). The kernel
+construction (see [Compilation options](compile/options.md)). The kernel
 compiles lazily on first use; call `model.prepare()` to compile eagerly and
 inspect the signatures.
 
@@ -271,11 +271,14 @@ if __name__ == "__main__":
 ## Where to go next
 
 - **Function style** — prefer `@cm.declare`? See
-  [Models → `@cm.declare`](models.md#cmdeclare-over-a-function) and
+  [Function style (`declare`)](models/declare.md) and
   `example/hello_world_v1.py`.
 - **More operators** — tournament selection, crossover and archives appear in
-  the algorithms under `example/` (see [Examples](examples.md)).
+  the algorithms under `example/optimizers/` (see [Examples](examples.md)).
 - **Vectorized targets** — score a whole population in one call with
-  [Target functions](target.md).
+  [Vectorized targets](target/vectorized.md).
+- **Test functions** — benchmark the finished optimizer against published
+  numerical and engineering problems in
+  [Test functions](benchmarks.md).
 - **Kernel recipes** — `@cm.vectorize` for elementwise ufuncs and `@cm.reduce`
-  for generalized ufuncs in [Numba kernels](compile.md).
+  for generalized ufuncs in [Numba kernels](compile/index.md).

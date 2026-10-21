@@ -1,3 +1,5 @@
+"""Abstract optimizer base (`BaseOptimizer`) and the context-builder helper."""
+
 import abc
 import typing
 
@@ -27,21 +29,26 @@ class BaseOptimizer(abc.ABC):
         pop_range: tuple[int, int] | None = None,
         debug: bool = False,
         sense: SenseType = "min",
-    ) -> tuple[float, NDArrayType]: ...
+    ) -> tuple[float, NDArrayType]:
+        """Run the optimization and return the best ``(fitness, solution)``."""
 
     @abc.abstractmethod
-    def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> "BaseOptimizer": ...
+    def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> "BaseOptimizer":
+        """Bind the model parameters and return the configured model."""
 
     @property
     @abc.abstractmethod
-    def alias(self) -> str: ...
+    def alias(self) -> str:
+        """The model name."""
 
     def __repr__(self) -> str:
+        """Return a ``Model(alias=...)`` representation."""
         return f"{self.__class__.__name__}(alias={self.alias})"
 
     @property
     @abc.abstractmethod
-    def tracker(self) -> list[EpochHistory]: ...
+    def tracker(self) -> list[EpochHistory]:
+        """Per-epoch history (empty before the first ``solve``)."""
 
 
 def build_context_manager(
@@ -56,34 +63,21 @@ def build_context_manager(
 ) -> MainContextManager:
     """Validate the population size and build a `MainContextManager`.
 
-    Parameters
-    ----------
-    f : Target
-        The objective callable.
-    bounds : Bounds | SequenceStructure[ScalarType]
-        The search space (or bounds sequence).
-    epochs : int
-        Total number of epochs.
-    pop_size : int
-        Initial population size.
-    pop_range : tuple[int, int], optional
-        ``(min, max)`` allowed population sizes.
-    seed : int, optional
-        Random seed.
-    debug : bool, optional
-        Record per-epoch history.
-    sense : SenseType, optional
-        ``"min"`` (default) or ``"max"``.
+    Args:
+        f: The objective callable.
+        bounds: The search space (or bounds sequence).
+        epochs: Total number of epochs.
+        pop_size: Initial population size.
+        pop_range: ``(min, max)`` allowed population sizes.
+        seed: Random seed.
+        debug: Record per-epoch history.
+        sense: ``"min"`` (default) or ``"max"``.
 
-    Returns
-    -------
-    MainContextManager
+    Returns:
         The wired per-run resource holder.
 
-    Raises
-    ------
-    IndexError
-        If ``pop_size`` falls outside ``pop_range``.
+    Raises:
+        IndexError: If ``pop_size`` falls outside ``pop_range``.
     """
     if pop_range is None:
         pop_range = pop_size, pop_size

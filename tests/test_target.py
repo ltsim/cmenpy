@@ -100,7 +100,7 @@ def test_truthy_marker_is_not_enough() -> None:
     assert target.vectorized is False
 
 
-@cm.declare(...)
+@cm.declare()
 def minimize(args, epoch, ctx):
     pop = cm.PopulationSwarm(ctx.buff)
     n_pop = cm.PopulationSwarm(ctx.buff.snapshot)

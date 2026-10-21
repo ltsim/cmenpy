@@ -1,4 +1,5 @@
 import numpy as np
+from opfunu.name_based import Ackley01
 
 import cmenpy as cm
 
@@ -55,30 +56,7 @@ class MyAlgorithm:
 if __name__ == "__main__":
     model = MyAlgorithm(a=3, b=2, seed=1)
 
-    def sphere(x):
-        return np.sum(x**2)
+    f = Ackley01(ndim=2)
 
-    def rastrigin(x):
-        return 10 * len(x) + np.sum(x**2 - 10 * np.cos(2 * np.pi * x))
-
-    def ackley(x):
-        n = len(x)
-        s1 = np.sum(x**2)
-        s2 = np.sum(np.cos(2 * np.pi * x))
-
-        return -20 * np.exp(-0.2 * np.sqrt(s1 / n)) - np.exp(s2 / n) + 20 + np.e
-
-    def peaks(i):
-        x = i[0]
-        y = i[1]
-
-        a = 3 * (1 - x) ** 2 * np.exp(-(x**2) - (y + 1) ** 2)
-        b = -10 * (x / 5 - x**3 - y**5) * np.exp(-(x**2) - y**2)
-        c = -1 / 3 * np.exp(-((x + 1) ** 2) - y**2)
-
-        return a + b + c
-
-    best_pop = model.solve(
-        sphere, cm.Bounds[(-1, 1), (-1, 1)], 1500, 15, (1, 20), debug=True
-    )
+    best_pop = model.solve(f.evaluate, f.bounds, 1500, 15, (1, 20), debug=True)
     print("Best population:", best_pop)

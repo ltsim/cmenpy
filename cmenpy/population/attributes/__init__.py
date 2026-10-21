@@ -1,3 +1,5 @@
+"""Buffer attribute views: matrix abstractions and the ``F``/``X`` operations."""
+
 from cmenpy.population.attributes.base import BufferMatrixOperations
 from cmenpy.population.attributes.matrix import (
     BufferMatrixAbstract,
@@ -5,4 +7,9 @@ from cmenpy.population.attributes.matrix import (
     BufferMatrixCompute,
 )
 
-__all__ = ["BufferMatrixAbstract", "BufferMatrixAccess", "BufferMatrixCompute", "BufferMatrixOperations"]
+__all__ = [
+    "BufferMatrixAbstract",
+    "BufferMatrixAccess",
+    "BufferMatrixCompute",
+    "BufferMatrixOperations",
+]

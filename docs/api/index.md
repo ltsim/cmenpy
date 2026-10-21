@@ -1,8 +1,14 @@
 # API Reference
 
-Complete autodoc for the public surface of `cmenpy`. Every class, function and
-type alias the framework exposes is documented here, grouped by subpackage. Each
-symbol links to the page that documents it.
+Complete autodoc for the public surface of `cmenpy`, organized by kind. Every
+class, function and type alias the framework exposes is documented here, and
+each symbol links to the page that documents it.
+
+| Browse | Contents |
+| ------ | -------- |
+| **[Classes](classes.md)** | Optimizers, field markers, population, buffer, objectives, search space, runtime, protocols, aliases |
+| **[Functions](functions.md)** | Declaration decorators, kernel decorators, signature markers, builders, introspection, comparators |
+| **[Modules](modules.md)** | One entry per subpackage, with its docstring and links to its symbols |
 
 !!! note "How to read this reference"
     Documentation is generated from the source via
@@ -13,53 +19,43 @@ symbol links to the page that documents it.
 
 | Symbol | Kind | Page |
 | ------ | ---- | ---- |
-| `Array`, `Scalar` | compile markers | [Compile](compile.md) |
-| `Contract` | compile marker | [Compile](compile.md) |
-| `precompile`, `vectorize`, `reduce` | decorators | [Compile](compile.md) |
-| `jit` | decorator (deprecated) | [Compile](compile.md) |
-| `kernels`, `prepare` | introspection | [Compile](compile.md) |
-| `declare`, `template` | model decorators | [Models](models.md) |
-| `Argument`, `Variable` | field markers | [Models](models.md) |
-| `BaseOptimizer` | abstract base | [Models](models.md) |
-| `FunctionOptimizerModel`, `TemplateOptimizerModel` | models | [Models](models.md) |
-| `ModelProtocol`, `AlgorithmFunction`, `CallableFunction` | protocols | [Models](models.md) |
-| `FunctionParamsArguments` | arguments holder | [Models](models.md) |
-| `ExceptionTypeParams`, `ExceptionValueParams` | exceptions | [Models](models.md) |
-| `build_context_manager`, `declare_from_func`, `declare_from_class` | builders | [Models](models.md) |
-| `PopulationSwarm` | population handle | [Population](population.md) |
-| `StreamOperations` | operator set | [Population](population.md) |
-| `ComputeOperator`, `AssignOperator`, `AccessOperator`, `ExtractOperation`, `SwapOperation` | operators | [Population](population.md) |
-| `ComputePipeline`, `AssignPipeline` | per-row targets | [Population](population.md) |
-| `StreamOperator`, `ReaderOperator`, `WriterOperator`, `VectorizableOperator`, `PipelineOperator` | operator ABCs | [Population](population.md) |
-| `BufferMatrixOperations`, `BufferMatrixFitness`, `BufferMatrixSolutions` | matrix views | [Population](population.md) |
-| `BufferMatrixAbstract`, `BufferMatrixAccess`, `BufferMatrixCompute` | matrix ABCs | [Population](population.md) |
-| `DynamicBase`, `BaseIterator` | population bases | [Population](population.md) |
-| `BaseAgent`, `ImmutableAgent`, `MutableAgent`, `AgentTemplate` | agents | [Population](population.md) |
-| `KernelBuffer` | buffer | [Kernel](kernel.md) |
-| `KernelMask`, `KernelSize` | buffer support | [Kernel](kernel.md) |
-| `BufferIndex` | ranking | [Kernel](kernel.md) |
-| `init_buffer` | allocator | [Kernel](kernel.md) |
-| `Target`, `TargetFunction` | objective | [Target](target.md) |
-| `VectorizedTarget`, `vectorized_target` | vectorized objective | [Target](target.md) |
-| `MaxNumberOfCalls` | exception | [Target](target.md) |
-| `Bounds`, `create_bounds` | search space | [Bounds](bounds.md) |
-| `InnerSequence`, `SequenceStructure` | bounds aliases | [Bounds](bounds.md) |
-| `Context`, `MainContextManager` | run context | [Runtime](runtime.md) |
-| `EpochIteration` | epoch iterator | [Runtime](runtime.md) |
-| `Tracker`, `EpochHistory` | history | [Runtime](runtime.md) |
-| `DefaultGenerator` | RNG | [Runtime](runtime.md) |
-| `is_best`, `is_worst` | comparators | [Utilities](utilities.md) |
-| `best_index`, `worst_index` | ranking helpers | [Utilities](utilities.md) |
-| `NDArrayType`, `ArrayFloatType`, `ArrayIntegerType` | array aliases | [Utilities](utilities.md) |
-| `ScalarType`, `SenseType` | scalar/option aliases | [Utilities](utilities.md) |
-
-## Browse by category
-
-- **[Compile](compile.md)** — numba kernels, markers and introspection.
-- **[Models](models.md)** — declaration decorators, field markers, optimizers.
-- **[Population](population.md)** — the swarm handle, operators, matrix views, agents.
-- **[Kernel](kernel.md)** — the flat buffer, masks, sizes and ranking.
-- **[Target](target.md)** — objectives and vectorized targets.
-- **[Bounds](bounds.md)** — the search-space description.
-- **[Runtime](runtime.md)** — context, epoch iteration, history, RNG.
-- **[Utilities](utilities.md)** — comparators and type aliases.
+| `Array`, `Scalar` | compile markers | [Functions](functions.md#signature-markers) |
+| `Contract` | compile marker | [Functions](functions.md#signature-markers) |
+| `precompile`, `vectorize`, `reduce` | decorators | [Functions](functions.md#kernel-decorators) |
+| `jit` | decorator (deprecated) | [Functions](functions.md#kernel-decorators) |
+| `kernels`, `prepare` | introspection | [Functions](functions.md#introspection) |
+| `declare`, `template` | model decorators | [Functions](functions.md#declaration-decorators) |
+| `module` | Operator Module decorator | [Functions](functions.md#declaration-decorators) |
+| `vectorized_target` | decorator | [Functions](functions.md#declaration-decorators) |
+| `declare_from_func`, `declare_from_class`, `build_context_manager` | builders | [Functions](functions.md#builders-and-factories) |
+| `create_bounds`, `init_buffer` | factories | [Functions](functions.md#builders-and-factories) |
+| `cast` | explicit casting | [Functions](functions.md#casting) |
+| `is_best`, `is_worst` | comparators | [Functions](functions.md#comparators) |
+| `best_index`, `worst_index` | ranking helpers | [Functions](functions.md#comparators) |
+| `Argument`, `Constant`, `Variable` | field markers | [Classes](classes.md#field-markers) |
+| `BaseOptimizer` | abstract base | [Classes](classes.md#optimizers) |
+| `FunctionOptimizerModel`, `TemplateOptimizerModel` | models | [Classes](classes.md#optimizers) |
+| `ModelProtocol`, `AlgorithmFunction`, `CallableFunction` | protocols | [Classes](classes.md#protocols) |
+| `FunctionParamsArguments` | arguments holder | [Classes](classes.md#support-types-and-aliases) |
+| `ExceptionTypeParams`, `ExceptionValueParams` | exceptions | [Classes](classes.md#support-types-and-aliases) |
+| `PopulationSwarm` | population handle | [Classes](classes.md#population) |
+| `StreamOperations` | operator set | [Classes](classes.md#population) |
+| `ComputeOperator`, `AssignOperator`, `AccessOperator`, `ExtractOperation`, `SwapOperation` | operators | [Classes](classes.md#population) |
+| `ComputePipeline`, `AssignPipeline` | per-row targets | [Classes](classes.md#population) |
+| `StreamOperator`, `ReaderOperator`, `WriterOperator`, `VectorizableOperator`, `PipelineOperator` | operator ABCs | [Classes](classes.md#population) |
+| `BufferMatrixOperations`, `BufferMatrixFitness`, `BufferMatrixSolutions` | matrix views | [Classes](classes.md#population) |
+| `BufferMatrixAbstract`, `BufferMatrixAccess`, `BufferMatrixCompute` | matrix ABCs | [Classes](classes.md#population) |
+| `DynamicBase`, `BaseIterator` | population bases | [Classes](classes.md#population) |
+| `KernelBuffer` | buffer | [Classes](classes.md#buffer) |
+| `KernelMask`, `KernelSize` | buffer support | [Classes](classes.md#buffer) |
+| `BufferIndex` | ranking | [Classes](classes.md#buffer) |
+| `Target`, `TargetFunction` | objective | [Classes](classes.md#objectives) |
+| `VectorizedTarget` | vectorized objective | [Classes](classes.md#objectives) |
+| `MaxNumberOfCalls` | exception | [Classes](classes.md#objectives) |
+| `Bounds` | search space | [Classes](classes.md#search-space) |
+| `Context`, `MainContextManager` | run context | [Classes](classes.md#runtime) |
+| `EpochIteration` | epoch iterator | [Classes](classes.md#runtime) |
+| `Tracker`, `EpochHistory` | history | [Classes](classes.md#runtime) |
+| `DefaultGenerator` | RNG | [Classes](classes.md#runtime) |
+| `NDArrayType`, `ArrayFloatType`, `ArrayIntegerType` | array aliases | [Classes](classes.md#support-types-and-aliases) |
+| `ScalarType`, `SenseType` | scalar/option aliases | [Classes](classes.md#support-types-and-aliases) |

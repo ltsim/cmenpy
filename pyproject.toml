@@ -66,12 +66,15 @@ classifiers = [
 
 requires-python = ">=3.11"
 dependencies = [
-    "numba>=0.67.0",
     "numpy>=2.0.2",
 ]
 
 [project.optional-dependencies]
+numba = [
+    "numba>=0.67.0",
+]
 dev = [
+    "numba>=0.67.0",
     "pytest>=8.0",
     "pytest-cov>=5.0",
     "mypy>=1.9.0",
@@ -80,12 +83,18 @@ dev = [
     "flake8>=7.0",
     "pandas-stubs>=2.2.3",
     "scipy-stubs>=1.15.0",
-    "black>=21.9b0"
+    "black>=21.9b0",
+    "opfunu-core>=1.0.6",
+    "enoppy-core>=0.1.2.1"
 ]
 docs = [
     "mkdocs>=1.6",
-    "mkdocs-material>=9.0",
+    "mkdocs-material>=9.0,<10",
     "mkdocstrings[python]>=0.26"
+]
+benchmarks = [
+    "opfunu-core>=1.0.6",
+    "enoppy-core>=0.1.2.1"
 ]
 
 [project.urls]
@@ -101,7 +110,7 @@ profile = "black"
 version = { attr = "cmenpy.__version__" }
 
 [tool.setuptools.packages.find]
-exclude = ["tests*", "examples*"]
+exclude = ["tests*", "example*"]
 
 [tool.setuptools]
 include-package-data = true
@@ -122,6 +131,16 @@ strict = true
 [tool.ruff]
 target-version = "py311"
 line-length = 88
+
+[tool.ruff.lint]
+extend-select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+"example/**" = ["D"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -145,3 +164,9 @@ exclude = '''
   | example
 )/
 '''
+
+[dependency-groups]
+dev = [
+    "enoppy-core>=0.1.2.1",
+    "opfunu-core>=1.0.6",
+]

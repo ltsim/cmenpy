@@ -1,19 +1,17 @@
+"""Objective wrappers: vectorized targets and the NFE-counting `TargetFunction`."""
+
 import typing
 
 import numpy as np
 
 from cmenpy.bounds import Bounds
-from cmenpy.hints import NDArrayType, ArrayIntegerType
+from cmenpy.casting import unwrap_array
+from cmenpy.hints import NDArrayType
+from cmenpy.hints.protocol import Target as Target
 
 
 class MaxNumberOfCalls(Exception):
     """Raised when a target's evaluation budget (``max_nfe``) is exceeded."""
-
-
-class Target(typing.Protocol):
-    """Protocol for an objective: a callable mapping a solution to a score."""
-
-    def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any: ...
 
 
 class VectorizedTarget:
@@ -27,9 +25,11 @@ class VectorizedTarget:
     vectorized = True
 
     def __init__(self, target: Target) -> None:
+        """Wrap ``target`` so it is dispatched as a whole-block evaluator."""
         self.__target = target
 
     def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any:
+        """Score the whole block ``x`` with one call to the wrapped target."""
         return self.__target(x)
 
 
@@ -40,14 +40,13 @@ def vectorized_target(target: Target) -> VectorizedTarget:
     row, so ``np.sum(x**2, axis=1)`` replaces a per-row comprehension. The
     result is identical to the row-by-row evaluation, only dispatched once.
 
-    Examples
-    --------
-    ::
+    Examples:
+        ::
 
-        def sphere(x):           # x: (pop, ndim) -> (pop,)
-            return np.sum(x**2, axis=1)
+            def sphere(x):           # x: (pop, ndim) -> (pop,)
+                return np.sum(x**2, axis=1)
 
-        model.solve(cm.vectorized_target(sphere), bounds, 100, 40)
+            model.solve(cm.vectorized_target(sphere), bounds, 100, 40)
     """
     return VectorizedTarget(target)
 
@@ -55,43 +54,29 @@ def vectorized_target(target: Target) -> VectorizedTarget:
 class TargetFunction:
     """Wraps an objective, counting NFE and enforcing an optional budget.
 
-    The wrapper scores solutions row-by-row (or whole-block via
-    `evaluate_matrix` for vectorized targets), increments the
-    function-evaluation counter on every call, and raises
-    `MaxNumberOfCalls` once ``max_nfe`` is spent.
+    The wrapper scores solutions one individual at a time (``evaluate``) or a
+    whole block at once (`evaluate_matrix`), increments the function-evaluation
+    counter on every individual scored, and raises `MaxNumberOfCalls` once
+    ``max_nfe`` is spent. A single individual always costs exactly one
+    evaluation, whatever the shape of the objective underneath: a row written
+    to a vectorized target is dispatched as a one-row block.
 
-    Parameters
-    ----------
-    target : Target
-        The raw objective callable.
-    bounds : Bounds
-        The search space.
-    max_nfe : int, optional
-        Evaluation budget; ``None`` means unlimited.
+    Args:
+        target: The raw objective callable.
+        bounds: The search space.
+        max_nfe: Evaluation budget; ``None`` means unlimited.
 
-    Attributes
-    ----------
-    nfe : int
-        Evaluations spent so far.
-    max : float or int
-        The budget (``inf`` when unlimited).
-    bounds : Bounds
-        The search space.
-    f : Target
-        Bound evaluator (``evaluate``).
-    vectorized : bool
-        Whether the target scores whole blocks.
+    Attributes:
+        nfe: Evaluations spent so far.
+        max: The budget (``inf`` when unlimited).
+        bounds: The search space.
+        vectorized: Whether the target scores whole blocks.
     """
 
     def __init__(
-        self, target: Target, bounds: Bounds, max_nfe: typing.Optional[int] = None
+        self, target: Target, bounds: Bounds, max_nfe: int | None = None
     ) -> None:
-        def wrapper(x: NDArrayType) -> NDArrayType | typing.Any:
-            self.__spend(1)
-
-            return target(x)
-
-        self.__target = wrapper
+        """Wrap ``target``, counting evaluations against the ``max_nfe`` budget."""
         self.__raw = target
         self.__vectorized = getattr(target, "vectorized", False) is True
         self.__bounds = bounds
@@ -105,41 +90,76 @@ class TargetFunction:
         self.__nfe += calls
 
     def __call__(self, x: NDArrayType) -> NDArrayType | typing.Any:
-        return self.__target(x)
+        """Score one individual, spending a single evaluation."""
+        return self.evaluate(x)
 
     def evaluate(self, x: NDArrayType) -> NDArrayType | typing.Any:
-        return self.__target(x)
+        """Score a single individual, spending exactly one evaluation.
+
+        A plain target receives the solution vector as it is; a vectorized
+        target receives it as a ``(1, ndim)`` block and the single score is
+        unwrapped again, so one individual never costs ``ndim``.
+
+        Args:
+            x: The solution vector, or a one-row ``(1, ndim)`` block.
+
+        Returns:
+            The fitness of that individual.
+        """
+        solution = unwrap_array(x)
+
+        if self.__vectorized:
+            rows = np.atleast_2d(solution)
+
+            self.__spend(len(rows))
+
+            scores = typing.cast(NDArrayType, self.__raw(rows))
+
+            return scores[0] if len(rows) == 1 else scores
+
+        self.__spend(1)
+
+        return self.__raw(solution)
 
     def evaluate_matrix(self, x: NDArrayType) -> NDArrayType:
-        """Score a whole ``(pop, ndim)`` block and return a ``(pop,)`` vector."""
+        """Score a whole ``(pop, ndim)`` block and return a ``(pop,)`` vector.
+
+        Spending is one evaluation per row of the block, so masked and
+        index-selected blocks cost only what they actually score.
+        """
         if not self.__vectorized:
             raise TypeError(
                 "Target is not vectorized; wrap it with `vectorized_target`."
             )
 
-        self.__spend(len(x))
+        block = unwrap_array(x)
 
-        return self.__raw(x)
+        if np.ndim(block) != 2:
+            raise TypeError(
+                "`evaluate_matrix` expects a (pop, ndim) block; score a single "
+                "solution with `evaluate`."
+            )
 
-    def apply_axis(self, x: NDArrayType, mask: ArrayIntegerType) -> NDArrayType:
-        return np.apply_along_axis(self.__target, 1, x[mask, 1:])
+        self.__spend(len(block))
+
+        return typing.cast(NDArrayType, self.__raw(block))
 
     @property
     def nfe(self) -> int:
+        """Evaluations spent so far."""
         return self.__nfe
 
     @property
     def max(self) -> float | int:
+        """The budget (``inf`` when unlimited)."""
         return self.__max_nfe
 
     @property
     def bounds(self) -> Bounds:
+        """The search space."""
         return self.__bounds
 
     @property
-    def f(self) -> Target:
-        return self.evaluate
-
-    @property
     def vectorized(self) -> bool:
+        """Whether the target scores whole blocks."""
         return self.__vectorized

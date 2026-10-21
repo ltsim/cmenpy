@@ -1,0 +1,100 @@
+/* cmenpy brand marks — the wordmark in its slots, and the home hero.
+ * Layout and type live in theme.css; tokens in tokens.css. */
+
+/* --------------------------------- Header ----------------------------------- */
+
+/* Wordmark at 40px tall (~110px wide); the ink is navy, so it needs no tint
+ * in the light scheme. */
+.md-header__button.md-logo {
+  padding: 0.4rem;
+}
+
+.md-header__button.md-logo img {
+  height: 2rem;
+  width: auto;
+}
+
+/* Material hides the header logo on narrow screens (it expects the site name
+ * to carry the bar there); with the name hidden, the logo must stay visible. */
+@media screen and (max-width: 76.234375em) {
+  .md-header__button.md-logo {
+    display: block;
+  }
+}
+
+/* On phones the wordmark shares the bar with the menu, palette and search
+ * controls; 110px is too wide, so it drops to ~88px. */
+@media screen and (max-width: 30em) {
+  .md-header__button.md-logo {
+    padding: 0.3rem;
+  }
+
+  .md-header__button.md-logo img {
+    height: 1.6rem;
+  }
+}
+
+/* The wordmark is dark ink: lift it to cream on the espresso scheme. */
+[data-md-color-scheme="slate"] .md-header__button.md-logo img {
+  filter: brightness(0) invert(1);
+}
+
+/* --------------------------------- Drawer ----------------------------------- */
+
+/* The drawer header shows the readable wordmark, not the site name too. The
+ * close icon is rem-sized, so it survives the zeroed font. */
+.md-nav--primary > .md-nav__title {
+  font-size: 0;
+}
+
+.md-nav--primary > .md-nav__title img {
+  height: 2rem;
+  width: auto;
+}
+
+/* ---------------------------------- Hero ------------------------------------ */
+
+/* Centered wordmark on the home page. The image is the page's H1, so the
+ * heading carries no text: kill its line box and trailing permalink, and
+ * center the image with flex so the inline permalink can't nudge it off-axis. */
+.md-typeset h1:has(> .cmenpy-hero) {
+  display: flex;
+  justify-content: center;
+  font-size: 0;
+  margin: 0;
+}
+
+/* Material sizes the permalink at 1rem, so the zeroed heading does not shrink
+ * it; remove it from the flex line to keep the image exactly centered. */
+.md-typeset h1:has(> .cmenpy-hero) .headerlink {
+  display: none;
+}
+
+.cmenpy-hero {
+  display: block;
+  width: min(360px, 80%);
+  height: auto;
+  margin: 1.5rem auto 1rem;
+}
+
+/* One quiet entrance for the home hero — the only non-user-triggered motion
+ * on the site. The reduced-motion guard lives in theme.css. */
+@keyframes cp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.md-typeset .cmenpy-hero {
+  animation: cp-rise 0.4s ease-out;
+}
+
+/* The hero is the same dark ink as the header mark. */
+[data-md-color-scheme="slate"] .cmenpy-hero {
+  filter: brightness(0) invert(1);
+}
